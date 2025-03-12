@@ -47,9 +47,17 @@ const handleLogin = async () => {
             withCredentials: true
         });
 
-        // トークンを保存
+        // ✅ トークンを保存
         localStorage.setItem('token', response.data.token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+
+        // ✅ authoritykinds_id を保存
+        localStorage.setItem('authoritykinds_id', response.data.user.authoritykinds_id);
+        localStorage.setItem('authoritykindsname', response.data.user.authoritykindsname);
+
+        // ✅ デバッグ用ログ (問題が発生した場合、ブラウザの Console に出力されます)
+        console.log('authoritykinds_id:', response.data.user.authoritykinds_id);
+        console.log('authoritykindsname:', response.data.user.authoritykindsname);
 
         // ダッシュボードへリダイレクト
         router.push('/');

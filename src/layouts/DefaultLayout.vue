@@ -8,7 +8,9 @@
         <c-nav-item href="/about" icon="cil-info">About</c-nav-item>
         <c-nav-item href="/contact" icon="cil-phone">Contact</c-nav-item>
 
-        <!-- 🔥 ログアウトボタン (メニューと同じデザイン) -->
+        <!-- 🔹 管理者 (authoritykinds_id = 1) のみ表示 -->
+        <c-nav-item v-if="isAdmin" href="/admin" icon="cil-settings">Admin</c-nav-item>
+
         <c-nav-item href="#" @click.prevent="handleLogout" icon="cil-account-logout">Logout</c-nav-item>
       </c-sidebar-nav>
     </c-sidebar>
@@ -30,7 +32,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
@@ -38,6 +40,10 @@ const router = useRouter();
 const route = useRoute();
 const sidebarVisible = ref(window.innerWidth >= 992); // PC: 常時表示
 const pageTitle = ref(route.meta.title || 'デフォルトタイトル');
+
+// 🔹 ユーザーの権限を取得
+const authoritykinds_id = ref(localStorage.getItem('authoritykinds_id'));
+const isAdmin = computed(() => authoritykinds_id.value == 1);
 
 const handleResize = () => {
   sidebarVisible.value = window.innerWidth >= 992;
@@ -58,6 +64,7 @@ const handleLogout = async () => {
 
     // ローカルストレージを削除
     localStorage.removeItem('token');
+    localStorage.removeItem('authoritykinds_id'); // 権限も削除
     axios.defaults.headers.common['Authorization'] = '';
 
     // ログインページへリダイレクト
