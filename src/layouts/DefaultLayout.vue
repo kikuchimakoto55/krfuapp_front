@@ -11,6 +11,13 @@
         <!-- 🔹 管理者 (authoritykinds_id = 1) のみ表示 -->
         <c-nav-item v-if="isAdmin" href="/admin" icon="cil-settings">Admin</c-nav-item>
 
+        <!-- 🔹 運営権限 (authoritykinds_id <= 2) のみ表示 -->
+        <c-nav-item v-if="isOperator" href="/management" icon="cil-task">Management</c-nav-item>
+
+        <!-- 🔹 一般権限 (authoritykinds_id <= 3) のみ表示 -->
+        <c-nav-item v-if="isMember" href="/members" icon="cil-user">Members</c-nav-item>
+
+        <!-- 🔹 ログアウト -->
         <c-nav-item href="#" @click.prevent="handleLogout" icon="cil-account-logout">Logout</c-nav-item>
       </c-sidebar-nav>
     </c-sidebar>
@@ -42,8 +49,12 @@ const sidebarVisible = ref(window.innerWidth >= 992); // PC: 常時表示
 const pageTitle = ref(route.meta.title || 'デフォルトタイトル');
 
 // 🔹 ユーザーの権限を取得
-const authoritykinds_id = ref(localStorage.getItem('authoritykinds_id'));
-const isAdmin = computed(() => authoritykinds_id.value == 1);
+const authoritykinds_id = ref(parseInt(localStorage.getItem('authoritykinds_id'), 10) || 0);
+
+const isAdmin = computed(() => authoritykinds_id.value === 1);
+const isOperator = computed(() => authoritykinds_id.value <= 2);
+const isMember = computed(() => authoritykinds_id.value <= 3);
+const isUser = computed(() => authoritykinds_id.value <= 4);
 
 const handleResize = () => {
   sidebarVisible.value = window.innerWidth >= 992;
