@@ -4,21 +4,19 @@
     <c-sidebar :visible="sidebarVisible" :unfoldable="false" class="sidebar">
       <c-sidebar-brand href="#">MAIN TITLE</c-sidebar-brand>
       <c-sidebar-nav>
-        <c-nav-item href="/" icon="cil-home">Home</c-nav-item>
-        <c-nav-item href="/about" icon="cil-info">About</c-nav-item>
-        <c-nav-item href="/contact" icon="cil-phone">Contact</c-nav-item>
-
-        <!-- 🔹 管理者 (authoritykinds_id = 1) のみ表示 -->
-        <c-nav-item v-if="isAdmin" href="/admin" icon="cil-settings">Admin</c-nav-item>
-
-        <!-- 🔹 運営権限 (authoritykinds_id <= 2) のみ表示 -->
-        <c-nav-item v-if="isOperator" href="/management" icon="cil-task">Management</c-nav-item>
-
-        <!-- 🔹 一般権限 (authoritykinds_id <= 3) のみ表示 -->
-        <c-nav-item v-if="isMember" href="/members" icon="cil-user">Members</c-nav-item>
-
-        <!-- 🔹 ログアウト -->
-        <c-nav-item href="#" @click.prevent="handleLogout" icon="cil-account-logout">Logout</c-nav-item>
+        <c-nav-item href="/"><i class="cil-home nav-icon"></i> Home</c-nav-item>
+        <c-nav-item href="/about"><i class="cil-info nav-icon"></i> About</c-nav-item>
+        <c-nav-item href="/contact"><i class="cil-phone nav-icon"></i> Contact</c-nav-item>
+        <c-nav-item v-if="isAdmin" href="/admin"><i class="cil-settings nav-icon"></i> Admin</c-nav-item><!-- 🔹 管理者 (authoritykinds_id = 1) のみ表示 -->
+        <c-nav-item v-if="isOperator" href="/management"><i class="cil-task nav-icon"></i> Management</c-nav-item><!-- 🔹 運営権限 (authoritykinds_id <= 2) のみ表示 -->
+        <c-nav-item href="#" @click.prevent="handleLogout"><i class="cil-account-logout nav-icon"></i> Logout</c-nav-item><!-- 🔹 ログアウト -->
+        <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+          <CDropdownToggle class="c-dropdown-toggle"><i class="cil-people dropdown-icon"></i> 会員管理</CDropdownToggle>
+            <CDropdownMenu class="dropdown-menu-custom">
+              <CDropdownItem href="/members" class="c-nav-item"><i class="cil-search dropdown-item-icon"></i> 会員検索</CDropdownItem>
+              <CDropdownItem href="/members/create" class="c-nav-item"><i class="cil-user-follow dropdown-item-icon"></i> 新規登録</CDropdownItem>
+            </CDropdownMenu>
+        </CDropdown>
       </c-sidebar-nav>
     </c-sidebar>
 
@@ -112,18 +110,71 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
 }
 
-/* 🔥 ログアウトボタンを他のメニューと統一 */
+/* 🔥 CDropdownToggle のデフォルトスタイルを統一 */
+.c-dropdown-toggle {
+  border: none !important;
+  background: transparent !important;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #212529;
+}
+.c-dropdown-toggle:hover {
+  background-color: #e9ecef !important;
+}
+
+/* 🔥 ドリルダウンメニューの枠線・影を削除 */
+.dropdown-menu-custom {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  transform: none !important;
+  z-index: 1050 !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: white !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* 🔥 `CDropdownItem` の枠線や背景色を統一 */
 .c-nav-item {
   text-decoration: none;
-  color: #212529; /* デフォルトのテキストカラー */
+  color: #212529;
   display: flex;
   align-items: center;
   padding: 10px 15px;
   cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
 }
 .c-nav-item:hover {
-  background-color: #e9ecef; /* ホバー時の背景色 */
+  background-color: #e9ecef !important;
 }
+
+.dropdown-icon,
+.dropdown-item-icon {
+  margin-right: 8px; /* 文字との間隔 */
+  font-size: 1.2em; /* アイコンサイズを統一 */
+  vertical-align: middle; /* アイコンの位置調整 */
+}
+
+/* 🔥 CoreUI のデフォルトの枠線を強制削除 */
+.c-dropdown-menu,
+.c-dropdown-menu.show,
+.c-dropdown-menu[aria-labelledby] {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 
 /* 🔥 ヘッダーのタイトル */
 .header-title {
