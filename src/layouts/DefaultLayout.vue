@@ -12,7 +12,7 @@
         <c-nav-item href="#" @click.prevent="handleLogout"><i class="cil-account-logout nav-icon"></i> Logout</c-nav-item><!-- 🔹 ログアウト -->
         <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
           <CDropdownToggle class="c-dropdown-toggle"><i class="cil-people dropdown-icon"></i> 会員管理</CDropdownToggle>
-            <CDropdownMenu class="dropdown-menu-custom">
+            <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
               <CDropdownItem href="/members" class="c-nav-item"><i class="cil-search dropdown-item-icon"></i> 会員検索</CDropdownItem>
               <CDropdownItem href="/members/create" class="c-nav-item"><i class="cil-user-follow dropdown-item-icon"></i> 新規登録</CDropdownItem>
             </CDropdownMenu>
@@ -99,6 +99,19 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+
+/* 🔥 CoreUI のデフォルトの枠線を強制削除 */
+.c-dropdown-menu,
+.c-dropdown-menu.show,
+.c-dropdown-menu[aria-labelledby] {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 .layout {
   display: flex;
   height: 100vh;
@@ -140,6 +153,7 @@ onBeforeUnmount(() => {
   margin: 0 !important;
 }
 
+
 /* 🔥 `CDropdownItem` の枠線や背景色を統一 */
 .c-nav-item {
   text-decoration: none;
@@ -163,17 +177,7 @@ onBeforeUnmount(() => {
   vertical-align: middle; /* アイコンの位置調整 */
 }
 
-/* 🔥 CoreUI のデフォルトの枠線を強制削除 */
-.c-dropdown-menu,
-.c-dropdown-menu.show,
-.c-dropdown-menu[aria-labelledby] {
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-  background-color: transparent !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
+
 
 
 /* 🔥 ヘッダーのタイトル */
