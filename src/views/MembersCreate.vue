@@ -244,6 +244,11 @@
           <CFormInput type="password" v-model="form.password_confirmation" required />
         </CCol>
       </CRow>
+      <CRow class="mb-1">
+        <CCol>
+          <span v-if="passwordMismatchError" class="text-danger">{{ passwordMismatchError }}</span>
+        </CCol>
+      </CRow>
 
 
       <CButton type="submit" color="primary">登録</CButton>
@@ -294,19 +299,7 @@ const form = ref({
   password_confirmation: ''
 });
 
-const submitForm = async () => {
-  try {
-    const response = await axios.post('http://127.0.0.1:8000/api/members', form.value, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      }
-    });
-    console.log('登録成功', response.data);
-    // 登録完了メッセージなど表示する処理も今後追加
-  } catch (error) {
-    console.error('登録失敗', error);
-  }
-};
+
 
 const gradeCategoryOptions = [
   { value: '', label: '選択してください' },
@@ -335,6 +328,30 @@ const gradeCategoryOptions = [
 
 // email を必須にするか判定（coach_flg が '1' ＝ 指導員 の場合）
 const isEmailRequired = computed(() => form.value.coach_flg === '1');
+
+//パスワード一致チェックを追加
+const passwordMismatchError = ref('');
+
+const submitForm = async () => {
+  passwordMismatchError.value = ''; // リセット
+
+  if (form.value.password !== form.value.password_confirmation) {
+    passwordMismatchError.value = 'パスワードと確認用パスワードが一致しません。';
+    return;
+  }
+
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/api/members', form.value, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      }
+    });
+    console.log('登録成功', response.data);
+  } catch (error) {
+    console.error('登録失敗', error);
+  }
+};
+
 </script>
 
 <style scoped>
