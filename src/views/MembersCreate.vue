@@ -7,16 +7,19 @@
         <CCol md="4">
           <CFormLabel>学年カテゴリ<span class="required">*</span></CFormLabel>
           <CFormSelect v-model="form.grade_category" :options="gradeCategoryOptions" required />
+          <div v-if="validationErrors.grade_category" class="text-danger">{{ validationErrors.grade_category[0] }}</div>
         </CCol>
 
         <CCol md="4">
           <CFormLabel>氏名 (姓)<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.username_sei" required maxlength="15" />
+          <div v-if="validationErrors.username_sei" class="text-danger">{{ validationErrors.username_sei[0] }}</div>
         </CCol>
 
         <CCol md="4">
           <CFormLabel>氏名 (名)<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.username_mei" required maxlength="15" />
+          <div v-if="validationErrors.username_mei" class="text-danger">{{ validationErrors.username_mei[0] }}</div>
         </CCol>
       </CRow>
 
@@ -24,10 +27,12 @@
         <CCol md="4">
           <CFormLabel>氏名カナ (姓)<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.username_kana_s" required maxlength="30" pattern="^[ァ-ヶー]+$" title="全角カタカナで入力してください"/>
+          <div v-if="validationErrors.username_kana_s" class="text-danger">{{ validationErrors.username_kana_s[0] }}</div>
         </CCol>
         <CCol md="4">
           <CFormLabel>氏名カナ (名)<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.username_kana_m" required maxlength="30" pattern="^[ァ-ヶー]+$" title="全角カタカナで入力してください"/>
+          <div v-if="validationErrors.username_kana_m" class="text-danger">{{ validationErrors.username_kana_m[0] }}</div>
         </CCol>
         <CCol md="4">
           <CFormLabel>性別<span class="required">*</span></CFormLabel>
@@ -36,16 +41,19 @@
             <option value="男">男</option>
             <option value="女">女</option>
           </CFormSelect>
+          <div v-if="validationErrors.sex" class="text-danger">{{ validationErrors.sex[0] }}</div>
         </CCol>
       </CRow>
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>氏名 (姓) 英<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.username_en_s" required />
+          <div v-if="validationErrors.username_en_s" class="text-danger">{{ validationErrors.username_en_s[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>氏名 (名) 英<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.username_en_m" required />
+          <div v-if="validationErrors.username_en_m" class="text-danger">{{ validationErrors.username_en_m[0] }}</div>
         </CCol>
       </CRow>
 
@@ -53,14 +61,17 @@
         <CCol md="6">
           <CFormLabel>生年月日</CFormLabel>
           <CFormInput type="date" v-model="form.birthday" required />
+          <div v-if="validationErrors.birthday" class="text-danger">{{ validationErrors.birthday[0] }}</div>
         </CCol>
         <CCol md="3">
           <CFormLabel>身長（cm）</CFormLabel>
           <CFormInput type="number" v-model="form.height" min="50" max="250" />
+          <div v-if="validationErrors.height" class="text-danger">{{ validationErrors.height[0] }}</div>
         </CCol>
         <CCol md="3">
           <CFormLabel>体重（kg）</CFormLabel>
           <CFormInput type="number" v-model="form.weight" min="10" max="250" />
+          <div v-if="validationErrors.weight" class="text-danger">{{ validationErrors.weight[0] }}</div>
         </CCol>
       </CRow>
 
@@ -75,10 +86,12 @@
             <option value="O">O</option>
             <option value="その他">その他</option>
           </CFormSelect>
+          <div v-if="validationErrors.blood_type" class="text-danger">{{ validationErrors.blood_type[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>郵便番号<span class="required">*</span></CFormLabel>
             <CFormInput v-model="form.zip" required type="text" maxlength="7" pattern="^[0-9]{7}$" title="7桁の半角数字で入力してください" />
+            <div v-if="validationErrors.zip" class="text-danger">{{ validationErrors.zip[0] }}</div>
         </CCol>
       </CRow>
 
@@ -86,14 +99,17 @@
         <CCol md="4">
           <CFormLabel>都道府県<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.address1" required />
+          <div v-if="validationErrors.address1" class="text-danger">{{ validationErrors.address1[0] }}</div>
         </CCol>
         <CCol md="4">
           <CFormLabel>市区町村<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.address2" required />
+          <div v-if="validationErrors.address2" class="text-danger">{{ validationErrors.address2[0] }}</div>
         </CCol>
         <CCol md="4">
           <CFormLabel>住所３</CFormLabel>
           <CFormInput v-model="form.address3" />
+          <div v-if="validationErrors.address3" class="text-danger">{{ validationErrors.address3[0] }}</div>
         </CCol>
       </CRow>
 
@@ -101,10 +117,12 @@
         <CCol md="6">
           <CFormLabel>在籍学校・園名</CFormLabel>
           <CFormInput v-model="form.enrolled_school" />
+          <div v-if="validationErrors.enrolled_school" class="text-danger">{{ validationErrors.enrolled_school[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>保護者氏名<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.guardian_name" required />
+          <div v-if="validationErrors.guardian_name" class="text-danger">{{ validationErrors.guardian_name[0] }}</div>
         </CCol>
       </CRow>
 
@@ -112,10 +130,12 @@
         <CCol md="6">
           <CFormLabel>保護者メールアドレス<span class="required">*</span></CFormLabel>
           <CFormInput type="email" v-model="form.guardian_email" required />
+          <div v-if="validationErrors.guardian_email" class="text-danger">{{ validationErrors.guardian_email[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>保護者電話番号<span class="required">*</span></CFormLabel>
             <CFormInput v-model="form.guardian_tel" required type="tel" maxlength="11" pattern="^[0-9]{10,11}$" title="10〜11桁の半角数字で入力してください" />
+            <div v-if="validationErrors.guardian_tel" class="text-danger">{{ validationErrors.guardian_tel[0] }}</div>
         </CCol>
       </CRow>
 
@@ -130,10 +150,12 @@
             <option value="祖母">祖母</option>
             <option value="その他">その他</option>
           </CFormSelect>
+          <div v-if="validationErrors.relationship" class="text-danger">{{ validationErrors.relationship[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>緊急連絡先・氏名<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.emergency_name1" required />
+          <div v-if="validationErrors.emergency_name1" class="text-danger">{{ validationErrors.emergency_name1[0] }}</div>
         </CCol>
       </CRow>
 
@@ -141,10 +163,12 @@
         <CCol md="6">
           <CFormLabel>緊急連絡先・メールアドレス<span class="required">*</span></CFormLabel>
           <CFormInput type="email" v-model="form.emergency_email1" required />
+          <div v-if="validationErrors.emergency_email1" class="text-danger">{{ validationErrors.emergency_email1[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>緊急連絡先・電話番号<span class="required">*</span></CFormLabel>
           <CFormInput type="tel" v-model="form.emergency_tel1" required maxlength="11" />
+          <div v-if="validationErrors.emergency_tel1" class="text-danger">{{ validationErrors.emergency_tel1[0] }}</div>
         </CCol>
       </CRow>
 
@@ -152,10 +176,12 @@
         <CCol md="6">
           <CFormLabel>本人メールアドレス<span v-if="isEmailRequired" class="required">*</span></CFormLabel>
           <CFormInput type="email" v-model="form.email" :required="isEmailRequired" placeholder="メールアドレスを入力してください"/>
+          <div v-if="validationErrors.email" class="text-danger">{{ validationErrors.email[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>本人電話番号</CFormLabel>
           <CFormInput type="tel" v-model="form.tel" maxlength="11" />
+          <div v-if="validationErrors.tel" class="text-danger">{{ validationErrors.tel[0] }}</div>
         </CCol>
       </CRow>
 
@@ -163,6 +189,7 @@
         <CCol md="12">
           <CFormLabel>備考</CFormLabel>
           <CFormTextarea v-model="form.remarks" rows="3" />
+          <div v-if="validationErrors.remarks" class="text-danger">{{ validationErrors.remarks[0] }}</div>
         </CCol>
       </CRow>
 
@@ -180,10 +207,12 @@
             <option value="トレーナー">トレーナー</option>
             <option value="チームドクター">チームドクター</option>
           </CFormSelect>
+          <div v-if="validationErrors.classification" class="text-danger">{{ validationErrors.classification[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>保険登録番号</CFormLabel>
           <CFormInput v-model="form.membershipfee_conf" />
+          <div v-if="validationErrors.membershipfee_conf" class="text-danger">{{ validationErrors.membershipfee_conf[0] }}</div>
         </CCol>
       </CRow>
 
@@ -191,6 +220,7 @@
         <CCol md="6">
           <CFormLabel>協会登録番号</CFormLabel>
           <CFormInput v-model="form.association_id" />
+          <div v-if="validationErrors.association_id" class="text-danger">{{ validationErrors.association_id[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>在籍状況<span class="required">*</span></CFormLabel>
@@ -203,6 +233,7 @@
             <option value="卒業">卒業</option>
             <option value="その他">その他</option>
           </CFormSelect>
+          <div v-if="validationErrors.status" class="text-danger">{{ validationErrors.status[0] }}</div>
         </CCol>
       </CRow>
 
@@ -210,6 +241,7 @@
         <CCol md="6">
           <CFormLabel>卒業年度</CFormLabel>
           <CFormInput type="number" v-model="form.graduation_year" />
+          <div v-if="validationErrors.graduation_year" class="text-danger">{{ validationErrors.graduation_year[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>権限種別ID<span class="required">*</span></CFormLabel>
@@ -220,6 +252,7 @@
             <option value="3">一般権限</option>
             <option value="4">使用者権限</option>
           </CFormSelect>
+          <div v-if="validationErrors.authoritykinds_id" class="text-danger">{{ validationErrors.authoritykinds_id[0] }}</div>
         </CCol>
       </CRow>
 
@@ -231,6 +264,7 @@
             <option value="0">選手</option>
             <option value="1">指導員</option>
           </CFormSelect>
+          <div v-if="validationErrors.coach_flg" class="text-danger">{{ validationErrors.coach_flg[0] }}</div>
         </CCol>
       </CRow>
 
@@ -238,10 +272,12 @@
         <CCol md="6">
           <CFormLabel>パスワード<span class="required">*</span></CFormLabel>
           <CFormInput type="password" v-model="form.password" required />
+          <div v-if="validationErrors.password" class="text-danger">{{ validationErrors.password[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>パスワード（確認）<span class="required">*</span></CFormLabel>
           <CFormInput type="password" v-model="form.password_confirmation" required />
+          <div v-if="validationErrors.password_confirmation" class="text-danger">{{ validationErrors.password_confirmation[0] }}</div>
         </CCol>
       </CRow>
       <CRow class="mb-1">
@@ -259,6 +295,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import axios from 'axios';
+
+const validationErrors = ref({});
 
 const form = ref({
   grade_category: '',
@@ -366,7 +404,15 @@ const submitForm = async () => {
     console.log('登録成功', response.data);
   } catch (error) {
     console.error('登録失敗', error);
+    if (error.response && error.response.status === 422) {
+    // Laravelのバリデーションエラー内容を取得して保存
+    validationErrors.value = error.response.data.errors;
+  } else {
+    alert('予期しないエラーが発生しました');
   }
+  }
+
+  
 
 };
 
