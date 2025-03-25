@@ -23,11 +23,11 @@
       <CRow class="mb-3">
         <CCol md="4">
           <CFormLabel>氏名カナ (姓)<span class="required">*</span></CFormLabel>
-          <CFormInput v-model="form.username_kana_s" required maxlength="30" />
+          <CFormInput v-model="form.username_kana_s" required maxlength="30" pattern="^[ァ-ヶー]+$" title="全角カタカナで入力してください"/>
         </CCol>
         <CCol md="4">
           <CFormLabel>氏名カナ (名)<span class="required">*</span></CFormLabel>
-          <CFormInput v-model="form.username_kana_m" required maxlength="30" />
+          <CFormInput v-model="form.username_kana_m" required maxlength="30" pattern="^[ァ-ヶー]+$" title="全角カタカナで入力してください"/>
         </CCol>
         <CCol md="4">
           <CFormLabel>性別<span class="required">*</span></CFormLabel>
@@ -40,11 +40,11 @@
       </CRow>
       <CRow class="mb-3">
         <CCol md="6">
-          <CFormLabel>氏名 (姓) 英</CFormLabel>
+          <CFormLabel>氏名 (姓) 英<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.username_en_s" required />
         </CCol>
         <CCol md="6">
-          <CFormLabel>氏名 (名) 英</CFormLabel>
+          <CFormLabel>氏名 (名) 英<span class="required">*</span></CFormLabel>
           <CFormInput v-model="form.username_en_m" required />
         </CCol>
       </CRow>
@@ -56,11 +56,11 @@
         </CCol>
         <CCol md="3">
           <CFormLabel>身長（cm）</CFormLabel>
-          <CFormInput type="number" v-model="form.height" />
+          <CFormInput type="number" v-model="form.height" min="50" max="250" />
         </CCol>
         <CCol md="3">
           <CFormLabel>体重（kg）</CFormLabel>
-          <CFormInput type="number" v-model="form.weight" />
+          <CFormInput type="number" v-model="form.weight" min="10" max="250" />
         </CCol>
       </CRow>
 
@@ -340,6 +340,23 @@ const submitForm = async () => {
     return;
   }
 
+  // ネイティブバリデーションのエラーチェック
+  const formElement = document.querySelector('form');
+  if (!formElement.checkValidity()) {
+    formElement.reportValidity(); // ブラウザにエラーを表示させる
+    return;
+  }
+
+  // メール重複チェック
+  if (isEmailRequired.value && form.value.email) {
+    const isDuplicate = await checkEmailDuplicate();
+    if (isDuplicate) {
+      passwordMismatchError.value = 'このメールアドレスは既に登録されています。';
+      return;
+    }
+  }
+
+
   try {
     const response = await axios.post('http://127.0.0.1:8000/api/members', form.value, {
       headers: {
@@ -349,6 +366,20 @@ const submitForm = async () => {
     console.log('登録成功', response.data);
   } catch (error) {
     console.error('登録失敗', error);
+  }
+
+};
+
+//メール重複チェック用メソッドを追加
+const checkEmailDuplicate = async () => {
+  try {
+    const res = await axios.get(`http://127.0.0.1:8000/api/check-email`, {
+      params: { email: form.value.email }
+    });
+    return res.data.exists; // trueなら重複あり
+  } catch (err) {
+    console.error('メール確認エラー:', err);
+    return false;
   }
 };
 
@@ -374,11 +405,14 @@ const submitForm = async () => {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+/* 数値入力欄（type="number"）の見た目をテキスト入力と同じにする */
 input[type="number"] {
   appearance: textfield;
   -moz-appearance: textfield;
+  background-color: #fff; /* 明示的に背景白に */
 }
 
+/* ChromeなどWebKit系ブラウザのスピンボタンを非表示に */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
