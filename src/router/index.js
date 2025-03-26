@@ -6,8 +6,9 @@ import Contact from '../views/Contact.vue';
 import Login from '../views/Login.vue';
 import Admin from '../views/Admin.vue';
 import Management from '../views/Management.vue';
-import Members from '../views/Members.vue';
-import MembersCreate from '../views/MembersCreate.vue';
+import Members from '../views/members/Members.vue';
+import MembersCreate from '../views/members/MembersCreate.vue';
+import MemberComplete from '../views/members/MemberComplete.vue';
 
 const routes = [
   {
@@ -31,8 +32,8 @@ const routes = [
 
       // 🔹 一般権限以上のページ (authoritykinds_id <= 3 のみ)
       { path: 'members', component: Members, meta: { title: '会員管理', requiresAuth: true, requiresGeneral: true } },
-
-      { path: '/members/create', component: MembersCreate, meta: { title: '新規会員登録' } }, // 🔥 ここを追加
+      { path: '/members/create', component: MembersCreate, meta: { title: '新規会員登録' } }, 
+      { path: 'members/complete', component: MemberComplete, meta: { title: '登録完了' } },
     ]
   }
 ];
