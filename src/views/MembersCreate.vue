@@ -289,14 +289,23 @@
 
       <CButton type="submit" color="primary">登録</CButton>
     </CForm>
+
+    <CToaster placement="top-end">
+      <CToast v-for="(toast, index) in toasts" :key="index" :color="toast.color" :autohide="toast.autohide" :delay="toast.delay">
+        <CToastBody>{{ toast.content }}</CToastBody>
+      </CToast>
+    </CToaster>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router'
 import axios from 'axios';
+import { CToast, CToastBody, CToaster } from '@coreui/vue'
 
 const validationErrors = ref({});
+const router = useRouter()
 
 const form = ref({
   grade_category: '',
@@ -337,7 +346,7 @@ const form = ref({
   password_confirmation: ''
 });
 
-
+const toasts = ref([])
 
 const gradeCategoryOptions = [
   { value: '', label: '選択してください' },
@@ -402,6 +411,10 @@ const submitForm = async () => {
       }
     });
     console.log('登録成功', response.data);
+    showSuccessToast(); 
+    setTimeout(() => {
+      router.push('/members/complete')
+    }, 3000)
   } catch (error) {
     console.error('登録失敗', error);
     if (error.response && error.response.status === 422) {
@@ -411,10 +424,16 @@ const submitForm = async () => {
     alert('予期しないエラーが発生しました');
   }
   }
-
-  
-
 };
+
+const showSuccessToast = () => {
+  toasts.value.push({
+    content: '登録が完了しました！',
+    color: 'success',
+    autohide: true,
+    delay: 3000
+  })
+  };
 
 //メール重複チェック用メソッドを追加
 const checkEmailDuplicate = async () => {
