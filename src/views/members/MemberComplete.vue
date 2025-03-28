@@ -12,7 +12,7 @@
   const router = useRouter()
   
   const goToTop = () => {
-    router.push('/dashboard') // またはトップページのパスに変更
+    router.push('/members/create') // またはトップページのパスに変更
   }
   </script>
   

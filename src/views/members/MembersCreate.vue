@@ -38,8 +38,8 @@
           <CFormLabel>性別<span class="required">*</span></CFormLabel>
           <CFormSelect v-model="form.sex" required>
             <option value="">選択してください</option>
-            <option value="男">男</option>
-            <option value="女">女</option>
+            <option value="1">男</option>
+            <option value="2">女</option>
           </CFormSelect>
           <div v-if="validationErrors.sex" class="text-danger">{{ validationErrors.sex[0] }}</div>
         </CCol>
@@ -80,11 +80,11 @@
           <CFormLabel>血液型</CFormLabel>
           <CFormSelect v-model="form.blood_type">
             <option value="">選択してください</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="AB">AB</option>
-            <option value="O">O</option>
-            <option value="その他">その他</option>
+            <option value="1">A</option>
+            <option value="2">B</option>
+            <option value="3">AB</option>
+            <option value="4">O</option>
+            <option value="5">その他</option>
           </CFormSelect>
           <div v-if="validationErrors.blood_type" class="text-danger">{{ validationErrors.blood_type[0] }}</div>
         </CCol>
@@ -144,11 +144,11 @@
           <CFormLabel>続柄<span class="required">*</span></CFormLabel>
           <CFormSelect v-model="form.relationship" required>
             <option value="">選択してください</option>
-            <option value="父">父</option>
-            <option value="母">母</option>
-            <option value="祖父">祖父</option>
-            <option value="祖母">祖母</option>
-            <option value="その他">その他</option>
+            <option value="1">父</option>
+            <option value="2">母</option>
+            <option value="3">祖父</option>
+            <option value="4">祖母</option>
+            <option value="5">その他</option>
           </CFormSelect>
           <div v-if="validationErrors.relationship" class="text-danger">{{ validationErrors.relationship[0] }}</div>
         </CCol>
@@ -198,14 +198,14 @@
           <CFormLabel>所属区分<span class="required">*</span></CFormLabel>
           <CFormSelect v-model="form.classification" required>
             <option value="">選択してください</option>
-            <option value="代表者">代表者</option>
-            <option value="監督">監督</option>
-            <option value="コーチ">コーチ</option>
-            <option value="プレイヤー">プレイヤー</option>
-            <option value="マネージャー">マネージャー</option>
-            <option value="メディカルサポーター">メディカルサポーター</option>
-            <option value="トレーナー">トレーナー</option>
-            <option value="チームドクター">チームドクター</option>
+            <option value="1">代表者</option>
+            <option value="2">監督</option>
+            <option value="3">コーチ</option>
+            <option value="4">プレイヤー</option>
+            <option value="5">マネージャー</option>
+            <option value="6">メディカルサポーター</option>
+            <option value="7">トレーナー</option>
+            <option value="8">チームドクター</option>
           </CFormSelect>
           <div v-if="validationErrors.classification" class="text-danger">{{ validationErrors.classification[0] }}</div>
         </CCol>
@@ -226,12 +226,12 @@
           <CFormLabel>在籍状況<span class="required">*</span></CFormLabel>
           <CFormSelect v-model="form.status" required>
             <option value="">選択してください</option>
-            <option value="在籍">在籍</option>
-            <option value="転籍">転籍</option>
-            <option value="休校">休校</option>
-            <option value="退校">退校</option>
-            <option value="卒業">卒業</option>
-            <option value="その他">その他</option>
+            <option value="1">在籍</option>
+            <option value="2">転籍</option>
+            <option value="3">休校</option>
+            <option value="4">退校</option>
+            <option value="5">卒業</option>
+            <option value="6">その他</option>
           </CFormSelect>
           <div v-if="validationErrors.status" class="text-danger">{{ validationErrors.status[0] }}</div>
         </CCol>
@@ -342,6 +342,7 @@ const form = ref({
   graduation_year: '',
   authoritykinds_id: '',
   coach_flg: '',
+  del_flg: 0,
   password: '',
   password_confirmation: ''
 });
@@ -350,27 +351,27 @@ const toasts = ref([])
 
 const gradeCategoryOptions = [
   { value: '', label: '選択してください' },
-  { value: '年年少', label: '年年少' },
-  { value: '年少', label: '年少' },
-  { value: '年中', label: '年中' },
-  { value: '年長', label: '年長' },
-  { value: '小１', label: '小１' },
-  { value: '小２', label: '小２' },
-  { value: '小３', label: '小３' },
-  { value: '小４', label: '小４' },
-  { value: '小５', label: '小５' },
-  { value: '小６', label: '小６' },
-  { value: '中１', label: '中１' },
-  { value: '中２', label: '中２' },
-  { value: '中３', label: '中３' },
-  { value: '高１', label: '高１' },
-  { value: '高２', label: '高２' },
-  { value: '高３', label: '高３' },
-  { value: '大１', label: '大１' },
-  { value: '大２', label: '大２' },
-  { value: '大３', label: '大３' },
-  { value: '大４', label: '大４' },
-  { value: '社会人', label: '社会人' }
+  { value: '1', label: '年年少' },
+  { value: '2', label: '年少' },
+  { value: '3', label: '年中' },
+  { value: '4', label: '年長' },
+  { value: '5', label: '小１' },
+  { value: '6', label: '小２' },
+  { value: '7', label: '小３' },
+  { value: '8', label: '小４' },
+  { value: '9', label: '小５' },
+  { value: '10', label: '小６' },
+  { value: '11', label: '中１' },
+  { value: '12', label: '中２' },
+  { value: '13', label: '中３' },
+  { value: '14', label: '高１' },
+  { value: '15', label: '高２' },
+  { value: '16', label: '高３' },
+  { value: '17', label: '大１' },
+  { value: '18', label: '大２' },
+  { value: '19', label: '大３' },
+  { value: '20', label: '大４' },
+  { value: '21', label: '社会人' },
 ]
 
 // email を必須にするか判定（coach_flg が '1' ＝ 指導員 の場合）
@@ -394,6 +395,23 @@ const submitForm = async () => {
     return;
   }
 
+  if (form.value.graduation_year === '') {
+    form.value.graduation_year = null;
+  }
+  // 🎯 送信用に変換
+  const formToSend = {
+    ...form.value,
+    grade_category: form.value.grade_category !== '' ? Number(form.value.grade_category) : null,
+    sex: form.value.sex !== '' ? Number(form.value.sex) : null,
+    blood_type: form.value.blood_type !== '' ? Number(form.value.blood_type) : null,
+    relationship: form.value.relationship !== '' ? Number(form.value.relationship) : null,
+    classification: form.value.classification !== '' ? Number(form.value.classification) : null,
+    status: form.value.status !== '' ? Number(form.value.status) : null,
+    authoritykinds_id: form.value.authoritykinds_id !== '' ? Number(form.value.authoritykinds_id) : null,
+    coach_flg: form.value.coach_flg !== '' ? Number(form.value.coach_flg) : null,
+    graduation_year: form.value.graduation_year === '' ? null : form.value.graduation_year,
+  };
+
   // メール重複チェック
   if (isEmailRequired.value && form.value.email) {
     const isDuplicate = await checkEmailDuplicate();
@@ -403,12 +421,22 @@ const submitForm = async () => {
     }
   }
 
+  const token = localStorage.getItem('token');
+  console.log('送信トークン:', token);
+
+  
 
   try {
+
+    await axios.get('http://127.0.0.1:8000/sanctum/csrf-cookie', {
+      withCredentials: true
+    });
+
     const response = await axios.post('http://127.0.0.1:8000/api/members', form.value, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
-      }
+      },
+      withCredentials: true
     });
     console.log('登録成功', response.data);
     showSuccessToast(); 
@@ -416,14 +444,16 @@ const submitForm = async () => {
       router.push('/members/complete')
     }, 3000)
   } catch (error) {
-    console.error('登録失敗', error);
-    if (error.response && error.response.status === 422) {
-    // Laravelのバリデーションエラー内容を取得して保存
-    validationErrors.value = error.response.data.errors;
+  console.error('登録失敗', error);
+
+  // 👇 403の原因やエラーメッセージをコンソールに表示
+  if (error.response) {
+    console.log('エラー内容:', error.response.data);
+    alert(error.response.data.message || '不明なエラーが発生しました');
   } else {
     alert('予期しないエラーが発生しました');
   }
-  }
+}
 };
 
 const showSuccessToast = () => {

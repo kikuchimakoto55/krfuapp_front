@@ -10,6 +10,8 @@ import axios from 'axios';
 // 🛠️ Axios のデフォルト設定
 axios.defaults.baseURL = 'http://127.0.0.1:8000';
 axios.defaults.withCredentials = true; // Cookie を送信可能にする
+axios.defaults.xsrfCookieName = 'XSRF-TOKEN';     // Laravelが発行するCSRF Cookie名
+axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';   // Laravelが期待するCSRFヘッダー名
 
 const app = createApp(App);
 
