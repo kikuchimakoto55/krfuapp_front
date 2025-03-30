@@ -145,16 +145,20 @@
           <CTableHeaderCell>メールアドレス</CTableHeaderCell>
           <CTableHeaderCell>学年カテゴリ</CTableHeaderCell>
           <CTableHeaderCell>在籍状況</CTableHeaderCell>
-          <CTableHeaderCell>保険登録番号</CTableHeaderCell>
+          <CTableHeaderCell>所属区分</CTableHeaderCell>
+          <CTableHeaderCell>権限種別</CTableHeaderCell>
+          <CTableHeaderCell>指導員フラグ</CTableHeaderCell>
         </CTableRow>
       </CTableHead>
       <CTableBody>
-        <CTableRow v-for="member in members" :key="member.id">
+        <CTableRow v-for="member in members" :key="member.member_id">
           <CTableDataCell>{{ member.username_sei }} {{ member.username_mei }}</CTableDataCell>
           <CTableDataCell>{{ member.email }}</CTableDataCell>
           <CTableDataCell>{{ gradeCategories[member.grade_category] }}</CTableDataCell>
           <CTableDataCell>{{ statusOptions[member.status] }}</CTableDataCell>
-          <CTableDataCell>{{ member.membershipfee_conf || 'なし' }}</CTableDataCell>
+          <CTableDataCell>{{ classificationOptions[member.classification] }}</CTableDataCell>
+          <CTableDataCell>{{ authorityOptions[member.authoritykinds_id] }}</CTableDataCell>
+          <CTableDataCell>{{ coachFlgOptions[member.coach_flg] }}</CTableDataCell>
         </CTableRow>
       </CTableBody>
     </CTable>
@@ -200,6 +204,8 @@ const showSearchForm = ref(false);
 const gradeCategories = { 0: '年年少', 1: '年少', 2: '年中', 3: '年長', 4: '小1', 5: '小2', 6: '小3', 7: '小4', 8: '小5', 9: '小6', 10: '中1', 11: '中2', 12: '中3', 13: '高1', 14: '高2', 15: '高3', 16: '大1', 17: '大2', 18: '大3', 19: '大4', 20: '社会人' };
 const classificationOptions = { 1: '代表者', 2: '監督', 3: 'コーチ', 4: 'プレイヤー', 5: 'マネージャー', 6: 'メディカルサポーター', 7: 'トレーナー', 8: 'チームドクター' };
 const statusOptions = { 0: '在籍', 1: '転籍', 2: '離籍', 3: '卒業', 4: 'その他' };
+const authorityOptions = { 1: '管理者', 2: '運営権限', 3: '一般権限', 4: '使用者権限' };
+const coachFlgOptions = { 0: '選手', 1: '指導員', 2: 'その他' };
 
 // 🔽 検索条件を開閉
 const toggleSearchForm = () => {
