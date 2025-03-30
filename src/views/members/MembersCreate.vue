@@ -3,6 +3,22 @@
     <h2 class="form-title">会員情報入力後、登録ボタンを押してください</h2>
 
     <CForm @submit.prevent="submitForm">
+
+      <CRow class="mb-3">
+        <CCol md="4">
+          <CFormLabel>指導員フラグ<span class="required">必須</span></CFormLabel>
+            <CFormSelect v-model="form.coach_flg" required>
+              <option value="">選択してください</option>
+              <option value="0">選手</option>
+              <option value="1">指導員</option>
+              <option value="2">その他</option>
+            </CFormSelect>
+            <div v-if="validationErrors.coach_flg" class="text-danger">
+              {{ validationErrors.coach_flg[0] }}
+            </div>
+          </CCol>
+        </CRow>
+
       <CRow class="mb-3">
         <CCol md="4">
           <CFormLabel>学年カテゴリ<span class="required">必須</span></CFormLabel>
@@ -258,18 +274,6 @@
         </CCol>
       </CRow>
 
-      <CRow class="mb-3">
-        <CCol md="6">
-          <CFormLabel>指導員フラグ<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.coach_flg" required>
-            <option value="">選択してください</option>
-            <option value="0">選手</option>
-            <option value="1">指導員</option>
-            <option value="2">その他</option>
-          </CFormSelect>
-          <div v-if="validationErrors.coach_flg" class="text-danger">{{ validationErrors.coach_flg[0] }}</div>
-        </CCol>
-      </CRow>
 
       <CRow class="mb-3">
         <CCol md="6">
