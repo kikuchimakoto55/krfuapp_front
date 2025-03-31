@@ -32,8 +32,10 @@ const routes = [
 
       // 🔹 一般権限以上のページ (authoritykinds_id <= 3 のみ)
       { path: 'members', component: Members, meta: { title: '会員管理', requiresAuth: true, requiresGeneral: true } },
-      { path: '/members/create', component: MembersCreate, meta: { title: '新規会員登録' } }, 
+      { path: 'members/create', component: MembersCreate, meta: { title: '新規会員登録' } }, 
       { path: 'members/complete', component: MemberComplete, meta: { title: '登録完了' } },
+      { path: 'members/edit/:id', name: 'MemberEdit', component: () => import('@/views/members/MembersEdit.vue'), meta: { title: '会員編集' } },
+      { path: 'members/show/:id', name: 'MembersShow', component: () => import('@/views/members/MembersShow.vue'), meta: { title: '会員詳細' } },
     ]
   }
 ];
