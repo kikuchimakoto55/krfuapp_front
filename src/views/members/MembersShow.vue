@@ -253,8 +253,8 @@ const authorityKindText = (val) => {
 /* 外枠ボックスのスタイル */
 .info-col {
   position: relative;                 /* 子要素（ラベル）の絶対配置用 */
-  border: 2px solid #FFC107;          /* 枠線：幅2px・色#FFC107（Bootstrapの「warning」色） */
-  padding: 0;                        /* 枠内の余白をなしにしてコンテンツを左詰め */
+  border: 1px solid #0099cc ;          /* 枠線：幅1px・色#0099cc（Bootstrapの「warning」色） */
+  padding: 22px;                        /* 枠内の余白をなしにしてコンテンツを左詰め */
   margin-bottom: 1rem;               /* 下方向の余白（行が折り返された場合の間隔調整） */
 }
 
@@ -263,18 +263,25 @@ const authorityKindText = (val) => {
   position: absolute;
   top: -0.6em;                       /* 枠線より少し上に配置（ラベル高さの約半分） */
   left: 0.5em;                       /* 枠の左端から少し内側にオフセット */
-  background: #FFC107;               /* ラベルの背景色（枠線と同じ色で一体感を演出） */
+  background: #006699;               /* ラベルの背景色（枠線と同じ色で一体感を演出） */
   color: #fff;                       /* ラベル文字色（背景に対し見やすい白など） */
   font-weight: bold;
-  padding: 0 0.3em;                  /* ラベル文字の左右に適度な余白を追加 */
+  padding: 5px 1.3em;                  /* ラベル文字の左右に適度な余白を追加 */
   line-height: 1;                    /* ラベルの行高を1にして余計な隙間を除去 */
-  border-radius: 0.2rem;             /* （任意）角を少し丸くするとデザインが柔らかくなります */
+  border-radius: 1.2rem;             /* （任意）角を少し丸くするとデザインが柔らかくなります */
 }
 
 /* 値部分のスタイル */
 .info-value {
   display: block;
+  margin-top: 0.5em;
+  padding-left: 0.3em;
   /* デフォルトで左寄せ。paddingは無し。必要に応じて微調整可能 */
+}
+
+/*ラベルが長い場合の防止策*/
+.info-label {
+  white-space: nowrap;
 }
 </style>
 
