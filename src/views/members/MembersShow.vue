@@ -156,12 +156,21 @@
                 <span class="info-value">{{ member.graduation_year }}</span>
             </CCol>
         </CRow>
+        <CRow>
+          <CCol md="6" class="info-col" v-if="isAdmin">
+            <span class="info-label">パスワード</span>
+            <span class="info-value info-flex">セキュリティ上表示できません。
+              <CButton size="sm" color="dark" variant="outline" class="ms-2 stylish-btn" @click="goToPasswordEdit">パスワード変更はこちら</CButton>
+            </span>
+          </CCol>
+        </CRow>
          <CRow class="mt-4">
             <CCol>
               <CButton color="primary" @click="goToEdit">編集する</CButton>
               <CButton color="secondary" class="ms-2" @click="router.back()">戻る</CButton>
             </CCol>
           </CRow>
+
         </CCardBody>
       </CCard>
     </div>
@@ -178,6 +187,8 @@
   const id = route.params.id
   
   const member = ref({})
+
+  const isAdmin = ref(false)
   
   onMounted(async () => {
     try {
@@ -188,14 +199,17 @@
         withCredentials: true
       })
       member.value = res.data.member
+      const myAuthId = parseInt(localStorage.getItem('authoritykinds_id'))
+      isAdmin.value = myAuthId === 1
     } catch (err) {
       console.error('会員情報の取得に失敗しました', err)
     }
   })
   
-  const goToEdit = () => {
-    router.push(`/members/edit/${id}`)
+  const goToPasswordEdit = () => {
+  router.push(`/members/edit-password/${id}`)
   }
+
   
   const genderText = (val) => {
     if (val == 1) return '男'
@@ -279,9 +293,28 @@ const authorityKindText = (val) => {
   /* デフォルトで左寄せ。paddingは無し。必要に応じて微調整可能 */
 }
 
+.info-flex {
+  align-items: center;   /* ←これで縦位置中央に */
+}
+
+
 /*ラベルが長い場合の防止策*/
 .info-label {
   white-space: nowrap;
+}
+
+.stylish-btn {
+  border-radius: 1.2rem;
+  padding: 0.25rem 1rem;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.stylish-btn:hover {
+  background-color: #006699;
+  color: #fff;
+  border-color: #006699;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 </style>
 
