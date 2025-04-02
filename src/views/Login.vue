@@ -6,14 +6,14 @@
       </CCardHeader>
       <CCardBody>
         <CForm @submit.prevent="handleLogin">
-          <CFormGroup>
+          <div class="mb-3">
             <CFormLabel for="email">メールアドレスをご入力ください</CFormLabel>
             <CFormInput v-model="email" type="email" id="email" required />
-          </CFormGroup>
-          <CFormGroup>
+          </div>
+          <div class="mb-3">
             <CFormLabel for="password">パスワード</CFormLabel>
             <CFormInput v-model="password" type="password" id="password" required />
-          </CFormGroup>
+          </div>
           <br/>
           <CButton type="submit" color="primary" class="custom-login-btn" block>ログイン</CButton>
         </CForm>
@@ -51,7 +51,8 @@ const handleLogin = async () => {
         localStorage.setItem('token', response.data.token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
 
-        // ✅ authoritykinds_id を保存
+        // ✅ ユーザーID・権限を保存
+        localStorage.setItem('user_id', response.data.user.member_id);
         localStorage.setItem('authoritykinds_id', response.data.user.authoritykinds_id);
         localStorage.setItem('authoritykindsname', response.data.user.authoritykindsname);
 

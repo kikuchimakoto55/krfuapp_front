@@ -26,7 +26,7 @@ const routes = [
 
       // 🔹 管理者専用ページ (authoritykinds_id = 1 のみ)
       { path: 'admin', component: Admin, meta: { title: '管理画面', requiresAuth: true, requiresAdmin: true } },
-
+ 
       // 🔹 運営権限以上のページ (authoritykinds_id <= 2 のみ)
       { path: 'management', component: Management, meta: { title: '運営管理', requiresAuth: true, requiresOperation: true } },
 
@@ -36,6 +36,8 @@ const routes = [
       { path: 'members/complete', component: MemberComplete, meta: { title: '登録完了' } },
       { path: 'members/edit/:id', name: 'MemberEdit', component: () => import('@/views/members/MembersEdit.vue'), meta: { title: '会員編集' } },
       { path: 'members/show/:id', name: 'MembersShow', component: () => import('@/views/members/MembersShow.vue'), meta: { title: '会員詳細' } },
+      { path: 'members/change-password', name: 'PasswordChange', component: () => import('@/views/members/PasswordChange.vue'), meta: { title: 'パスワード変更', requiresAuth: true } },
+
     ]
   }
 ];
