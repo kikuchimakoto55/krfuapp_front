@@ -1,6 +1,15 @@
+// src/utils/axios.js
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000/api';
-axios.defaults.withCredentials = true; // Sanctumの認証を有効化
+const instance = axios.create({
+  baseURL: 'http://localhost:8000',
+  withCredentials: true,
+});
 
-export default axios;
+// ローカルストレージにトークンがあれば Authorization ヘッダーにセット
+const token = localStorage.getItem('token');
+if (token) {
+  instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
+
+export default instance;

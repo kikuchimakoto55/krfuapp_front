@@ -206,6 +206,10 @@
     }
   })
   
+  const goToEdit = () => {
+  router.push(`/members/edit/${id}`)
+}
+
   const goToPasswordEdit = () => {
   router.push(`/members/edit-password/${id}`)
   }

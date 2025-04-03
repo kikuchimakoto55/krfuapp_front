@@ -191,7 +191,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import axios from '@/utils/axios';;
 
 // 🔽 データ管理
 const members = ref([]);
@@ -226,8 +226,9 @@ const fetchMembers = async (page = 1) => {
 
     params.append('page', currentPage.value);
 
-    const response = await axios.get(`http://127.0.0.1:8000/api/members?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    const response = await axios.get(`http://localhost:8000/api/members?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      withCredentials: true, 
     });
 
     console.log("取得データ:", response.data);

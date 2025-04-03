@@ -39,7 +39,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import axios from 'axios';
+import axios from '@/utils/axios';
 
 const router = useRouter();
 const route = useRoute();
@@ -65,21 +65,29 @@ const toggleSidebar = () => {
 // 🔥 ログアウト処理
 const handleLogout = async () => {
   try {
-    await axios.post('http://127.0.0.1:8000/api/logout', {}, {
+    // 🚨 CSRFトークンを明示的に取得
+    await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true });
+
+    await axios.post('http://localhost:8000/api/logout', {}, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
-      }
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true
     });
 
-    // ローカルストレージを削除
+    // 🔄 ローカルストレージを削除
     localStorage.removeItem('token');
-    localStorage.removeItem('authoritykinds_id'); // 権限も削除
+    localStorage.removeItem('authoritykinds_id');
+    localStorage.removeItem('authoritykindsname');
     axios.defaults.headers.common['Authorization'] = '';
 
-    // ログインページへリダイレクト
     router.push('/login');
   } catch (error) {
-    console.error('ログアウトエラー:', error.response);
+    console.error('ログアウトエラー詳細:', error);
+    if (error.response) {
+      console.error('レスポンス内容:', error.response.data);
+    }
   }
 };
 

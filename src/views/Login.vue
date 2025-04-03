@@ -32,41 +32,43 @@ const email = ref('');
 const password = ref('');
 
 const handleLogin = async () => {
-    try {
-        // CSRFトークンを取得
-        await axios.get('http://127.0.0.1:8000/sanctum/csrf-cookie', {
-            withCredentials: true
-        });
+  try {
+    // CSRFトークンを取得
+    await axios.get('http://localhost:8000/sanctum/csrf-cookie', {
+      withCredentials: true
+    });
 
-        // ログインリクエストを送信
-        const response = await axios.post('http://127.0.0.1:8000/api/login', {
-            email: email.value,
-            password: password.value,
-        }, {
-            headers: { 'Content-Type': 'application/json' },
-            withCredentials: true
-        });
+    // ログインリクエスト
+    const response = await axios.post('http://localhost:8000/api/login', {
+      email: email.value,
+      password: password.value,
+    }, {
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true
+    });
 
-        // ✅ トークンを保存
-        localStorage.setItem('token', response.data.token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+    // トークン保存
+    localStorage.setItem('token', response.data.token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
 
-        // ✅ ユーザーID・権限を保存
-        localStorage.setItem('user_id', response.data.user.member_id);
-        localStorage.setItem('authoritykinds_id', response.data.user.authoritykinds_id);
-        localStorage.setItem('authoritykindsname', response.data.user.authoritykindsname);
+    // ユーザー情報保存
+    localStorage.setItem('user_id', response.data.user.member_id);
+    localStorage.setItem('authoritykinds_id', response.data.user.authoritykinds_id);
+    localStorage.setItem('authoritykindsname', response.data.user.authoritykindsname);
 
-        // ✅ デバッグ用ログ (問題が発生した場合、ブラウザの Console に出力されます)
-        console.log('authoritykinds_id:', response.data.user.authoritykinds_id);
-        console.log('authoritykindsname:', response.data.user.authoritykindsname);
-
-        // ダッシュボードへリダイレクト
-        router.push('/');
-    } catch (error) {
-        alert('ログインに失敗しました。');
-        console.error(error.response);
+    // ダッシュボードへ遷移
+    router.push('/');
+  } catch (error) {
+    alert('ログインに失敗しました。');
+    console.error('ログインエラー詳細:', error);
+    if (error.response) {
+      console.error('レスポンス内容:', error.response.data);
+    } else {
+      console.error('レスポンスなし（ネットワークエラーなど）');
     }
+  }
 };
+
 </script>
 
 <style scoped>
