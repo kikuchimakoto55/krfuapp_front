@@ -18,20 +18,16 @@
         <i class="cil-people dropdown-icon"></i> 会員管理
       </CDropdownToggle>
       <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
-        <CDropdownItem class="c-nav-item">
-          <template #default>
-            <router-link to="/members" class="c-nav-item">
-              <i class="cil-search dropdown-item-icon"></i> 会員検索
-            </router-link>
-          </template>
-        </CDropdownItem>
-        <CDropdownItem class="c-nav-item">
-          <template #default>
-            <router-link to="/members/create" class="c-nav-item">
-              <i class="cil-user-follow dropdown-item-icon"></i> 新規登録
-            </router-link>
-          </template>
-        </CDropdownItem>
+        <CDropdownItem class="c-nav-item" style="padding: 0;">
+  <router-link to="/members" class="dropdown-link">
+    <i class="cil-search dropdown-item-icon"></i> <span>会員検索</span>
+  </router-link>
+</CDropdownItem>
+<CDropdownItem class="c-nav-item" style="padding: 0;">
+  <router-link to="/members/create" class="dropdown-link">
+    <i class="cil-user-follow dropdown-item-icon"></i> <span>新規登録</span>
+  </router-link>
+</CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
   </c-sidebar-nav>
@@ -258,5 +254,19 @@ onBeforeUnmount(() => {
   .main-content {
     margin-left: 20px;
   }
+}
+
+.dropdown-link {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  color: #212529;
+  text-decoration: none;
+  width: 100%;
+  font-weight: normal; /* ← これで太字回避 */
+}
+
+.dropdown-link:hover {
+  background-color: #e9ecef;
 }
 </style>

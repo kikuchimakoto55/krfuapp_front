@@ -290,10 +290,12 @@
           <span v-if="passwordMismatchError" class="text-danger">{{ passwordMismatchError }}</span>
         </CCol>
       </CRow>
-        <button type="submit">更新</button>
+      <CButton type="submit" class="custom-submit-button">更新</CButton>
       </form>
     </div>
-
+    <CAlert v-if="showToast" class="toast-alert custom-toast">
+    {{ toastMessage }}
+    </CAlert>
   </template>
 
 <script setup>
@@ -306,6 +308,8 @@ const route = useRoute()
 const router = useRouter()
 const id = route.params.id
 const passwordMismatchError = ref('');
+const showToast = ref(false)
+const toastMessage = ref('')
 
 const form = ref({
   // 必要なフィールドを初期化（空でもOK）
@@ -443,20 +447,58 @@ const updateMember = async () => {
     ? Number(form.value.graduation_year)
     : null;
 
-  try {
+    try {
     await axios.put(`http://127.0.0.1:8000/api/members/${id}`, form.value, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       },
       withCredentials: true
     });
-    alert('更新完了しました');
-    router.push('/members');
+
+    // ✅ トースト表示だけにする
+    toastMessage.value = '✅ 更新が完了しました'
+    showToast.value = true
+
+    setTimeout(() => {
+      showToast.value = false
+      toastMessage.value = ''
+    }, 3000)
+
   } catch (err) {
     console.error('更新失敗', err);
     if (err.response && err.response.data.errors) {
       validationErrors.value = err.response.data.errors;
     }
   }
-};
+
+  };
 </script>
+
+<style scoped>
+.toast-alert {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  min-width: 250px;
+  padding: 16px 24px;
+  font-size: 1.1rem;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+.custom-toast {
+  background-color: #999999;
+  color: #ffffff;
+  border: none;
+}
+
+.custom-submit-button{
+  background-color: #003366;
+  color: #ffffff;
+  border: none;
+}
+
+
+</style>
