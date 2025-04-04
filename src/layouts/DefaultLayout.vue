@@ -1,24 +1,41 @@
 <template>
   <div class="layout">
-    <!-- サイドバー -->
-    <c-sidebar :visible="sidebarVisible" :unfoldable="false" class="sidebar">
-      <c-sidebar-brand href="#">MAIN TITLE</c-sidebar-brand>
-      <c-sidebar-nav>
-        <c-nav-item href="/"><i class="cil-home nav-icon"></i> Home</c-nav-item>
-        <c-nav-item href="/about"><i class="cil-info nav-icon"></i> About</c-nav-item>
-        <c-nav-item href="/contact"><i class="cil-phone nav-icon"></i> Contact</c-nav-item>
-        <c-nav-item v-if="isAdmin" href="/admin"><i class="cil-settings nav-icon"></i> Admin</c-nav-item><!-- 🔹 管理者 (authoritykinds_id = 1) のみ表示 -->
-        <c-nav-item v-if="isOperator" href="/management"><i class="cil-task nav-icon"></i> Management</c-nav-item><!-- 🔹 運営権限 (authoritykinds_id <= 2) のみ表示 -->
-        <c-nav-item href="#" @click.prevent="handleLogout"><i class="cil-account-logout nav-icon"></i> Logout</c-nav-item><!-- 🔹 ログアウト -->
-        <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
-          <CDropdownToggle class="c-dropdown-toggle"><i class="cil-people dropdown-icon"></i> 会員管理</CDropdownToggle>
-            <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
-              <CDropdownItem href="/members" class="c-nav-item"><i class="cil-search dropdown-item-icon"></i> 会員検索</CDropdownItem>
-              <CDropdownItem href="/members/create" class="c-nav-item"><i class="cil-user-follow dropdown-item-icon"></i> 新規登録</CDropdownItem>
-            </CDropdownMenu>
-        </CDropdown>
-      </c-sidebar-nav>
-    </c-sidebar>
+   <!-- サイドバー -->
+<c-sidebar :visible="sidebarVisible" :unfoldable="false" class="sidebar">
+  <c-sidebar-brand href="#">MAIN TITLE</c-sidebar-brand>
+  <c-sidebar-nav>
+    <c-nav-item href="/"><i class="cil-home nav-icon"></i> Home</c-nav-item>
+    <c-nav-item href="/about"><i class="cil-info nav-icon"></i> About</c-nav-item>
+    <c-nav-item href="/contact"><i class="cil-phone nav-icon"></i> Contact</c-nav-item>
+    <c-nav-item v-if="isAdmin" href="/admin"><i class="cil-settings nav-icon"></i> Admin</c-nav-item>
+    <c-nav-item v-if="isOperator" href="/management"><i class="cil-task nav-icon"></i> Management</c-nav-item>
+    <c-nav-item href="#" @click.prevent="handleLogout">
+      <i class="cil-account-logout nav-icon"></i> Logout
+    </c-nav-item>
+
+    <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+      <CDropdownToggle class="c-dropdown-toggle">
+        <i class="cil-people dropdown-icon"></i> 会員管理
+      </CDropdownToggle>
+      <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+        <CDropdownItem class="c-nav-item">
+          <template #default>
+            <router-link to="/members" class="c-nav-item">
+              <i class="cil-search dropdown-item-icon"></i> 会員検索
+            </router-link>
+          </template>
+        </CDropdownItem>
+        <CDropdownItem class="c-nav-item">
+          <template #default>
+            <router-link to="/members/create" class="c-nav-item">
+              <i class="cil-user-follow dropdown-item-icon"></i> 新規登録
+            </router-link>
+          </template>
+        </CDropdownItem>
+      </CDropdownMenu>
+    </CDropdown>
+  </c-sidebar-nav>
+</c-sidebar>
 
     <!-- メインコンテンツ -->
     <div class="main-content">

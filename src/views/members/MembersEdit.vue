@@ -297,13 +297,15 @@
   </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+
 
 const route = useRoute()
 const router = useRouter()
 const id = route.params.id
+const passwordMismatchError = ref('');
 
 const form = ref({
   // 必要なフィールドを初期化（空でもOK）
@@ -371,19 +373,43 @@ const gradeCategoryOptions = [
   { value: '21', label: '社会人' },
 ];
 
+const isEmailRequired = computed(() => {
+  return form.value.coach_flg === '1'; // 1 のときだけ必須（指導員）
+});
+
 const validationErrors = ref({})
 
 onMounted(async () => {
+  passwordMismatchError.value = '';// ← 念のため初期化
   try {
     const res = await axios.get(`http://127.0.0.1:8000/api/members/${id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       },
       withCredentials: true
-    })
-    form.value = res.data.member // Laravel API 側が `{ member: {...} }` で返す想定
+    });
+    const member = res.data.member;
+
+    // 🔽 ここで数値 → 文字列 に変換（CFormSelect 警告対策）
+    const fieldsToCastToString = [
+      'coach_flg',
+      'grade_category',
+      'sex',
+      'relationship',
+      'classification',
+      'blood_type',
+      'status',
+      'authoritykinds_id'
+    ];
+    fieldsToCastToString.forEach((key) => {
+      if (member[key] !== null && member[key] !== undefined) {
+        member[key] = String(member[key]);
+      }
+    });
+
+    form.value = member;
   } catch (err) {
-    console.error('取得失敗', err)
+    console.error('取得失敗', err);
   }
 })
 
@@ -396,16 +422,26 @@ const updateMember = async () => {
     passwordMismatchError.value = '';
   }
 
-  // 数値変換が必要な項目（例：selectなどで文字列になってるもの）
-  form.value.coach_flg = Number(form.value.coach_flg);
-  form.value.grade_category = Number(form.value.grade_category);
-  form.value.sex = Number(form.value.sex);
-  form.value.relationship = Number(form.value.relationship);
-  form.value.classification = Number(form.value.classification);
-  form.value.blood_type = Number(form.value.blood_type);
-  form.value.status = Number(form.value.status);
-  form.value.authoritykinds_id = Number(form.value.authoritykinds_id);
-  form.value.graduation_year = form.value.graduation_year ? Number(form.value.graduation_year) : null;
+  // 🔽 文字列 → 数値に戻す（APIに適切な型で送る）
+  const keysToNumber = [
+    'coach_flg',
+    'grade_category',
+    'sex',
+    'relationship',
+    'classification',
+    'blood_type',
+    'status',
+    'authoritykinds_id'
+  ];
+  keysToNumber.forEach((key) => {
+    if (form.value[key] !== '') {
+      form.value[key] = Number(form.value[key]);
+    }
+  });
+
+  form.value.graduation_year = form.value.graduation_year
+    ? Number(form.value.graduation_year)
+    : null;
 
   try {
     await axios.put(`http://127.0.0.1:8000/api/members/${id}`, form.value, {
