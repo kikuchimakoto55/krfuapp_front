@@ -346,6 +346,31 @@ const form = ref({
   password_confirmation: ''
 })
 
+const gradeCategoryOptions = [
+  { value: '', label: '選択してください' },
+  { value: '1', label: '年年少' },
+  { value: '2', label: '年少' },
+  { value: '3', label: '年中' },
+  { value: '4', label: '年長' },
+  { value: '5', label: '小１' },
+  { value: '6', label: '小２' },
+  { value: '7', label: '小３' },
+  { value: '8', label: '小４' },
+  { value: '9', label: '小５' },
+  { value: '10', label: '小６' },
+  { value: '11', label: '中１' },
+  { value: '12', label: '中２' },
+  { value: '13', label: '中３' },
+  { value: '14', label: '高１' },
+  { value: '15', label: '高２' },
+  { value: '16', label: '高３' },
+  { value: '17', label: '大１' },
+  { value: '18', label: '大２' },
+  { value: '19', label: '大３' },
+  { value: '20', label: '大４' },
+  { value: '21', label: '社会人' },
+];
+
 const validationErrors = ref({})
 
 onMounted(async () => {
