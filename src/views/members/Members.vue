@@ -148,6 +148,7 @@
           <CTableHeaderCell>所属区分</CTableHeaderCell>
           <CTableHeaderCell>権限種別</CTableHeaderCell>
           <CTableHeaderCell>指導員フラグ</CTableHeaderCell>
+          <CTableHeaderCell>編集</CTableHeaderCell>
         </CTableRow>
       </CTableHead>
       <CTableBody>
@@ -159,6 +160,11 @@
           <CTableDataCell>{{ classificationOptions[member.classification] }}</CTableDataCell>
           <CTableDataCell>{{ authorityOptions[member.authoritykinds_id] }}</CTableDataCell>
           <CTableDataCell>{{ coachFlgOptions[member.coach_flg] }}</CTableDataCell>
+          <CTableDataCell>
+          <router-link :to="`/members/show/${member.member_id}`">
+          <CButton color="info" size="sm">詳細</CButton>
+          </router-link>
+          </CTableDataCell>
         </CTableRow>
       </CTableBody>
     </CTable>
