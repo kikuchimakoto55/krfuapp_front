@@ -194,6 +194,7 @@
           <CFormLabel>本人メールアドレス<span v-if="isEmailRequired" class="required">必須</span></CFormLabel>
           <CFormInput type="email" v-model="form.email" :required="isEmailRequired" placeholder="メールアドレスを入力してください"/>
           <div v-if="validationErrors.email" class="text-danger">{{ validationErrors.email[0] }}</div>
+          <div v-if="emailDuplicateError" class="text-danger">{{ emailDuplicateError }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>本人電話番号</CFormLabel>
@@ -287,21 +288,10 @@
           <div v-if="validationErrors.password_confirmation" class="text-danger">{{ validationErrors.password_confirmation[0] }}</div>
         </CCol>
       </CRow>
-      <CRow class="mb-1">
-        <CCol>
-          <span v-if="passwordMismatchError" class="text-danger">{{ passwordMismatchError }}</span>
-        </CCol>
-      </CRow>
 
 
       <CButton type="submit" color="primary">登録</CButton>
     </CForm>
-
-    <CToaster placement="top-end">
-      <CToast v-for="(toast, index) in toasts" :key="index" :color="toast.color" :autohide="toast.autohide" :delay="toast.delay">
-        <CToastBody>{{ toast.content }}</CToastBody>
-      </CToast>
-    </CToaster>
   </div>
 </template>
 
@@ -309,7 +299,9 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router'
 import axios from 'axios';
-import { CToast, CToastBody, CToaster } from '@coreui/vue'
+
+const passwordMismatchError = ref(''); //パスワード一致チェックを追加
+const emailDuplicateError = ref('');
 
 const validationErrors = ref({});
 const router = useRouter()
@@ -354,7 +346,6 @@ const form = ref({
   password_confirmation: ''
 });
 
-const toasts = ref([])
 
 const gradeCategoryOptions = [
   { value: '', label: '選択してください' },
@@ -383,10 +374,6 @@ const gradeCategoryOptions = [
 
 // coach_flg が '1' または '2' の場合に email を必須にする
 const isEmailRequired = computed(() => ['1', '2'].includes(form.value.coach_flg));
-
-//パスワード一致チェックを追加
-const passwordMismatchError = ref('');
-
 
 const resetForm = () => {
   form.value = {
@@ -464,13 +451,17 @@ const submitForm = async () => {
   };
 
   // メール重複チェック
+  passwordMismatchError.value = '';
+  emailDuplicateError.value = '';
+
   if (isEmailRequired.value && form.value.email) {
     const isDuplicate = await checkEmailDuplicate();
     if (isDuplicate) {
-      passwordMismatchError.value = 'このメールアドレスは既に登録されています。';
+      emailDuplicateError.value = 'このメールアドレスは既に登録されています。';
       return;
     }
-  }
+    }
+  
 
   const token = localStorage.getItem('token');
   console.log('送信トークン:', token);
@@ -489,33 +480,25 @@ const submitForm = async () => {
       },
       withCredentials: true
     });
+    
+    const newMemberId = response.data.member.member_id;
     console.log('登録成功', response.data);
-    showSuccessToast(); 
-    resetForm(); // 🎯 初期化！
-    setTimeout(() => {
-      router.push('/members/complete')
-    }, 3000)
-  } catch (error) {
-  console.error('登録失敗', error);
+    
+    
+      router.push({ path: '/members/complete', query: { id: newMemberId } });
+      resetForm(); // 🎯 リセットは最後でもOK
+      } catch (error) {
+      console.error('登録失敗', error);
 
-  // 👇 403の原因やエラーメッセージをコンソールに表示
-  if (error.response) {
-    console.log('エラー内容:', error.response.data);
-    alert(error.response.data.message || '不明なエラーが発生しました');
-  } else {
-    alert('予期しないエラーが発生しました');
-  }
-}
+      // 👇 403の原因やエラーメッセージをコンソールに表示
+      if (error.response) {
+        console.log('エラー内容:', error.response.data);
+        alert(error.response.data.message || '不明なエラーが発生しました');
+      } else {
+        alert('予期しないエラーが発生しました');
+      }
+      }
 };
-
-const showSuccessToast = () => {
-  toasts.value.push({
-    content: '登録が完了しました！',
-    color: 'success',
-    autohide: true,
-    delay: 3000
-  })
-  };
 
 //メール重複チェック用メソッドを追加
 const checkEmailDuplicate = async () => {

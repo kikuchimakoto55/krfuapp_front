@@ -162,7 +162,7 @@
           <CTableDataCell>{{ coachFlgOptions[member.coach_flg] }}</CTableDataCell>
           <CTableDataCell>
           <router-link :to="`/members/show/${member.member_id}`">
-          <CButton color="info" size="sm">詳細</CButton>
+          <CButton color="info" size="sm" class="custom-detail-btn">詳細</CButton>
           </router-link>
           </CTableDataCell>
         </CTableRow>
@@ -263,4 +263,16 @@ onMounted(() => fetchMembers());
   padding: 10px 20px;
   font-size: 16px;
 }
+
+.custom-detail-btn {
+  color: #fff !important;          /* 文字色 */
+  background-color: #006699 !important; /* 背景色 */
+  border-color: #6c757d !important;
+}
+
+.custom-detail-btn:hover {
+  background-color: #008099 !important;
+  border-color: #545b62 !important;
+}
+
 </style>

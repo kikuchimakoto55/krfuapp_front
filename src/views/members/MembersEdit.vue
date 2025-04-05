@@ -291,6 +291,7 @@
         </CCol>
       </CRow>
       <CButton type="submit" class="custom-submit-button">更新</CButton>
+      <CButton v-if="currentUserAuthority === 1 || currentUserAuthority === 2" class="custom-submit-deletebutton" @click="handleDelete(member.id)">削除</CButton>
       </form>
     </div>
     <CAlert v-if="showToast" class="toast-alert custom-toast">
@@ -310,6 +311,7 @@ const id = route.params.id
 const passwordMismatchError = ref('');
 const showToast = ref(false)
 const toastMessage = ref('')
+const currentUserAuthority = Number(localStorage.getItem('authoritykinds_id'));
 
 const form = ref({
   // 必要なフィールドを初期化（空でもOK）
@@ -500,5 +502,11 @@ const updateMember = async () => {
   border: none;
 }
 
+.custom-submit-deletebutton{
+  background-color: #ffff00;
+  color: #333333;
+  border: none;
+  margin-left: 332px;
+}
 
 </style>
