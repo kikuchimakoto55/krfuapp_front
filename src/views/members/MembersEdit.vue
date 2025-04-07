@@ -291,7 +291,7 @@
         </CCol>
       </CRow>
       <CButton type="submit" class="custom-submit-button">更新</CButton>
-      <CButton v-if="currentUserAuthority === 1 || currentUserAuthority === 2" class="custom-submit-deletebutton" @click="handleDelete(member.id)">削除</CButton>
+      <CButton v-if="currentUserAuthority === 1 || currentUserAuthority === 2" class="custom-submit-deletebutton" @click="handleDelete(form.member_id)">削除</CButton>
       </form>
     </div>
     <CAlert v-if="showToast" class="toast-alert custom-toast">
@@ -473,6 +473,33 @@ const updateMember = async () => {
     }
   }
 
+  };
+
+  // 削除処理
+  const handleDelete = async (memberId) => {
+  if (!confirm('この会員を本当に削除しますか？')) return;
+
+  try {
+    await axios.delete(`http://127.0.0.1:8000/api/members/${memberId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      withCredentials: true
+    });
+
+    toastMessage.value = '✅ 削除が完了しました';
+    showToast.value = true;
+
+    setTimeout(() => {
+      showToast.value = false;
+      toastMessage.value = '';
+      router.push('/members/'); // 一覧ページに戻す
+    }, 3000);
+
+  } catch (err) {
+    console.error('削除失敗', err);
+    alert('削除中にエラーが発生しました');
+  }
   };
 </script>
 
