@@ -170,17 +170,32 @@
               <CButton color="secondary" class="ms-2" @click="router.back()">戻る</CButton>
             </CCol>
           </CRow>
+          <CRow class="mt-2">
+            <CCol>
+              <CButton size="sm" color="dark" variant="outline" class="ms-2 stylish-btn"  @click="openFamilyModal">家族登録はこちら</CButton>
+            </CCol>
+          </CRow>
 
         </CCardBody>
       </CCard>
     </div>
+    <FamilyRegisterModal
+  :visible="showFamilyModal"
+  :member-id="Number(id)"
+  @close="closeFamilyModal"
+  @success="handleFamilyRegistered"
+/>
   </template>
   
   <script setup>
   import { ref, onMounted } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import axios from 'axios'
+  import FamilyRegisterModal from '@/components/members/FamilyRegisterModal.vue'
+  import '@coreui/coreui/dist/css/coreui.min.css'
   import { CCard, CCardBody, CRow, CCol, CButton } from '@coreui/vue'
+  
+
   
   const route = useRoute()
   const router = useRouter()
@@ -263,6 +278,18 @@ const authorityKindText = (val) => {
     3: '一般権限',
     4: '使用者権限'
   }[val] || ''
+}
+
+//家族登録モーダル
+const showFamilyModal = ref(false)
+const openFamilyModal = () => showFamilyModal.value = true
+const closeFamilyModal = () => {
+  showFamilyModal.value = false
+}
+
+const handleFamilyRegistered = () => {
+  showFamilyModal.value = false
+  // ✅ 家族一覧を再取得したい場合ここに fetchFamilies() などを追加
 }
 
   </script>
