@@ -11,7 +11,6 @@
         type="text"
         placeholder="氏名で検索（例：山田）"
         class="mb-3"
-        @input="searchMembers"
       />
 
       <div v-if="filteredMembers.length === 0">該当する会員が見つかりません。</div>
@@ -69,6 +68,7 @@ const closeModal = () => {
 // 会員データと検索キーワード
 const members = ref([])
 const searchKeyword = ref('')
+let debounceTimer = null
 
 // 検索（カタカナ→ひらがな用）
 const toHiragana = (str) => {
@@ -79,12 +79,14 @@ const toHiragana = (str) => {
 
 // 検索時にAPIから取得
 const searchMembers = async () => {
-  const keyword = searchKeyword.value.trim()
+  const keywordRaw = searchKeyword.value.trim()
+  const keyword = toHiragana(keywordRaw)
   if (!keyword) {
     members.value = []
     return
   }
   // 検索ワードをサーバーに送信（URL例：/api/members/search?keyword=武田）
+  try {
   const res = await axios.get('http://127.0.0.1:8000/api/members/search', {
     params: { keyword },
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -96,7 +98,18 @@ const searchMembers = async () => {
     selected: false,
     relationship: ''
   }))
+  } catch (error) {
+      console.error('検索エラー:', error)
+    }
 }
+
+// 🔄 入力監視して、0.5秒後に検索実行
+watch(searchKeyword, (newVal) => {
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => {
+    searchMembers()
+  }, 500)
+})
 
 // 検索結果をそのまま使用
 const filteredMembers = computed(() => members.value)
