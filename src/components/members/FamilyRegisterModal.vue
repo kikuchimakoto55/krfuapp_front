@@ -14,8 +14,11 @@
       />
 
       <div v-if="filteredMembers.length === 0">該当する会員が見つかりません。</div>
-      <div v-for="member in filteredMembers" :key="member.member_id" class="mb-2 border-bottom pb-2">
-        <CFormCheck :label="`${member.username_sei} ${member.username_mei}`" v-model="member.selected" />
+      <div v-for="member in filteredMembers" :key="member.member_id" class="mb-2 pb-2 border-bottom">
+        <div class="d-flex align-items-center mb-2">
+          <input type="checkbox" v-model="member.selected" class="custom-checkbox" />
+          <span>{{ member.username_sei }} {{ member.username_mei }}</span>
+        </div>
         <CFormSelect v-model="member.relationship" :disabled="!member.selected">
           <option value="">続柄を選択</option>
           <option value="1">父</option>
@@ -155,3 +158,32 @@ const registerFamilies = async () => {
 }
 
 </script>
+<style scoped>
+.custom-checkbox {
+  width: 1.2em;
+  height: 1.2em;
+  border: 2px solid #555; /* 🔍 太さと色をカスタム */
+  border-radius: 4px;      /* 角丸（必要なら） */
+  appearance: none;        /* デフォルトスタイル無効化 */
+  cursor: pointer;
+  position: relative;
+  margin-right: 8px;
+}
+
+.custom-checkbox:checked {
+  background-color: #0d6efd; /* チェック時の背景色 */
+  border-color: #0d6efd;
+}
+
+.custom-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+</style>
