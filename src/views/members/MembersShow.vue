@@ -163,6 +163,14 @@
               <CButton size="sm" color="dark" variant="outline" class="ms-2 stylish-btn" @click="goToPasswordEdit">パスワード変更はこちら</CButton>
             </span>
           </CCol>
+          <CCol md="6" class="info-col" v-if="families.length">
+            <span class="info-label">家族情報</span>
+              <ul class="info-value" style="margin-top: 0.5em;">
+              <li v-for="f in families" :key="f.member_id">
+              {{ f.username_sei }} {{ f.username_mei }}（{{ relationshipText(f.relationship) }}）
+              </li>
+            </ul>
+          </CCol>
         </CRow>
          <CRow class="mt-4">
             <CCol>
@@ -179,12 +187,12 @@
         </CCardBody>
       </CCard>
     </div>
-    <FamilyRegisterModal
-  :visible="showFamilyModal"
-  :member-id="Number(id)"
-  @close="closeFamilyModal"
-  @success="handleFamilyRegistered"
-/>
+      <FamilyRegisterModal
+      :visible="showFamilyModal"
+      :member-id="Number(id)"
+      @close="closeFamilyModal"
+      @success="handleFamilyRegistered"
+      />
   </template>
   
   <script setup>
@@ -204,6 +212,7 @@
   const member = ref({})
 
   const isAdmin = ref(false)
+  const families = ref([])
   
   onMounted(async () => {
     try {
@@ -214,6 +223,7 @@
         withCredentials: true
       })
       member.value = res.data.member
+      families.value = res.data.families || []
       const myAuthId = parseInt(localStorage.getItem('authoritykinds_id'))
       isAdmin.value = myAuthId === 1
     } catch (err) {
@@ -346,6 +356,12 @@ const handleFamilyRegistered = () => {
   color: #fff;
   border-color: #006699;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.info-value li {
+  list-style: none;         /* 黒ポチを消す */
+  padding-left: 0;          /* 左余白もリセット（必要なら） */
+  margin-bottom: 0.3rem;    /* 各行の余白（お好みで） */
 }
 </style>
 
