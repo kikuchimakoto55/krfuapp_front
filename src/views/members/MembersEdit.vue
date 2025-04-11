@@ -285,6 +285,30 @@
           <div v-if="validationErrors.password_confirmation" class="text-danger">{{ validationErrors.password_confirmation[0] }}</div>
         </CCol>
       </CRow>
+
+      <CRow class="mb-3">
+        <CCol md="12">
+          <CFormLabel>家族情報</CFormLabel>
+
+          <!-- 家族情報がある場合 -->
+          <ul v-if="families.length > 0" class="list-group">
+            <li
+            v-for="family in families"
+            :key="family.member_id"
+            class="list-group-item d-flex justify-content-between align-items-center"
+            >
+            {{ family.username_sei }} {{ family.username_mei }}（{{ relationshipText(family.relationship) }}）
+            <div>
+              <CButton size="sm" color="primary" class="me-2" @click="editFamily(family)">家族編集</CButton>
+              <CButton size="sm" color="danger" class="text-white" @click="removeFamily(family)">家族解除</CButton>
+            </div>
+            </li>
+          </ul>
+
+        <!-- 家族情報がない場合 -->
+        <p v-else class="text-muted ps-2">家族情報は登録されていません。</p>
+        </CCol>
+      </CRow>
       <CRow class="mb-1">
         <CCol>
           <span v-if="passwordMismatchError" class="text-danger">{{ passwordMismatchError }}</span>
@@ -297,12 +321,19 @@
     <CAlert v-if="showToast" class="toast-alert custom-toast">
     {{ toastMessage }}
     </CAlert>
+    <FamilyEditModal
+    :visible="showFamilyEditModal"
+    :family="selectedFamily"
+    @close="closeFamilyEditModal"
+    @updated="handleFamilyUpdated"
+    />
   </template>
 
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import FamilyEditModal from '@/components/members/FamilyEditModal.vue'
 
 
 const route = useRoute()
@@ -312,6 +343,9 @@ const passwordMismatchError = ref('');
 const showToast = ref(false)
 const toastMessage = ref('')
 const currentUserAuthority = Number(localStorage.getItem('authoritykinds_id'));
+const families = ref([])
+
+
 
 const form = ref({
   // 必要なフィールドを初期化（空でもOK）
@@ -385,6 +419,11 @@ const isEmailRequired = computed(() => {
 
 const validationErrors = ref({})
 
+//家族情報
+const relationshipText = (val) => {
+  return { 1: '父', 2: '母', 3: '兄', 4: '姉', 5: '弟', 6: '妹', 7: '子', 8: '親戚', 9: 'その他'}[val] || ''
+}
+
 onMounted(async () => {
   passwordMismatchError.value = '';// ← 念のため初期化
   try {
@@ -395,6 +434,7 @@ onMounted(async () => {
       withCredentials: true
     });
     const member = res.data.member;
+    families.value = res.data.families || []
 
     // 🔽 ここで数値 → 文字列 に変換（CFormSelect 警告対策）
     const fieldsToCastToString = [
@@ -501,6 +541,50 @@ const updateMember = async () => {
     alert('削除中にエラーが発生しました');
   }
   };
+
+  const showFamilyEditModal = ref(false)
+const selectedFamily = ref(null)
+
+const editFamily = (family) => {
+  console.log('family:', family) // ← これ追加
+  selectedFamily.value = { ...family }
+  showFamilyEditModal.value = true
+}
+
+const closeFamilyEditModal = () => {
+  showFamilyEditModal.value = false
+  selectedFamily.value = null
+}
+
+const handleFamilyUpdated = () => {
+  showFamilyEditModal.value = false
+  fetchMemberWithFamily() // ← 再取得用の関数（onMounted内のaxiosを関数化すると便利）
+}
+
+// 家族編集用モーダル表示
+const fetchMemberWithFamily = async () => {
+  try {
+    const res = await axios.get(`http://127.0.0.1:8000/api/members/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      withCredentials: true
+    });
+    const member = res.data.member;
+    families.value = res.data.families || [];
+
+    const fieldsToCastToString = [ 'coach_flg', 'grade_category', 'sex', 'relationship', 'classification', 'blood_type', 'status', 'authoritykinds_id' ];
+    fieldsToCastToString.forEach((key) => {
+      if (member[key] !== null && member[key] !== undefined) {
+        member[key] = String(member[key]);
+      }
+    });
+
+    form.value = member;
+  } catch (err) {
+    console.error('取得失敗', err);
+  }
+}
 </script>
 
 <style scoped>
