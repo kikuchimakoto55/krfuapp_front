@@ -422,7 +422,7 @@ const validationErrors = ref({})
 //家族情報
 const relationshipText = (val) => {
   return { 1: '父', 2: '母', 3: '兄', 4: '姉', 5: '弟', 6: '妹', 7: '子', 8: '親戚', 9: 'その他'}[val] || ''
-}
+};
 
 onMounted(async () => {
   passwordMismatchError.value = '';// ← 念のため初期化
@@ -457,7 +457,7 @@ onMounted(async () => {
   } catch (err) {
     console.error('取得失敗', err);
   }
-})
+});
 
 const updateMember = async () => {
   // パスワード一致チェック
@@ -466,7 +466,7 @@ const updateMember = async () => {
     return;
   } else {
     passwordMismatchError.value = '';
-  }
+  };
 
   // 🔽 文字列 → 数値に戻す（APIに適切な型で送る）
   const keysToNumber = [
@@ -542,24 +542,24 @@ const updateMember = async () => {
   }
   };
 
-  const showFamilyEditModal = ref(false)
+const showFamilyEditModal = ref(false)
 const selectedFamily = ref(null)
 
 const editFamily = (family) => {
   console.log('family:', family) // ← これ追加
   selectedFamily.value = { ...family }
   showFamilyEditModal.value = true
-}
+};
 
 const closeFamilyEditModal = () => {
   showFamilyEditModal.value = false
   selectedFamily.value = null
-}
+};
 
 const handleFamilyUpdated = () => {
   showFamilyEditModal.value = false
   fetchMemberWithFamily() // ← 再取得用の関数（onMounted内のaxiosを関数化すると便利）
-}
+};
 
 // 家族編集用モーダル表示
 const fetchMemberWithFamily = async () => {
@@ -584,7 +584,33 @@ const fetchMemberWithFamily = async () => {
   } catch (err) {
     console.error('取得失敗', err);
   }
-}
+};
+// 家族解除処理
+const removeFamily = async (family) => {
+  if (!confirm(`${family.username_sei} ${family.username_mei} さんの家族情報を解除しますか？`)) return;
+
+  try {
+    await axios.delete(`http://127.0.0.1:8000/api/families/${family.id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      withCredentials: true,
+    });
+
+    toastMessage.value = '家族情報を解除しました';
+    showToast.value = true;
+
+    fetchMemberWithFamily(); // 最新データ取得
+
+    setTimeout(() => {
+      showToast.value = false;
+      toastMessage.value = '';
+    }, 3000);
+  } catch (err) {
+    console.error('家族解除失敗', err);
+    alert('家族情報の解除に失敗しました');
+  }
+};
 </script>
 
 <style scoped>

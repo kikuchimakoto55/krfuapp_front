@@ -37,7 +37,7 @@ const routes = [
       { path: 'members/edit/:id', name: 'MemberEdit', component: () => import('@/views/members/MembersEdit.vue'), meta: { title: '会員編集' } },
       { path: 'members/show/:id', name: 'MembersShow', component: () => import('@/views/members/MembersShow.vue'), meta: { title: '会員詳細' } },
       { path: 'members/edit-password/:id', name: 'PasswordChange', component: () => import('@/views/members/PasswordChange.vue'), meta: { title: 'パスワード変更', requiresAuth: true } },
-
+      { path: '/families/search', name: 'FamiliesSearch', component: () => import('@/components/members/FamiliesSearch.vue'), meta: { title: '家族検索' } },
     ]
   }
 ];
