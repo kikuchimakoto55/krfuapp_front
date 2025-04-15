@@ -12,26 +12,43 @@
       <c-nav-item href="#" @click.prevent="handleLogout"><i class="cil-account-logout nav-icon"></i> Logout</c-nav-item>
 
       <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
-        <CDropdownToggle class="c-dropdown-toggle"><i class="cil-people dropdown-icon"></i> 会員管理</CDropdownToggle>
+        <CDropdownToggle class="c-dropdown-toggle">
+          <i class="cil-people dropdown-icon"></i> 会員管理
+        </CDropdownToggle>
         <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
           <CDropdownItem class="c-nav-item" style="padding: 0;">
             <router-link to="/members" class="dropdown-link">
-            <i class="cil-search dropdown-item-icon"></i> <span>会員検索</span>
+              <i class="cil-search dropdown-item-icon"></i> <span>会員検索</span>
             </router-link>
           </CDropdownItem>
           <CDropdownItem class="c-nav-item" style="padding: 0;">
-            <router-link to="/families/search" class="nav-link">
-            <i class="cil-people dropdown-item-icon"></i> <span>家族検索</span>
+            <router-link to="/families/search" class="dropdown-link">
+              <i class="cil-people dropdown-item-icon"></i> <span>家族検索</span>
             </router-link>
           </CDropdownItem>
           <CDropdownItem class="c-nav-item" style="padding: 0;">
             <router-link to="/members/create" class="dropdown-link">
-            <i class="cil-user-follow dropdown-item-icon"></i> <span>新規会員登録</span>
+              <i class="cil-user-follow dropdown-item-icon"></i> <span>新規会員登録</span>
             </router-link>
           </CDropdownItem>
         </CDropdownMenu>
       </CDropdown>
-    </c-sidebar-nav>
+
+      <!-- ✅ 大会管理ドロップダウンを別に記述 -->
+      <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+        <CDropdownToggle class="c-dropdown-toggle">
+          <i class="cil-calendar dropdown-icon"></i> 大会管理
+        </CDropdownToggle>
+        <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/tournaments/create" class="dropdown-link">
+              <i class="cil-plus dropdown-item-icon"></i> <span>大会登録</span>
+            </router-link>
+          </CDropdownItem>
+          <!-- 今後追加される検索・編集機能もここに追加可能 -->
+        </CDropdownMenu>
+      </CDropdown>
+  </c-sidebar-nav>
 </c-sidebar>
 
     <!-- メインコンテンツ -->
