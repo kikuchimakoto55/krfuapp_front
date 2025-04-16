@@ -50,20 +50,23 @@
         <CCol md="6" class="text-center">
           <CFormLabel>ディビジョン設定</CFormLabel>
           <div class="d-flex justify-content-center gap-4 mt-2">
+            <!-- ✅ 設定しない -->
             <CFormCheck
-              type="radio"
-              v-model="form.divisionflg"
-              :value="'0'"
-              name="division-setting"
-              id="division-off"
+            type="radio"
+            :checked="form.divisionflg === 0"
+            @change="setDivisionFlg(0)"
+            name="division-setting"
+            id="division-off"
             />
             <label for="division-off" class="form-check-label">設定しない</label>
+
+            <!-- ✅ 設定する -->
             <CFormCheck
-              type="radio"
-              v-model="form.divisionflg"
-              :value="'1'"
-              name="division-setting"
-              id="division-on"
+            type="radio"
+            :checked="form.divisionflg === 1"
+            @change="setDivisionFlg(1)"
+            name="division-setting"
+            id="division-on"
             />
             <label for="division-on" class="form-check-label">設定する</label>
           </div>
@@ -71,7 +74,7 @@
         </CRow>
 
         <!-- ✅ 設定する を選んだ場合だけ表示 -->
-        <CRow v-if="form.divisionflg === '1'" class="mb-3">
+        <CRow v-if="form.divisionflg === 1" class="mb-3">
         <CCol>
           <div class="border p-3">
             <table class="table table-bordered">
@@ -94,14 +97,14 @@
                 <CButton size="sm" color="danger" @click="removeDivision(index)">削除</CButton>
                 </CTableDataCell>
               </tr>
-                <tr>
-                  <td colspan="2">
-                    <input v-model="newDivisionName" placeholder="ディビジョン名を入力" class="form-control" />
-                  </td>
-                  <td>
-                    <CButton size="sm" color="primary" @click="addDivision">追加</CButton>
-                  </td>
-                </tr>
+              <tr>
+                <td colspan="2">
+                <input v-model="newDivisionName" placeholder="ディビジョン名を入力" class="form-control" />
+                </td>
+                <td>
+                <CButton size="sm" color="primary" @click="addDivision">追加</CButton>
+                </td>
+              </tr>
               </tbody>
             </table>
           </div>
@@ -131,7 +134,7 @@ const router = useRouter()
     event_period_start: '',
     event_period_end: '',
     publishing: 0,
-    divisionflg: "0",
+    divisionflg: 0,
     divisions: [],
   })
 
@@ -149,6 +152,7 @@ onMounted(async () => {
     // divisions はJSON文字列 → オブジェクトに変換
     form.value = {
       ...data,
+      divisionflg: Number(data.divisionflg),
       divisions: data.divisions ? JSON.parse(data.divisions) : [],
     }
   } catch (err) {
@@ -208,6 +212,10 @@ const onDateChange = (type, event) => {
   } else {
     form.value.event_period_end = value
   }
+}
+//@change イベントに直接代入処理を書くと、構文チェックで赤く表示されることがあるため、関数に切り出して明示的に処理する
+const setDivisionFlg = (value) => {
+  form.value.divisionflg = value
 }
   </script>
   
