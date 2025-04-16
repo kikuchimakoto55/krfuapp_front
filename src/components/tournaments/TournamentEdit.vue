@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
       <h4>大会情報登録</h4>
-      <CForm @submit.prevent="handleSubmit">
+      <CForm @submit.prevent="handleUpdate">
         <CRow class="mb-3">
           <CCol md="6">
             <CFormLabel>大会名</CFormLabel>
@@ -22,11 +22,8 @@
             </CFormSelect>
           </CCol>
           <CCol md="3">
-            <CFormLabel>年度（西暦）<span class="required">必須</span></CFormLabel>
-                <CFormInput type="text" v-model="form.year" maxlength="4" pattern="^[0-9]{4}$" title="西暦4桁で入力してください" required />
-                <div v-if="validationErrors.year" class="text-danger">
-                {{ validationErrors.year[0] }}
-                </div>
+            <CFormLabel>年度（西暦）</CFormLabel>
+                <CFormInput v-model="form.year" maxlength="4" />
           </CCol>
         </CRow>
   
@@ -113,7 +110,7 @@
               
         <CRow class="mt-4">
           <CCol class="text-center">
-            <CButton type="submit" color="primary">登録</CButton>
+            <CButton type="submit" color="primary">更新</CButton>
           </CCol>
         </CRow>
       </CForm>
@@ -121,9 +118,12 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
   import axios from 'axios'
   
+const route = useRoute()
+const router = useRouter()
   const form = ref({
     name: '',
     categoly: '',
@@ -134,58 +134,56 @@
     divisionflg: "0",
     divisions: [],
   })
+
+  // 編集対象のデータを取得
+onMounted(async () => {
+  try {
+    const res = await axios.get(`http://127.0.0.1:8000/api/tournaments/${route.params.id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      withCredentials: true,
+    })
+
+    const data = res.data
+    // divisions はJSON文字列 → オブジェクトに変換
+    form.value = {
+      ...data,
+      divisions: data.divisions ? JSON.parse(data.divisions) : [],
+    }
+  } catch (err) {
+    console.error('取得失敗', err)
+    alert('大会情報の取得に失敗しました')
+  }
+})
   
-  const handleSubmit = async () => {
-    try {
+// 更新処理
+const handleUpdate = async () => {
+  try {
     const formData = {
-      name: form.value.name,
+      ...form.value,
       categoly: Number(form.value.categoly),
-      year: form.value.year,
-      event_period_start: form.value.event_period_start,
-      event_period_end: form.value.event_period_end,
       publishing: Number(form.value.publishing),
       divisionflg: Number(form.value.divisionflg),
       divisions: form.value.divisions?.length ? JSON.stringify(form.value.divisions) : null,
-    };
-
-    console.log('送信内容:', formData); // ← これで送る直前の確認もOK
-    
-      await axios.post('http://127.0.0.1:8000/api/tournaments', formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
-        withCredentials: true
-      })
-      alert('大会情報を登録しました')
-    } catch (err) {
-      console.error('登録失敗', err)
-      alert('登録に失敗しました')
     }
+
+    await axios.put(`http://127.0.0.1:8000/api/tournaments/${route.params.id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      withCredentials: true,
+    })
+
+    alert('大会情報を更新しました')
+    router.push('/tournaments') // 更新後一覧ページへ
+  } catch (err) {
+    console.error('更新失敗', err)
+    alert('更新に失敗しました')
   }
-  const validationErrors = ref({})
+}
 
-  const registerTournament = async () => {
-    // ✅ 年度が西暦4桁でなければエラー
-    if (!/^\d{4}$/.test(form.value.year)) {
-      alert('年度は西暦4桁で入力してください');
-      return;
-    }
-
-    try {
-      await axios.post('http://127.0.0.1:8000/api/tournaments', form.value, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
-        withCredentials: true
-      })
-      alert('登録完了しました')
-    } catch (error) {
-      console.error('登録エラー:', error)
-      if (error.response && error.response.data.errors) {
-        validationErrors.value = error.response.data.errors
-      }
-    }
-  }
+ 
   //ディビジョン設定
   const newDivisionName = ref('')
 

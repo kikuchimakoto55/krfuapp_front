@@ -45,7 +45,11 @@
               <i class="cil-plus dropdown-item-icon"></i> <span>大会登録</span>
             </router-link>
           </CDropdownItem>
-          <!-- 今後追加される検索・編集機能もここに追加可能 -->
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/tournaments" class="dropdown-link">
+              <i class="cil-list-rich dropdown-item-icon"></i> <span>大会一覧</span>
+            </router-link>
+          </CDropdownItem>
         </CDropdownMenu>
       </CDropdown>
   </c-sidebar-nav>
