@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
    <!-- サイドバー -->
-<c-sidebar :visible="sidebarVisible" :unfoldable="false" class="sidebar">
+<c-sidebar v-if="isUserLoggedIn" :visible="sidebarVisible" :unfoldable="false" class="sidebar">
   <c-sidebar-brand href="#">MAIN TITLE</c-sidebar-brand>
     <c-sidebar-nav>
       <c-nav-item href="/"><i class="cil-home nav-icon"></i> Home</c-nav-item>
@@ -154,6 +154,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
+
+
+// 🟢 追加：ログイン状態を判定する computed
+const isUserLoggedIn = computed(() => !!localStorage.getItem('token'));
 </script>
 
 <style scoped>
