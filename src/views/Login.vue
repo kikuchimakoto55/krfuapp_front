@@ -17,9 +17,16 @@
           <br/>
           <CButton type="submit" color="primary" class="custom-login-btn" block>ログイン</CButton>
         </CForm>
+        <div class="mt-3 text-center">
+          <router-link to="/members/create">
+            <CButton color="secondary" variant="outline">新規会員登録はこちら</CButton>
+          </router-link>
+        </div>
       </CCardBody>
     </CCard>
+
   </div>
+
 </template>
 
 <script setup>
