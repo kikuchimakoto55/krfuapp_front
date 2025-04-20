@@ -29,12 +29,13 @@ const routes = [
  
       // 🔹 運営権限以上のページ (authoritykinds_id <= 2 のみ)
       { path: 'management', component: Management, meta: { title: '運営管理', requiresAuth: true, requiresOperation: true } },
+      { path: 'members/edit/:id', name: 'MemberEdit', component: () => import('@/views/members/MembersEdit.vue'), meta: { title: '会員編集', requiresAuth: true, requiresOperation: true }},
+
 
       // 🔹 一般権限以上のページ (authoritykinds_id <= 3 のみ)
       { path: 'members', component: Members, meta: { title: '会員管理', requiresAuth: true, requiresGeneral: true } },
       { path: 'members/create', component: MembersCreate, meta: { title: '新規会員登録' } }, 
       { path: 'members/complete', component: MemberComplete, meta: { title: '登録完了' } },
-      { path: 'members/edit/:id', name: 'MemberEdit', component: () => import('@/views/members/MembersEdit.vue'), meta: { title: '会員編集' } },
       { path: 'members/show/:id', name: 'MembersShow', component: () => import('@/views/members/MembersShow.vue'), meta: { title: '会員詳細' } },
       { path: 'members/edit-password/:id', name: 'PasswordChange', component: () => import('@/views/members/PasswordChange.vue'), meta: { title: 'パスワード変更', requiresAuth: true } },
       { path: '/families/search', name: 'FamiliesSearch', component: () => import('@/components/members/FamiliesSearch.vue'), meta: { title: '家族検索' } },
@@ -43,6 +44,7 @@ const routes = [
       { path: '/tournaments/edit/:id', name: 'TournamentEdit', component: () => import('@/components/tournaments/TournamentEdit.vue'), meta: { requiresAuth: true, title: '大会編集'}},
       { path: '/teams/create', name: 'TeamCreate', component: () => import('@/views/teams/TeamCreate.vue'), meta: { title: 'チーム新規登録' }, },
       { path: '/teams/complete', name: 'TeamComplete', component: () => import('@/views/teams/TeamComplete.vue'), meta: { title: 'チーム登録完了' }, },
+      { path: '/forbidden', name: 'Forbidden', component: () => import('@/views/errors/Forbidden.vue'), meta: { title: 'アクセス拒否' } },
     ]
   }
 ];
@@ -63,18 +65,19 @@ router.beforeEach((to, from, next) => {
 
   // 🔹 管理者 (authoritykinds_id = 1) 以外は `/admin` へアクセス不可
   if (to.meta.requiresAdmin && authoritykindsId !== 1) {
-    return next('/');
+    return next('/forbidden');
   }
 
   // 🔹 運営権限以上 (authoritykinds_id <= 2) 以外は `/management` へアクセス不可
   if (to.meta.requiresOperation && authoritykindsId > 2) {
-    return next('/');
+    return next('/forbidden');
   }
 
   // 🔹 一般権限以上 (authoritykinds_id <= 3) 以外は `/members` へアクセス不可
   if (to.meta.requiresGeneral && authoritykindsId > 3) {
-    return next('/');
+    return next('/forbidden');
   }
+  
 
   next();
 });
