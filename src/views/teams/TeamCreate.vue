@@ -68,7 +68,7 @@
         <CRow class="mb-3">
           <CCol md="3">
             <CFormLabel>カテゴリ</CFormLabel>
-            <CFormSelect v-model="form.categoly" required>
+            <CFormSelect v-model="form.category" required>
               <option value="1">有料試合</option>
               <option value="2">社会人</option>
               <option value="3">クラブ</option>
@@ -154,7 +154,7 @@
     });
 
     alert('登録しました');
-    router.push('/teams');
+    router.push('/teams/complete');
   } catch (error) {
     console.error('登録エラー:', error);
     alert('登録に失敗しました');
