@@ -11,6 +11,7 @@
       <c-nav-item v-if="isOperator" href="/management"><i class="cil-task nav-icon"></i> Management</c-nav-item>
       <c-nav-item href="#" @click.prevent="handleLogout"><i class="cil-account-logout nav-icon"></i> Logout</c-nav-item>
 
+      <!--  会員管理 -->
       <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
         <CDropdownToggle class="c-dropdown-toggle">
           <i class="cil-people dropdown-icon"></i> 会員管理
@@ -34,7 +35,7 @@
         </CDropdownMenu>
       </CDropdown>
 
-      <!-- ✅ 大会管理ドロップダウンを別に記述 -->
+      <!--  大会管理 -->
       <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
         <CDropdownToggle class="c-dropdown-toggle">
           <i class="cil-calendar dropdown-icon"></i> 大会管理
@@ -50,6 +51,21 @@
               <i class="cil-list-rich dropdown-item-icon"></i> <span>大会一覧</span>
             </router-link>
           </CDropdownItem>
+        </CDropdownMenu>
+      </CDropdown>
+
+      <!--  チーム管理 -->
+      <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+        <CDropdownToggle class="c-dropdown-toggle">
+          <i class="cil-group dropdown-icon"></i> チーム管理
+        </CDropdownToggle>
+        <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/teams/create" class="dropdown-link">
+              <i class="cil-user-follow dropdown-item-icon"></i> <span>チーム登録</span>
+            </router-link>
+          </CDropdownItem>
+          <!-- 今後「チーム一覧」なども追加可能 -->
         </CDropdownMenu>
       </CDropdown>
   </c-sidebar-nav>
@@ -102,7 +118,6 @@ const handleLogout = async () => {
   try {
     // 🚨 CSRFトークンを明示的に取得
     await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true });
-
     await axios.post('http://localhost:8000/api/logout', {}, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,

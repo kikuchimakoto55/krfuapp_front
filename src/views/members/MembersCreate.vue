@@ -75,7 +75,7 @@
 
       <CRow class="mb-3">
         <CCol md="6">
-          <CFormLabel>生年月日</CFormLabel>
+          <CFormLabel>生年月日<span class="required">必須</span></CFormLabel>
           <CFormInput type="date" v-model="form.birthday" required />
           <div v-if="validationErrors.birthday" class="text-danger">{{ validationErrors.birthday[0] }}</div>
         </CCol>
@@ -448,6 +448,8 @@ const submitForm = async () => {
     authoritykinds_id: form.value.authoritykinds_id !== '' ? Number(form.value.authoritykinds_id) : null,
     coach_flg: form.value.coach_flg !== '' ? Number(form.value.coach_flg) : null,
     graduation_year: form.value.graduation_year === '' ? null : form.value.graduation_year,
+    height: form.value.height === '' ? null : Number(form.value.height),
+    weight: form.value.weight === '' ? null : Number(form.value.weight),
   };
 
   // メール重複チェック
@@ -485,7 +487,7 @@ const submitForm = async () => {
     console.log('登録成功', response.data);
     
     
-      router.push({ path: '/members/complete', query: { id: newMemberId } });
+      router.push({ path: '/members/complete', query: { id: newMemberId, email: form.value.email } });
       resetForm(); // 🎯 リセットは最後でもOK
       } catch (error) {
       console.error('登録失敗', error);

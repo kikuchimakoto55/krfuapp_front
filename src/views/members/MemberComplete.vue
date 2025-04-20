@@ -1,15 +1,16 @@
-<!-- MemberComplete.vue -->
 <template>
   <div class="complete-page">
     <h2>登録が完了しました！</h2>
     <p>ご登録ありがとうございます。</p>
 
-    <!-- 🔽 マイページリンクを表示（id が存在する場合のみ） -->
-      <div v-if="memberId">
-        <router-link :to="`/members/show/${memberId}`">
-          <button class="custom-submit-button">マイページへ</button>
-        </router-link>
-      </div>
+    <div>
+      <p>以下のメールアドレスでログインしてください：</p>
+      <p><strong>{{ email }}</strong></p>
+
+      <router-link to="/login">
+        <CButton color="primary">ログイン画面へ</CButton>
+      </router-link>
+    </div>
 
     <!-- 🔽 トップへ戻る -->
     <div style="margin-top: 20px;">
@@ -20,13 +21,11 @@
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { computed } from 'vue'
 
-const router = useRouter()
 const route = useRoute()
+const router = useRouter()
 
-// ✅ computed で取得しておく
-const memberId = computed(() => route.query.id)
+const email = route.query.email || '（取得できませんでした）'
 
 const goToTop = () => {
   router.push('/members/create')
@@ -41,11 +40,5 @@ const goToTop = () => {
 .complete-page h2 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
-}
-
-.custom-submit-button{
-  background-color: #003366;
-  color: #ffffff;
-  border: none;
 }
 </style>

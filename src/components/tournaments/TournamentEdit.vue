@@ -1,6 +1,6 @@
 <template>
     <div class="p-4">
-      <h4>大会情報登録</h4>
+      
       <CForm @submit.prevent="handleUpdate">
         <CRow class="mb-3">
           <CCol md="6">
