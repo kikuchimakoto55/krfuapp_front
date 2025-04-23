@@ -9,6 +9,7 @@ import Management from '../views/Management.vue';
 import Members from '../views/members/Members.vue';
 import MembersCreate from '../views/members/MembersCreate.vue';
 import MemberComplete from '../views/members/MemberComplete.vue';
+import Teams from '../views/teams/Teams.vue'
 
 const routes = [
   {
@@ -38,14 +39,17 @@ const routes = [
       { path: 'members/complete', component: MemberComplete, meta: { title: '登録完了' } },
       { path: 'members/show/:id', name: 'MembersShow', component: () => import('@/views/members/MembersShow.vue'), meta: { title: '会員詳細' } },
       { path: 'members/edit-password/:id', name: 'PasswordChange', component: () => import('@/views/members/PasswordChange.vue'), meta: { title: 'パスワード変更', requiresAuth: true } },
-      { path: '/families/search', name: 'FamiliesSearch', component: () => import('@/components/members/FamiliesSearch.vue'), meta: { title: '家族検索' } },
-      { path: '/tournaments/create', name: 'TournamentCreate', component: () => import('@/components/tournaments/TournamentCreate.vue'), meta: { title: '大会情報登録' } },
-      { path: '/tournaments', name: 'Tournaments', component: () => import('@/components/tournaments/TournamentIndex.vue'), meta: { title: '大会一覧' } },
-      { path: '/tournaments/edit/:id', name: 'TournamentEdit', component: () => import('@/components/tournaments/TournamentEdit.vue'), meta: { requiresAuth: true, title: '大会編集'}},
-      { path: '/teams/create', name: 'TeamCreate', component: () => import('@/views/teams/TeamCreate.vue'), meta: { title: 'チーム新規登録' }, },
-      { path: '/teams/complete', name: 'TeamComplete', component: () => import('@/views/teams/TeamComplete.vue'), meta: { title: 'チーム登録完了' }, },
-      { path: '/forbidden', name: 'Forbidden', component: () => import('@/views/errors/Forbidden.vue'), meta: { title: 'アクセス拒否' } },
-      { path: '/tournaments/:id/results/create', name: 'TournamentResultCreate', component: () => import('@/components/tournaments/TournamentResultCreate.vue'), meta: { title: '大会結果登録', requiresAuth: true } },
+      { path: 'families/search', name: 'FamiliesSearch', component: () => import('@/components/members/FamiliesSearch.vue'), meta: { title: '家族検索' } },
+      { path: 'tournaments/create', name: 'TournamentCreate', component: () => import('@/components/tournaments/TournamentCreate.vue'), meta: { title: '大会情報登録' } },
+      { path: 'tournaments', name: 'Tournaments', component: () => import('@/components/tournaments/TournamentIndex.vue'), meta: { title: '大会一覧' } },
+      { path: 'tournaments/edit/:id', name: 'TournamentEdit', component: () => import('@/components/tournaments/TournamentEdit.vue'), meta: { requiresAuth: true, title: '大会編集'} },
+      { path: 'teams', component: Teams, meta: { title: 'チーム一覧', requiresAuth: true, requiresGeneral: true } },
+      { path: 'teams/edit/:id', name: 'TeamEdit', component: () => import('@/views/teams/TeamEdit.vue'), meta: { title: 'チーム編集', requiresAuth: true, requiresOperation: true } },
+      { path: 'teams/create', name: 'TeamCreate', component: () => import('@/views/teams/TeamCreate.vue'), meta: { title: 'チーム新規登録' }, },
+      { path: 'teams/complete', name: 'TeamComplete', component: () => import('@/views/teams/TeamComplete.vue'), meta: { title: 'チーム登録完了' }, },
+      { path: 'forbidden', name: 'Forbidden', component: () => import('@/views/errors/Forbidden.vue'), meta: { title: 'アクセス拒否' } },
+      { path: 'tournaments/:id/results/create', name: 'TournamentResultCreate', component: () => import('@/components/tournaments/TournamentResultCreate.vue'), meta: { title: '大会結果登録', requiresAuth: true } },
+      
     ]
   }
 ];

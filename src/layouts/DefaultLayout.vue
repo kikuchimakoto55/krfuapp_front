@@ -65,7 +65,11 @@
               <i class="cil-user-follow dropdown-item-icon"></i> <span>チーム登録</span>
             </router-link>
           </CDropdownItem>
-          <!-- 今後「チーム一覧」なども追加可能 -->
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/teams" class="dropdown-link">
+              <i class="cil-list-rich dropdown-item-icon"></i> <span>チーム一覧</span>
+            </router-link>
+          </CDropdownItem>
         </CDropdownMenu>
       </CDropdown>
   </c-sidebar-nav>
