@@ -20,7 +20,7 @@
             <td>{{ getCategoryLabel(team.category) }}</td>
             <td>{{ team.representative_name }}</td>
             <td><CButton color="primary" size="sm" @click="goToEdit(team.id)">編集</CButton></td>
-            <td><CButton color="primary" size="sm" @click="deleteTeam(team.id)">削除</CButton></td>
+            <td><CButton color="primary" size="sm" @click="confirmDelete(team.id)">削除</CButton></td>
           </tr>
         </tbody>
       </table>
@@ -33,13 +33,9 @@
   import { useRouter } from 'vue-router'
   
   const teams = ref([])
-
   const router = useRouter()
 
-    const goToEdit = (id) => {
-    router.push(`/teams/edit/${id}`)
-    }
-  
+ 
   const getCategoryLabel = (val) => {
     const map = {
       1: '有料試合', 2: '社会人', 3: 'クラブ', 4: '大学',
@@ -49,14 +45,36 @@
     return map[val] || '-'
   }
   
-   onMounted(async () => {
-    const res = await axios.get('http://localhost:8000/api/teams', {
-        withCredentials: true,
-        headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-        }
-    });
-    teams.value = res.data;
-    });
+  const fetchTeams = async () => {
+  const res = await axios.get('http://localhost:8000/api/teams', {
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    }
+  });
+  teams.value = res.data;
+}
+
+// 初回マウント時に呼び出す
+onMounted(fetchTeams);
+
+  const confirmDelete = async (id) => {
+    if (confirm('本当に削除しますか？')) {
+      try {
+        await axios.delete(`http://localhost:8000/api/teams/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          },
+          withCredentials: true
+        })
+        alert('削除しました')
+        await fetchTeams() // 再読み込み
+      } catch (err) {
+        console.error('削除失敗:', err)
+        alert('削除に失敗しました')
+      }
+    }
+  }
+
   </script>
   
