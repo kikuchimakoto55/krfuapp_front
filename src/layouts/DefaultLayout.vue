@@ -72,6 +72,24 @@
           </CDropdownItem>
         </CDropdownMenu>
       </CDropdown>
+      <!-- 会場管理（追加部分） -->
+      <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+        <CDropdownToggle class="c-dropdown-toggle">
+          <i class="cil-building dropdown-icon"></i> 会場管理
+        </CDropdownToggle>
+        <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/venues/create" class="dropdown-link">
+              <i class="cil-plus dropdown-item-icon"></i> <span>会場登録</span>
+            </router-link>
+          </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/venues" class="dropdown-link">
+              <i class="cil-list dropdown-item-icon"></i> <span>会場一覧</span>
+            </router-link>
+          </CDropdownItem>
+        </CDropdownMenu>
+      </CDropdown>
   </c-sidebar-nav>
 </c-sidebar>
 

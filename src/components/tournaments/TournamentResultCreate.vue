@@ -4,11 +4,7 @@
         <p>ディビジョン情報が見つかりません。</p>
       </div>
   
-      <div
-        v-for="division in divisions"
-        :key="division.order"
-        class="mb-5 p-3 border rounded"
-      >
+      <div v-for="division in divisions" :key="division.order" class="mb-5 p-3 border rounded">
         <h3 class="text-primary mb-3">
           ディビジョン {{ division.order }}：{{ division.name }}
         </h3>
@@ -87,22 +83,8 @@
   
       divisions.value.forEach((division) => {
         results.value[division.order] = [
-          {
-            division_order: division.order,
-            division_name: division.name,
-            rank_label: '優勝',
-            team_id: '',
-            file: null,
-            report: ''
-          },
-          {
-            division_order: division.order,
-            division_name: division.name,
-            rank_label: '準優勝',
-            team_id: '',
-            file: null,
-            report: ''
-          }
+          { division_order: division.order, division_name: division.name, rank_label: '優勝', team_id: '', file: null, report: '' },
+          { division_order: division.order, division_name: division.name, rank_label: '準優勝', team_id: '', file: null, report: '' }
         ]
       })
     } catch (error) {
@@ -114,10 +96,12 @@
   
   const addRankRow = (divisionOrder) => {
     results.value[divisionOrder].push({
-      rank_label: '',
-      team_id: '',
-      file: null,
-      report: ''
+    division_order: divisionOrder,
+    division_name: divisions.value.find(d => d.order == divisionOrder)?.name || '',
+    rank_label: '',
+    team_id: '',
+    file: null,
+    report: ''
     })
   }
   
@@ -141,25 +125,28 @@
         formData.append(`results[${divisionOrder}][${index}][team_id]`, entry.team_id)
         formData.append(`results[${divisionOrder}][${index}][report]`, entry.report)
         if (entry.file) {
-          formData.append(`results[${divisionOrder}][${index}][document]`, entry.file)
+          formData.append(`results[${divisionOrder}][${index}][team_id]`, entry.team_id != null ? entry.team_id : '')
         }
       })
     }
   
     try {
-      await axios.post('http://localhost:8000/api/tournament-results', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
-        withCredentials: true
-      })
-      alert('登録完了')
-      router.push('/tournaments')
-    } catch (err) {
-      console.error('登録失敗:', err)
-      alert('登録に失敗しました')
-    }
+    const response = await axios.post('http://localhost:8000/api/tournament-results', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      withCredentials: true
+    })
+
+    // 成功時：大会IDを渡して登録完了画面に遷移！
+    const tournamentIdFromResponse = response.data.tournament_id || tournamentId
+    router.push({ name: 'TournamentResultComplete', params: { id: tournamentIdFromResponse } })
+
+    } catch (error) {
+      console.error('登録失敗:', error)
+      alert('登録に失敗しました。サーバーまたはネットワークエラーの可能性があります。')
+      }
   }
   </script>
   
