@@ -75,6 +75,9 @@ onMounted(fetchTeams);
       }
     }
   }
+  const goToEdit = (id) => {
+  router.push(`/teams/edit/${id}`)
+}
 
   </script>
   

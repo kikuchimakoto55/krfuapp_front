@@ -1,5 +1,9 @@
 <template>
   <div class="p-4">
+    <!-- 🔍 検索フォーム -->
+    <GameSearchForm @submit="handleSearch" />
+  </div>
+  <div class="p-4">
     <div v-if="isLoading">
       読み込み中...
     </div>
@@ -69,6 +73,7 @@
 </template>
 
 <script setup>
+import GameSearchForm from '@/components/games/GameSearchForm.vue'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
@@ -182,7 +187,7 @@ const categoryLabel = (value) => {
       };
       
       const approvalLabel = (value) => {
-        return value == 1 ? '承認' : '未承認';
+        return value == 1 ? '承認' : '未承認'; //未実装
       };
 
       const displayResultMark = (game, team) => {
@@ -201,6 +206,31 @@ const categoryLabel = (value) => {
       const teamScore = (score1st, score2nd) => {
       return (score1st || 0) + (score2nd || 0)
       };
+
+      const handleSearch = async (criteria) => {
+      isLoading.value = true
+      try {
+        const params = new URLSearchParams()
+
+        Object.entries(criteria).forEach(([key, value]) => {
+          if (value !== '') {
+            params.append(key, value)
+          }
+        })
+
+        const res = await axios.get(`http://localhost:8000/api/games/search?${params.toString()}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          withCredentials: true
+        })
+
+        games.value = res.data.data
+      } catch (error) {
+        console.error('検索失敗:', error)
+        alert('検索に失敗しました')
+      } finally {
+        isLoading.value = false
+      }
+}
 </script>
 
 <style scoped>

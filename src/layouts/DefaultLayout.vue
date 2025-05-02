@@ -5,10 +5,10 @@
   <c-sidebar-brand href="#">MAIN TITLE</c-sidebar-brand>
     <c-sidebar-nav>
       <c-nav-item href="/"><i class="cil-home nav-icon"></i> Home</c-nav-item>
-      <c-nav-item href="/about"><i class="cil-info nav-icon"></i> About</c-nav-item>
+      <!--<c-nav-item href="/about"><i class="cil-info nav-icon"></i> About</c-nav-item>
       <c-nav-item href="/contact"><i class="cil-phone nav-icon"></i> Contact</c-nav-item>
       <c-nav-item v-if="isAdmin" href="/admin"><i class="cil-settings nav-icon"></i> Admin</c-nav-item>
-      <c-nav-item v-if="isOperator" href="/management"><i class="cil-task nav-icon"></i> Management</c-nav-item>
+      <c-nav-item v-if="isOperator" href="/management"><i class="cil-task nav-icon"></i> Management</c-nav-item>-->
       <c-nav-item href="#" @click.prevent="handleLogout"><i class="cil-account-logout nav-icon"></i> Logout</c-nav-item>
 
       <!--  会員管理 -->
@@ -49,6 +49,25 @@
           <CDropdownItem class="c-nav-item" style="padding: 0;">
             <router-link to="/tournaments" class="dropdown-link">
               <i class="cil-list-rich dropdown-item-icon"></i> <span>大会一覧</span>
+            </router-link>
+          </CDropdownItem>
+        </CDropdownMenu>
+      </CDropdown>
+
+      <!-- 試合管理 -->
+      <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+        <CDropdownToggle class="c-dropdown-toggle">
+          <i class="cil-american-football dropdown-icon"></i> 試合管理
+        </CDropdownToggle>
+        <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/games" class="dropdown-link">
+              <i class="cil-list dropdown-item-icon"></i> <span>試合一覧</span>
+            </router-link>
+          </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/games/select" class="dropdown-link">
+              <i class="cil-plus dropdown-item-icon"></i> <span>試合登録</span>
             </router-link>
           </CDropdownItem>
         </CDropdownMenu>

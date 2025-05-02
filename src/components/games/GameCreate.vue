@@ -10,12 +10,11 @@
         </CCol>
         <CCol md="6">
           <CFormLabel>ディビジョン名</CFormLabel>
-          <CFormSelect v-model="form.division_name" :disabled="divisionOptions.length === 0">
+          <CFormSelect v-model="form.division_name" :required="isDivisionRequired" :disabled="divisionOptions.length === 0">
             <option value="">選択してください</option>
-            <option v-for="d in divisionOptions" :key="d.order" :value="d.name">
-              {{ d.name }}
-            </option>
+            <option v-for="d in divisionOptions" :key="d.order" :value="d.name">{{ d.name }}</option>
           </CFormSelect>
+          <div class="text-danger" v-if="validationErrors.division_name">{{ validationErrors.division_name[0] }}</div>
         </CCol>
       </CRow>
 
@@ -163,6 +162,8 @@ const router = useRouter()
 const teams = ref([]) // チーム一覧
 const venues = ref([]); // 会場一覧
 const divisionOptions = ref([]) // ディビジョン配列
+const isDivisionRequired = ref(false)  // ディビジョン入力の要否
+const validationErrors = ref({}) //バリデーションエラー
 
 const form = ref({
   tournament_id: '',
@@ -183,6 +184,7 @@ const form = ref({
 onMounted(async () => {
   const tournamentIdFromQuery = route.query.tournament_id || ''
   form.value.tournament_id = tournamentIdFromQuery
+
   if (tournamentIdFromQuery) {
     try {
       const res = await axios.get(`http://localhost:8000/api/tournaments/${tournamentIdFromQuery}`, {
@@ -193,7 +195,8 @@ onMounted(async () => {
       })
 
       const divisionsJson = res.data.divisions
-      divisionOptions.value = divisionsJson ? JSON.parse(divisionsJson) : []
+      divisionOptions.value = divisionsJson ?? []
+      isDivisionRequired.value = res.data.divisionflg === 1
     } catch (e) {
       console.error('大会情報の取得に失敗:', e)
     }
@@ -209,11 +212,15 @@ onMounted(async () => {
     console.error('チーム情報の取得に失敗:', e)
   }
 
-  const venueRes = await axios.get('http://localhost:8000/api/venues', {
-  headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-  withCredentials: true
-  });
-    venues.value = venueRes.data;
+    try {
+    const venueRes = await axios.get('http://localhost:8000/api/venues', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      withCredentials: true
+    })
+    venues.value = venueRes.data
+  } catch (e) {
+    console.error('会場情報の取得に失敗:', e)
+  }
 })
 
 const prepareFormData = () => {
@@ -241,25 +248,30 @@ const prepareFormData = () => {
 }
 
 const submitForm = async () => {
+  validationErrors.value = {} // ← 送信前に初期化
   try {
     const preparedData = prepareFormData()
     await axios.post('http://localhost:8000/api/games', preparedData, {
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`
-  },
+  headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
   withCredentials: true
   })
     alert('登録完了しました')
     router.push('/games')
   } catch (error) {
-    console.error('登録エラー:', error)
-    alert('登録に失敗しました')
+    if (error.response && error.response.status === 422) {
+      validationErrors.value = error.response.data.errors || {}
+    } else {
+      console.error('登録エラー:', error)
+      alert('登録に失敗しました')
+    }
   }
 }
 
 const goBack = () => {
   router.back() // 1つ前のページに戻る（または router.push('/tournaments') なども可）
 }
+
+
 
 </script>
 

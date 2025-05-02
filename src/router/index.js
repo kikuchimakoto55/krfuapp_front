@@ -58,6 +58,7 @@ const routes = [
       { path: 'games', name: 'Games', component: GameIndex, meta: { title: '試合一覧', requiresAuth: true } },
       { path: 'games/create', name: 'GameCreate', component: GameCreate, meta: { title: '試合登録', requiresAuth: true } },
       { path: 'games/edit/:id', name: 'GameEdit', component: GameEdit, meta: { title: '試合編集', requiresAuth: true } },
+      { path: 'games/select', name: 'GameSelect', component: () => import('@/components/games/GameSelect.vue'), meta: { title: '試合登録 - 大会選択', requiresAuth: true } },
       { path: 'venues/create', name: 'VenueCreate', component: () => import('@/components/venues/VenueCreate.vue'), meta: { title: '会場登録' } },
       { path: 'venues', name: 'VenueIndex', component: VenueIndex, meta: { title: '会場一覧' } },
       { path: 'venues/edit/:id', name: 'VenueEdit', component: () => import('@/components/venues/VenueEdit.vue'), meta: { title: '会場編集' } },

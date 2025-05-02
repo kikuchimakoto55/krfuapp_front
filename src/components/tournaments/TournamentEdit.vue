@@ -153,7 +153,7 @@ onMounted(async () => {
     form.value = {
       ...data,
       divisionflg: Number(data.divisionflg),
-      divisions: data.divisions ? JSON.parse(data.divisions) : [],
+      divisions: data.divisions ?? [],
     }
   } catch (err) {
     console.error('取得失敗', err)
