@@ -6,10 +6,12 @@
           <CCol md="6">
             <CFormLabel>年度</CFormLabel>
             <CFormInput v-model="form.year" type="number" required />
+            <p class="text-danger" v-if="errors.year">{{ errors.year }}</p>
           </CCol>
           <CCol md="6">
             <CFormLabel>チーム登録番号</CFormLabel>
             <CFormInput v-model="form.team_id" required />
+            <p class="text-danger" v-if="errors.team_id">{{ errors.team_id }}</p>
           </CCol>
         </CRow>
   
@@ -17,10 +19,12 @@
           <CCol md="6">
             <CFormLabel>チーム名</CFormLabel>
             <CFormInput v-model="form.team_name" required />
+            <p class="text-danger" v-if="errors.team_name">{{ errors.team_name }}</p>
           </CCol>
           <CCol md="6">
             <CFormLabel>代表者名</CFormLabel>
             <CFormInput v-model="form.representative_name" required />
+            <p class="text-danger" v-if="errors.representative_name">{{ errors.representative_name }}</p>
           </CCol>
         </CRow>
   
@@ -28,10 +32,12 @@
           <CCol md="6">
             <CFormLabel>代表者名（カナ）</CFormLabel>
             <CFormInput v-model="form.representative_kana" required />
+            <p class="text-danger" v-if="errors.representative_kana">{{ errors.representative_kana }}</p>
           </CCol>
           <CCol md="6">
             <CFormLabel>代表者電話番号</CFormLabel>
             <CFormInput v-model="form.representative_tel" required />
+            <p class="text-danger" v-if="errors.representative_tel">{{ errors.representative_tel }}</p>
           </CCol>
         </CRow>
   
@@ -39,6 +45,7 @@
           <CCol md="6">
             <CFormLabel>代表者メールアドレス</CFormLabel>
             <CFormInput v-model="form.representative_email" type="email" />
+            <p class="text-danger" v-if="errors.representative_email">{{ errors.representative_email }}</p>
           </CCol>
           <CCol md="3">
             <CFormLabel>登録人数（男）</CFormLabel>
@@ -79,6 +86,7 @@
               <option value="8">タグラグビー</option>
               <option value="9">女子</option>
             </CFormSelect>
+            <p class="text-danger" v-if="errors.category">{{ errors.category }}</p>
           </CCol>
           <CCol md="3">
             <CFormLabel>状態</CFormLabel>
@@ -118,6 +126,34 @@
   import { useRouter } from 'vue-router'
   
   const router = useRouter()
+  const errors = ref({})
+
+  const validateForm = () => {
+  errors.value = {}
+
+  if (!form.value.year) errors.value.year = '年度を入力してください'
+  if (!form.value.team_id) errors.value.team_id = 'チーム登録番号を入力してください'
+  if (!form.value.team_name) errors.value.team_name = 'チーム名を入力してください'
+  if (!form.value.representative_name) errors.value.representative_name = '代表者名を入力してください'
+  if (!form.value.representative_kana) errors.value.representative_kana = '代表者名（カナ）を入力してください'
+  if (!form.value.representative_tel) errors.value.representative_tel = '代表者電話番号を入力してください'
+  if (!form.value.representative_email) {
+    errors.value.representative_email = 'メールアドレスを入力してください'
+  } else if (!/\S+@\S+\.\S+/.test(form.value.representative_email)) {
+    errors.value.representative_email = '正しいメールアドレス形式で入力してください'
+  }
+  if (!form.value.category) errors.value.category = 'カテゴリを選択してください'
+
+  if (!/^[ァ-ヶー\s]+$/.test(form.value.representative_kana)) {
+  errors.value.representative_kana = '全角カタカナで入力してください'
+  }
+
+  if (!/^0\d{9,10}$/.test(form.value.representative_tel)) {
+  errors.value.representative_tel = '正しい電話番号を入力してください（ハイフンなし）'
+  }
+
+  return Object.keys(errors.value).length === 0
+}
   
   const form = ref({
     year: '',
@@ -139,11 +175,12 @@
   })
   
   const handleSubmit = async () => {
+    if (!validateForm()) {
+    return
+    }
   try {
     // 🔐 CSRFトークン取得（Sanctum用）
-    await axios.get('http://localhost:8000/sanctum/csrf-cookie', {
-      withCredentials: true,
-    });
+    await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true, });
 
     // 📦 チームデータを送信
     await axios.post('http://127.0.0.1:8000/api/teams', form.value, {
@@ -159,6 +196,7 @@
     console.error('登録エラー:', error);
     alert('登録に失敗しました');
   }
+
 };
   </script>
   
