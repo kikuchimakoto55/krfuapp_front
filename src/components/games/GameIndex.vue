@@ -95,6 +95,7 @@ onMounted(async () => {
   }
 })
 
+
 // 日時をきれいに表示する
 const formatDateTime = (datetime) => {
   if (!datetime) return '-'
@@ -206,6 +207,13 @@ const categoryLabel = (value) => {
       const teamScore = (score1st, score2nd) => {
       return (score1st || 0) + (score2nd || 0)
       };
+
+      import { useRouter } from 'vue-router'
+      const router = useRouter()
+
+      const goDetail = (id) => {
+        router.push(`/games/edit/${id}`)
+      }
 
       const handleSearch = async (criteria) => {
       isLoading.value = true

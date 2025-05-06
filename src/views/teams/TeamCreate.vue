@@ -36,7 +36,7 @@
           </CCol>
           <CCol md="6">
             <CFormLabel>代表者電話番号</CFormLabel>
-            <CFormInput v-model="form.representative_tel" required />
+            <CFormInput v-model="form.representative_tel" type="tel" inputmode="numeric" pattern="[0-9]*" required/>
             <p class="text-danger" v-if="errors.representative_tel">{{ errors.representative_tel }}</p>
           </CCol>
         </CRow>

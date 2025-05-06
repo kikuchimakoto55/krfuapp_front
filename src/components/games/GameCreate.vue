@@ -8,14 +8,30 @@
           <CFormLabel>大会ID[編集不可]</CFormLabel>
           <CFormInput v-model="form.tournament_id" type="number" :readonly="true" />
         </CCol>
-        <CCol md="6">
+
+        <!-- ディビジョン設定が有効な大会のみ表示、isLoadedチェックも内包 -->
+        <CCol md="6" v-if="isDivisionLoaded && divisionflg === 1">
           <CFormLabel>ディビジョン名</CFormLabel>
-          <CFormSelect v-model="form.division_name" :required="isDivisionRequired" :disabled="divisionOptions.length === 0">
-            <option value="">選択してください</option>
-            <option v-for="d in divisionOptions" :key="d.order" :value="d.name">{{ d.name }}</option>
-          </CFormSelect>
-          <div class="text-danger" v-if="validationErrors.division_name">{{ validationErrors.division_name[0] }}</div>
-        </CCol>
+
+          <!-- divisionflg 読み込み中は placeholder を表示 -->
+            <CFormSelect
+              v-if="isDivisionLoaded && divisionflg === 1"
+              v-model="form.division_name"
+              :required="isDivisionRequired"
+              :disabled="divisionOptions.length === 0">
+              <option value="">選択してください</option>
+              <option v-for="d in divisionOptions" :key="d.order" :value="d.name">
+                {{ d.name }}
+              </option>
+            </CFormSelect>
+          </CCol>
+
+          <!-- ディビジョンフラグ未取得中のみプレースホルダ表示（ちらつき防止） -->
+          <CCol md="6" v-else-if="!isDivisionLoaded">
+            <CFormLabel>ディビジョン名</CFormLabel>
+            <CFormInput :disabled="true" placeholder="読み込み中..." />
+          </CCol>
+        
       </CRow>
 
       <CRow class="mb-3">
@@ -163,7 +179,10 @@ const teams = ref([]) // チーム一覧
 const venues = ref([]); // 会場一覧
 const divisionOptions = ref([]) // ディビジョン配列
 const isDivisionRequired = ref(false)  // ディビジョン入力の要否
+const isDivisionLoaded = ref(false) // isDivisionLoaded だけを別に定義
 const validationErrors = ref({}) //バリデーションエラー
+const divisionflg = ref(null)  //ディビジョン表示
+const isLoaded = ref(false)  //ディビジョン表示タイミング調整
 
 const form = ref({
   tournament_id: '',
@@ -184,21 +203,38 @@ const form = ref({
 onMounted(async () => {
   const tournamentIdFromQuery = route.query.tournament_id || ''
   form.value.tournament_id = tournamentIdFromQuery
+  
+  // divisionflg 初期値クリア
+  divisionflg.value = null
+  isDivisionRequired.value = false
+  isDivisionLoaded.value = false // ← divisionflg取得完了を明示的に表す
 
+  // divisionflg だけを先に軽量取得（divRes）
   if (tournamentIdFromQuery) {
-    try {
-      const res = await axios.get(`http://localhost:8000/api/tournaments/${tournamentIdFromQuery}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
+  try {
+      const divRes = await axios.get(`http://localhost:8000/api/tournaments/${tournamentIdFromQuery}/check-division`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         withCredentials: true
       })
-
-      const divisionsJson = res.data.divisions
-      divisionOptions.value = divisionsJson ?? []
-      isDivisionRequired.value = res.data.divisionflg === 1
+      divisionflg.value = divRes.data.divisionflg
+      isDivisionRequired.value = divRes.data.divisionflg === 1
+      isDivisionLoaded.value = true // divisionflg のみ先に表示させる
     } catch (e) {
-      console.error('大会情報の取得に失敗:', e)
+      console.error('divisionflg の取得に失敗:', e)
+  }
+  // 必要な場合のみ、divisions 情報を取得（res）
+  if (divisionflg.value === 1) {
+    try {
+        const res = await axios.get(`http://localhost:8000/api/tournaments/${tournamentIdFromQuery}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          withCredentials: true
+        })
+
+        const divisionsJson = res.data.divisions
+        divisionOptions.value = divisionsJson ?? []
+      } catch (e) {
+        console.error('大会情報の取得に失敗:', e)
+      }
     }
   }
   // 🔵 チーム一覧もここで取得する
@@ -211,8 +247,8 @@ onMounted(async () => {
   } catch (e) {
     console.error('チーム情報の取得に失敗:', e)
   }
-
-    try {
+  // 会場情報の取得
+  try {
     const venueRes = await axios.get('http://localhost:8000/api/venues', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true
@@ -221,9 +257,10 @@ onMounted(async () => {
   } catch (e) {
     console.error('会場情報の取得に失敗:', e)
   }
-})
+  isLoaded.value = true
+  })
 
-const prepareFormData = () => {
+  const prepareFormData = () => {
   const convertEmptyToNull = (value) => value === '' ? null : value
   // 対戦チーム（team_left, team_right）はIDを送る
   const selectedTeamLeft = teams.value.find(t => t.team_name === form.value.team_left);
@@ -241,11 +278,11 @@ const prepareFormData = () => {
     team2_id: selectedTeamRight ? selectedTeamRight.team_id : null,
     team2_alias: null,
 
-    referee_id: null,                                // ★ レフリーID未設定なのでNULL
-    staff_id: null,                                  // ★ 担当者ID未設定なのでNULL
-    doctor_id: null                                  // ★ ドクターID未設定なのでNULL
+    referee: convertEmptyToNull(form.value.referee),
+    manager: convertEmptyToNull(form.value.manager),
+    doctor: convertEmptyToNull(form.value.doctor),
   }
-}
+};
 
 const submitForm = async () => {
   validationErrors.value = {} // ← 送信前に初期化
