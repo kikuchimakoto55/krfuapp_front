@@ -44,10 +44,11 @@
         <CRow class="mb-3">
           <CCol md="6">
             <CFormLabel>公開設定</CFormLabel>
-            <CFormSelect v-model.number="form.publishing" required>
+            <CFormSelect v-model="form.publishing" required>
               <option value="0">公開</option>
               <option value="1">非公開</option>
             </CFormSelect>
+            <p>publishingの現在値: {{ form.publishing }}</p>
           </CCol>
 
         <CCol md="6" class="text-center">
@@ -130,7 +131,7 @@
     year: '',
     event_period_start: '',
     event_period_end: '',
-    publishing: 0,
+    publishing: "0",
     divisionflg: "0",
     divisions: [],
   })

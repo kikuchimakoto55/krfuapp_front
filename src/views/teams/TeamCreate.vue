@@ -90,7 +90,7 @@
           </CCol>
           <CCol md="3">
             <CFormLabel>状態</CFormLabel>
-            <CFormSelect v-model.number="form.status">
+            <CFormSelect v-model="form.status">
               <option value="1">有効</option>
               <option value="0">無効</option>
             </CFormSelect>
@@ -169,7 +169,7 @@
     jrfu_coach: '',
     safety_lecturer: '',
     category: '',
-    status: 1,
+    status: '1',
     annual_fee_flg: 0,
     individual_entry_flg: 0,
   })
@@ -178,24 +178,33 @@
     if (!validateForm()) {
     return
     }
-  try {
-    // 🔐 CSRFトークン取得（Sanctum用）
-    await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true, });
+    const formData = {
+    ...form.value,
+    status: Number(form.value.status),
+    annual_fee_flg: Number(form.value.annual_fee_flg),
+    individual_entry_flg: Number(form.value.individual_entry_flg),
+    male_members: Number(form.value.male_members),
+    female_members: Number(form.value.female_members),
+    };
 
-    // 📦 チームデータを送信
-    await axios.post('http://127.0.0.1:8000/api/teams', form.value, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      withCredentials: true,
-    });
+      try {
+        // 🔐 CSRFトークン取得（Sanctum用）
+        await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true, });
 
-    alert('登録しました');
-    router.push('/teams/complete');
-  } catch (error) {
-    console.error('登録エラー:', error);
-    alert('登録に失敗しました');
-  }
+        // 📦 チームデータを送信
+        await axios.post('http://127.0.0.1:8000/api/teams', form.value, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          withCredentials: true,
+        });
+
+        alert('登録しました');
+        router.push('/teams/complete');
+      } catch (error) {
+        console.error('登録エラー:', error);
+        alert('登録に失敗しました');
+      }
 
 };
   </script>
