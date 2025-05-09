@@ -1,18 +1,17 @@
 <template>
     <div class="p-4">
-  
       <CForm @submit.prevent="submit">
         <CRow class="mb-3">
           <CCol md="6">
             <CFormLabel>大会ID</CFormLabel>
             <CFormInput v-model="form.tournament_id" readonly />
           </CCol>
-          <CCol md="6" v-if="tournament.value && tournament.value.divisionflg === 1">
+          <CCol md="6">
             <CFormLabel>ディビジョン名</CFormLabel>
             <CFormSelect v-model="form.division_name">
               <option value="">選択してください</option>
-              <option v-for="division in divisions" :key="division.division_name" :value="division.division_name">
-                {{ division.division_name }}
+              <option v-for="division in divisions" :key="division.order" :value="division.name">
+                {{ division.name }}
               </option>
             </CFormSelect>
           </CCol>
@@ -37,9 +36,9 @@
             <CFormLabel>会場名</CFormLabel>
               <CFormSelect v-model="form.venue_id">
                 <option value="">選択してください</option>
-                  <option v-for="venue in venues" :key="venue.venue_id" :value="String(venue.venue_id)">
-                    {{ venue.venue_name }}
-                  </option>
+                <option v-for="venue in venues" :key="venue.venue_id" :value="String(venue.venue_id)">
+                  {{ venue.venue_name }}
+                </option>
               </CFormSelect>
           </CCol>
         </CRow>
@@ -68,25 +67,21 @@
         <CRow class="mb-3">
           <CCol md="6">
             <CFormLabel>レフリー</CFormLabel>
-            <CFormInput :value="form.referee || '未設定'" />
+            <CFormInput v-model="form.referee" placeholder="未設定" />
           </CCol>
           <CCol md="6">
             <CFormLabel>担当者</CFormLabel>
-            <CFormInput :value="form.manager || '未設定'" />
+            <CFormInput v-model="form.manager" placeholder="未設定" />
           </CCol>
         </CRow>
   
         <CRow class="mb-3">
           <CCol md="6">
             <CFormLabel>ドクター</CFormLabel>
-            <CFormInput :value="form.doctor || '未設定'" />
+            <CFormInput v-model="form.doctor" placeholder="未設定" />
           </CCol>
         </CRow>
-  
-        <CButton type="submit" color="primary">更新する</CButton>
-        <CButton color="secondary" class="ms-4" @click="goBack">キャンセル</CButton>
-      </CForm>
-    </div>
+
 
         <h3 class="mt-5 text-lg font-bold">スコア編集</h3>
     <table class="table table-bordered w-full text-center border mt-2">
@@ -181,21 +176,68 @@
       </tbody>
     </table>
 
+    <!-- スコアブック・レポートエリア -->
+    <CRow class="mb-3">
+      <CCol md="6">
+        <CFormLabel>スコアブック（ファイル添付）</CFormLabel>
+        <CFormInput type="file" @change="handleFileUpload" />
+        <p v-if="form.scorebook_file_name">現在のファイル: {{ form.scorebook_file_name }}</p>
+      </CCol>
+    </CRow>
+
+    <CRow class="mb-3">
+      <CCol>
+        <CFormLabel>ゲームレポート</CFormLabel>
+        <CFormTextarea v-model="form.game_report" rows="5" placeholder="試合内容の詳細やコメントを入力してください" />
+      </CCol>
+    </CRow>
+
+    <CRow class="mb-3">
+      <CCol md="4">
+        <CFormLabel>公開設定</CFormLabel>
+        <CFormSelect v-model="form.publishing">
+          <option value="0">公開</option>
+          <option value="1">非公開</option>
+        </CFormSelect>
+      </CCol>
+    </CRow>
+
+              <!-- ⭐ フォームの最後にボタン -->
+              <div class="mt-4 text-center">
+          <CButton type="submit" color="primary">更新する</CButton>
+          <CButton color="secondary" class="ms-4" @click="goBack">キャンセル</CButton>
+        </div>
+      </CForm>
+    </div>
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue'
+  import { ref, onMounted, computed } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import axios from 'axios'
   
   const route = useRoute()
   const router = useRouter()
   const gameId = route.params.id
-  const form = ref({})
   const venues = ref([])
   const teams = ref([])
   const tournament = ref({})
   const divisions = ref([])
+  
+  const shouldShowDivision = computed(() => {
+  return Number(tournament.value?.divisionflg) === 1 && divisions.value.length > 0
+})
+
+  const form = ref({
+  // onMounted で上書きされる既存項目に加えて、
+  game_report: '',
+  publishing: '0', // ← 文字列で管理（後で数値化して送信）
+  scorebook_file: null,
+  scorebook_file_name: '', // 既存ファイル名表示用（編集前にAPI取得して反映する）
+  });
+  const handleFileUpload = (event) => {
+    form.value.scorebook_file = event.target.files[0];
+  };
   
   const score = ref({
   // 前半・後半：チーム1
@@ -245,83 +287,153 @@ onMounted(async () => {
     const gameResponse = await axios.get(`http://localhost:8000/api/games/${gameId}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true
-    })
+    });
 
-    form.value = { ...gameResponse.data }
+    const data = gameResponse.data;
 
-    // 試合日時をdatetime-local用に変換
-    if (form.value.game_date) {
-      form.value.game_date = new Date(form.value.game_date).toISOString().slice(0, 16)
-    }
+    form.value = {
+      tournament_id: data.tournament_id,
+      division_name: data.division_name,
+      round_label: data.round_label,
+      game_date: data.game_date ? new Date(data.game_date).toISOString().slice(0, 16) : '',
+      venue_id: String(data.venue_id),
+      team1_id: String(data.team1_id),
+      team2_id: String(data.team2_id),
+      referee: data.referee,
+      manager: data.manager,
+      doctor: data.doctor,
+      game_report: data.game_report,
+      publishing: data.publishing,
+      scorebook_file_name: data.score?.scorebook_file_name || ''
+    };
+
+    score.value = {
+      op1fh_t: data.score?.op1fh_t || 0,
+      op1fh_g: data.score?.op1fh_g || 0,
+      op1fh_pg: data.score?.op1fh_pg || 0,
+      op1fh_dg: data.score?.op1fh_dg || 0,
+      op1hh_t: data.score?.op1hh_t || 0,
+      op1hh_g: data.score?.op1hh_g || 0,
+      op1hh_pg: data.score?.op1hh_pg || 0,
+      op1hh_dg: data.score?.op1hh_dg || 0,
+      op2fh_t: data.score?.op2fh_t || 0,
+      op2fh_g: data.score?.op2fh_g || 0,
+      op2fh_pg: data.score?.op2fh_pg || 0,
+      op2fh_dg: data.score?.op2fh_dg || 0,
+      op2hh_t: data.score?.op2hh_t || 0,
+      op2hh_g: data.score?.op2hh_g || 0,
+      op2hh_pg: data.score?.op2hh_pg || 0,
+      op2hh_dg: data.score?.op2hh_dg || 0,
+      op1fh_score: data.score?.op1fh_score || 0,
+      op1hh_score: data.score?.op1hh_score || 0,
+      op2fh_score: data.score?.op2fh_score || 0,
+      op2hh_score: data.score?.op2hh_score || 0,
+      op1fh_pkscore: data.score?.op1fh_pkscore || 0,
+      op1fh_fkscore: data.score?.op1fh_fkscore || 0,
+      op1hh_pkscore: data.score?.op1hh_pkscore || 0,
+      op1hh_fkscore: data.score?.op1hh_fkscore || 0,
+      op2fh_pkscore: data.score?.op2fh_pkscore || 0,
+      op2fh_fkscore: data.score?.op2fh_fkscore || 0,
+      op2hh_pkscore: data.score?.op2hh_pkscore || 0,
+      op2hh_fkscore: data.score?.op2hh_fkscore || 0,
+      score_book: data.score?.score_book || '',
+      gamereport: data.score?.gamereport || '',
+      publishing: data.score?.publishing || 1
+    };
 
     // 試合情報取得後
     const tournamentResponse = await axios.get(`http://localhost:8000/api/tournaments/${form.value.tournament_id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true
-    })
-    tournament.value = tournamentResponse.data
+    });
+    tournament.value = tournamentResponse.data;
+    console.log('tournament.value:', tournament.value);
+    console.log('取得した tournamentResponse:', tournament.value);
 
-    console.log('取得した tournament:', tournament.value)
-    console.log('divisionflg:', tournament.value.divisionflg)
-    console.log('取得した divisions:', divisions.value)
+if (Number(tournament.value.divisionflg) === 1 && Array.isArray(tournament.value.divisions)) {
+  divisions.value = tournament.value.divisions;
+}
 
+console.log('divisionflg:', tournament.value.divisionflg);
+console.log('divisions.value:', divisions.value);
 
     // divisionflgが0ならディビジョン名をnullに
     if (tournament.value.divisionflg !== 1) {
-      form.value.division_name = null
+      form.value.division_name = null;
     }
-    // division 一覧を取得
-    const divisionResponse = await axios.get(`http://localhost:8000/api/tournaments/${form.value.tournament_id}/divisions`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      withCredentials: true
-    })
-    divisions.value = divisionResponse.data
+    console.log('divisions.value:', divisions.value);
 
-    // 会場一覧を取得
+
+
+
+	// 会場一覧を取得
     const venueResponse = await axios.get('http://localhost:8000/api/venues', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true
-    })
-    venues.value = venueResponse.data
+    });
+    venues.value = venueResponse.data;
 
-    // チーム一覧を取得
+	// チーム一覧を取得
     const teamResponse = await axios.get('http://localhost:8000/api/teams', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true
-    })
-    teams.value = teamResponse.data
+    });
+    teams.value = teamResponse.data;
 
   } catch (error) {
-    console.error('試合情報の取得失敗:', error)
-    alert('試合情報の取得に失敗しました')
+    console.error('試合情報の取得失敗:', error);
+    alert('試合情報の取得に失敗しました');
   }
-})
+});
+
+
   
 const submit = async () => {
-  try {
-    await axios.put(`http://localhost:8000/api/games/${gameId}`, {
-      ...form.value,
-      venue_id: Number(form.value.venue_id),
-      team1_id: Number(form.value.team1_id),
-      team2_id: Number(form.value.team2_id),
-      round_label: Number(form.value.round_label),
-      score: score.value
-    }, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      withCredentials: true
-    })
-    alert('試合情報を更新しました')
-    router.push('/games')
-  } catch (error) {
-    console.error('試合情報の更新失敗:', error)
-    alert('試合情報の更新に失敗しました')
+  const formData = new FormData();
+
+  formData.append('_method', 'PUT');
+  formData.append('venue_id', Number(form.value.venue_id));
+  formData.append('team1_id', Number(form.value.team1_id));
+  formData.append('team2_id', Number(form.value.team2_id));
+  formData.append('match_round', Number(form.value.round_label));
+  formData.append('match_datetime', form.value.game_date || '');
+  formData.append('division_name', form.value.division_name || '');
+  formData.append('referee', form.value.referee || '');
+  formData.append('manager', form.value.manager || '');
+  formData.append('doctor', form.value.doctor || '');
+  formData.append('game_report', form.value.game_report || '');
+  formData.append('publishing', Number(form.value.publishing));
+
+  if (form.value.scorebook_file) {
+    formData.append('scorebook', form.value.scorebook_file);
   }
-}
+
+  // ⭐ scoreオブジェクトを個別展開
+  for (const [key, value] of Object.entries(score.value)) {
+    formData.append(`score[${key}]`, value);
+  }
+
+  try {
+    await axios.post(`http://localhost:8000/api/games/${gameId}`, formData, {
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'multipart/form-data',
+    },
+    withCredentials: true,
+    });
+
+    alert('試合情報を更新しました');
+    router.push('/games');
+  } catch (error) {
+    console.error('試合情報の更新失敗:', error);
+    alert('試合情報の更新に失敗しました');
+  }
+};
   
   
   const goBack = () => {
     router.push('/games')
-  }
+  };
 
   const calcScore = () => {
   const calc = (t, g, pg, dg) => (t * 5) + (g * 2) + (pg * 3) + (dg * 3)
@@ -331,7 +443,7 @@ const submit = async () => {
 
   score.value.op2fh_score = calc(score.value.op2fh_t, score.value.op2fh_g, score.value.op2fh_pg, score.value.op2fh_dg)
   score.value.op2hh_score = calc(score.value.op2hh_t, score.value.op2hh_g, score.value.op2hh_pg, score.value.op2hh_dg)
-  }
+  };
 
   const roundOptions = {
     9: 'Aリーグ',
@@ -399,7 +511,7 @@ const submit = async () => {
     41: '6位決定戦',
     42: '7位決定戦',
     43: '8位決定戦',
-}
+};
 
   </script>
   
