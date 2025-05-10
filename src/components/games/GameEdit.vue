@@ -7,16 +7,10 @@
             <CFormInput v-model="form.tournament_id" readonly />
           </CCol>
           <CCol md="6">
-            <CFormLabel>ディビジョン名</CFormLabel>
-            <CFormSelect v-model="form.division_name">
-              <option value="">選択してください</option>
-              <option v-for="division in divisions" :key="division.order" :value="division.name">
-                {{ division.name }}
-              </option>
-            </CFormSelect>
+            <CFormLabel>ディビジョン</CFormLabel>
+            <CFormInput type="text" :value="getDivisionLabel(form.division_order)" readonly />
           </CCol>
         </CRow>
-  
         <CRow class="mb-3">
           <CCol md="6">
             <CFormLabel>回戦</CFormLabel>
@@ -168,11 +162,7 @@
           <td>{{ score.op2fh_pkscore + score.op2hh_pkscore }}</td>
           <td>{{ score.op2fh_fkscore + score.op2hh_fkscore }}</td>
         </tr>
-        <tr>
-          <td colspan="5">
-            <CButton color="secondary" @click="calcPenalty">反則数計算</CButton>
-          </td>
-        </tr>
+
       </tbody>
     </table>
 
@@ -215,6 +205,7 @@
   import { ref, onMounted, computed } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import axios from 'axios'
+  import { roundOptions } from '../roundOptions'
   
   const route = useRoute()
   const router = useRouter()
@@ -227,6 +218,11 @@
   const shouldShowDivision = computed(() => {
   return Number(tournament.value?.divisionflg) === 1 && divisions.value.length > 0
 })
+
+const getDivisionLabel = (order) => {
+  const division = divisions.value.find(d => d.order === Number(order));
+  return division ? division.name : '-';
+};
 
   const form = ref({
   // onMounted で上書きされる既存項目に加えて、
@@ -270,16 +266,6 @@ const judgeResult = () => {
   if (team1 > team2) return ['○', '●']
   if (team1 < team2) return ['●', '○']
   return ['△', '△']
-}
-
-const calcPenalty = () => {
-  // ここではVueテンプレート側で合計済みのため、処理が必要なら記載
-  console.log('PK/FK合計:', {
-    team1_pk: score.value.op1fh_pkscore + score.value.op1hh_pkscore,
-    team1_fk: score.value.op1fh_fkscore + score.value.op1hh_fkscore,
-    team2_pk: score.value.op2fh_pkscore + score.value.op2hh_pkscore,
-    team2_fk: score.value.op2fh_fkscore + score.value.op2hh_fkscore,
-  })
 }
 
 onMounted(async () => {
@@ -397,7 +383,6 @@ const submit = async () => {
   formData.append('team2_id', Number(form.value.team2_id));
   formData.append('match_round', Number(form.value.round_label));
   formData.append('match_datetime', form.value.game_date || '');
-  formData.append('division_name', form.value.division_name || '');
   formData.append('referee', form.value.referee || '');
   formData.append('manager', form.value.manager || '');
   formData.append('doctor', form.value.doctor || '');
@@ -429,11 +414,10 @@ const submit = async () => {
     alert('試合情報の更新に失敗しました');
   }
 };
-  
-  
-  const goBack = () => {
-    router.push('/games')
-  };
+
+const goBack = () => {
+  router.push('/games');
+};
 
   const calcScore = () => {
   const calc = (t, g, pg, dg) => (t * 5) + (g * 2) + (pg * 3) + (dg * 3)
@@ -444,74 +428,6 @@ const submit = async () => {
   score.value.op2fh_score = calc(score.value.op2fh_t, score.value.op2fh_g, score.value.op2fh_pg, score.value.op2fh_dg)
   score.value.op2hh_score = calc(score.value.op2hh_t, score.value.op2hh_g, score.value.op2hh_pg, score.value.op2hh_dg)
   };
-
-  const roundOptions = {
-    9: 'Aリーグ',
-    10: 'Bリーグ',
-    11: 'Cリーグ',
-    12: 'Dリーグ',
-    44: 'Eリーグ',
-    45: 'Fリーグ',
-    46: 'Gリーグ',
-    47: 'Hリーグ',
-    48: 'Iリーグ',
-    49: 'Jリーグ',
-    50: 'Kリーグ',
-    51: 'Lリーグ',
-    52: 'Mリーグ',
-    53: 'Nリーグ',
-    54: 'Oリーグ',
-    55: 'Pリーグ',
-    56: 'Qリーグ',
-    57: 'Rリーグ',
-    58: 'Sリーグ',
-    59: 'Tリーグ',
-    60: 'Uリーグ',
-    61: 'Vリーグ',
-    62: 'Wリーグ',
-    63: 'Xリーグ',
-    64: 'Yリーグ',
-    65: 'Zリーグ',
-    1: '1回戦',
-    2: '2回戦',
-    3: '3回戦',
-    4: '4回戦',
-    5: '5回戦',
-    13: '6回戦',
-    14: '7回戦',
-    15: '8回戦',
-    16: '9回戦',
-    17: '10回戦',
-    18: '11回戦',
-    19: '12回戦',
-    20: '13回戦',
-    21: '14回戦',
-    22: '15回戦',
-    23: '16回戦',
-    24: '17回戦',
-    25: '18回戦',
-    26: '19回戦',
-    27: '20回戦',
-    28: '21回戦',
-    29: '22回戦',
-    30: '23回戦',
-    31: '24回戦',
-    32: '25回戦',
-    33: '26回戦',
-    34: '27回戦',
-    35: '28回戦',
-    36: '29回戦',
-    37: '30回戦',
-    38: '準々決勝',
-    6: '準決勝',
-    7: '決勝',
-    8: '3位決定戦',
-    39: '4位決定戦',
-    40: '5位決定戦',
-    41: '6位決定戦',
-    42: '7位決定戦',
-    43: '8位決定戦',
-};
 
   </script>
   

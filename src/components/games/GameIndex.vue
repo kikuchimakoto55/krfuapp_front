@@ -74,11 +74,47 @@
 
 <script setup>
 import GameSearchForm from '@/components/games/GameSearchForm.vue'
-import { ref, onMounted } from 'vue'
+import { getRoundLabel, categoryLabel } from '@/components/constants/labels'
+import { onMounted, watch, ref } from 'vue'
 import axios from 'axios'
+import { useRoute } from 'vue-router'
+
 
 const games = ref([])
 const isLoading = ref(true)
+const route = useRoute()
+
+const fetchGames = async () => {
+  isLoading.value = true
+  try {
+    const res = await axios.get('http://localhost:8000/api/games', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      withCredentials: true
+    })
+    games.value = res.data
+  } catch (error) {
+    console.error('試合一覧取得失敗:', error)
+    alert('試合データの取得に失敗しました')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// 初回読み込み
+onMounted(() => {
+  fetchGames()
+})
+
+// ルート変更を監視（/games に戻ったとき再フェッチ）
+watch(
+  () => route.fullPath,
+  (newPath) => {
+    if (newPath === '/games') {
+      fetchGames()
+    }
+  }
+)
+
 
 onMounted(async () => {
   try {
@@ -102,92 +138,7 @@ const formatDateTime = (datetime) => {
   return new Date(datetime).toLocaleString('ja-JP')
 }
 
-const getRoundLabel = (roundValue) => {
-  const mapping = {
-    9: 'Aリーグ',
-    10: 'Bリーグ',
-    11: 'Cリーグ',
-    12: 'Dリーグ',
-    44: 'Eリーグ',
-    45: 'Fリーグ',
-    46: 'Gリーグ',
-    47: 'Hリーグ',
-    48: 'Iリーグ',
-    49: 'Jリーグ',
-    50: 'Kリーグ',
-    51: 'Lリーグ',
-    52: 'Mリーグ',
-    53: 'Nリーグ',
-    54: 'Oリーグ',
-    55: 'Pリーグ',
-    56: 'Qリーグ',
-    57: 'Rリーグ',
-    58: 'Sリーグ',
-    59: 'Tリーグ',
-    60: 'Uリーグ',
-    61: 'Vリーグ',
-    62: 'Wリーグ',
-    63: 'Xリーグ',
-    64: 'Yリーグ',
-    65: 'Zリーグ',
-    1: '1回戦',
-    2: '2回戦',
-    3: '3回戦',
-    4: '4回戦',
-    5: '5回戦',
-    13: '6回戦',
-    14: '7回戦',
-    15: '8回戦',
-    16: '9回戦',
-    17: '10回戦',
-    18: '11回戦',
-    19: '12回戦',
-    20: '13回戦',
-    21: '14回戦',
-    22: '15回戦',
-    23: '16回戦',
-    24: '17回戦',
-    25: '18回戦',
-    26: '19回戦',
-    27: '20回戦',
-    28: '21回戦',
-    29: '22回戦',
-    30: '23回戦',
-    31: '24回戦',
-    32: '25回戦',
-    33: '26回戦',
-    34: '27回戦',
-    35: '28回戦',
-    36: '29回戦',
-    37: '30回戦',
-    38: '準々決勝',
-    6: '準決勝',
-    7: '決勝',
-    8: '3位決定戦',
-    39: '4位決定戦',
-    40: '5位決定戦',
-    41: '6位決定戦',
-    42: '7位決定戦',
-    43: '8位決定戦',
-  }
-
-  return mapping[roundValue] || roundValue || '-'
-}
-
-const categoryLabel = (value) => {
-        if (value == 1) return '有料試合';
-        if (value == 2) return '社会人';
-        if (value == 3) return 'クラブ';
-        if (value == 4) return '大学';
-        if (value == 5) return '高校';
-        if (value == 6) return '中学';
-        if (value == 7) return 'ラグビースクール';
-        if (value == 8) return 'タグラグビー';
-        if (value == 9) return '女子';
-        return 'その他';
-      };
-      
-      const approvalLabel = (value) => {
+     const approvalLabel = (value) => {
         return value == 1 ? '承認' : '未承認'; //未実装
       };
 
