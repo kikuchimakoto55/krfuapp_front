@@ -170,8 +170,24 @@
     <CRow class="mb-3">
       <CCol md="6">
         <CFormLabel>スコアブック（ファイル添付）</CFormLabel>
-        <CFormInput type="file" @change="handleFileUpload" />
-        <p v-if="form.scorebook_file_name">現在のファイル: {{ form.scorebook_file_name }}</p>
+        <CFormInput type="file" multiple @change="handleFileUpload" />
+        <CFormText v-if="form.scorebook_file_name" class="mt-1">
+          現在のファイル:
+          <br />
+          <span
+            v-for="(file, index) in form.scorebook_file_name.split(',')"
+            :key="index"
+          >
+            <a
+              :href="`/storage/${file}`"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ file }}
+            </a>
+            <br />
+          </span>
+        </CFormText>
       </CCol>
     </CRow>
 
@@ -231,9 +247,12 @@ const getDivisionLabel = (order) => {
   scorebook_file: null,
   scorebook_file_name: '', // 既存ファイル名表示用（編集前にAPI取得して反映する）
   });
+   //複数ファイルアップロード
   const handleFileUpload = (event) => {
-    form.value.scorebook_file = event.target.files[0];
+  form.value.scorebook_files = Array.from(event.target.files);
   };
+
+  
   
   const score = ref({
   // 前半・後半：チーム1
@@ -288,9 +307,9 @@ onMounted(async () => {
       referee: data.referee,
       manager: data.manager,
       doctor: data.doctor,
-      game_report: data.game_report,
-      publishing: data.publishing,
-      scorebook_file_name: data.score?.scorebook_file_name || ''
+      game_report: data.score?.gamereport || '',
+      publishing: String(data.score?.publishing ?? '1'),
+      scorebook_file_name: data.score?.score_book || ''
     };
 
     score.value = {
@@ -389,8 +408,10 @@ const submit = async () => {
   formData.append('game_report', form.value.game_report || '');
   formData.append('publishing', Number(form.value.publishing));
 
-  if (form.value.scorebook_file) {
-    formData.append('scorebook', form.value.scorebook_file);
+  if (form.value.scorebook_files && form.value.scorebook_files.length > 0) {
+  form.value.scorebook_files.forEach(file => {
+    formData.append('scorebook[]', file);
+  });
   }
 
   // ⭐ scoreオブジェクトを個別展開
