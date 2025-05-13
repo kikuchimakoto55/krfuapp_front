@@ -45,13 +45,7 @@
         </CButton>
       </div>
   
-      <CButton
-        v-if="!isLoading && divisions.length > 0"
-        color="primary"
-        @click="submitResults"
-      >
-        登録
-      </CButton>
+      <CButton v-if="!isLoading" color="primary" @click="submitResults">登録</CButton>
     </div>
   </template>
   
@@ -78,21 +72,35 @@
       const teamsRes = await axios.get('http://localhost:8000/api/teams')
       teams.value = teamsRes.data
   
-      divisions.value = JSON.parse(tournament.value.divisions || '[]')
-      results.value = {}
-  
-      divisions.value.forEach((division) => {
-        results.value[division.order] = [
-          { division_order: division.order, division_name: division.name, rank_label: '優勝', team_id: '', file: null, report: '' },
-          { division_order: division.order, division_name: division.name, rank_label: '準優勝', team_id: '', file: null, report: '' }
-        ]
-      })
-    } catch (error) {
-      console.error('初期データ取得失敗:', error)
-    } finally {
-      isLoading.value = false
+      // divisionsの準備
+    if (tournament.value.divisionflg === 0) {
+      // ディビジョン未設定 → 仮の1件を用意
+      divisions.value = [{ order: 1, name: 'メイン' }]
+    } else {
+      // divisionflg = 1 → JSON配列を使用
+      if (typeof tournament.value.divisions === 'string') {
+        divisions.value = JSON.parse(tournament.value.divisions || '[]')
+      } else if (Array.isArray(tournament.value.divisions)) {
+        divisions.value = tournament.value.divisions
+      } else {
+        divisions.value = []
+      }
     }
-  })
+
+    // 結果データの初期化
+    results.value = {}
+    divisions.value.forEach((division) => {
+      results.value[division.order] = [
+        { division_order: division.order, division_name: division.name, rank_label: '優勝', team_id: '', file: null, report: '' },
+        { division_order: division.order, division_name: division.name, rank_label: '準優勝', team_id: '', file: null, report: '' }
+      ]
+    })
+    } catch (error) {
+    console.error('初期データ取得失敗:', error)
+  } finally {
+    isLoading.value = false
+  }
+})
   
   const addRankRow = (divisionOrder) => {
     results.value[divisionOrder].push({
@@ -125,7 +133,7 @@
         formData.append(`results[${divisionOrder}][${index}][team_id]`, entry.team_id)
         formData.append(`results[${divisionOrder}][${index}][report]`, entry.report)
         if (entry.file) {
-          formData.append(`results[${divisionOrder}][${index}][team_id]`, entry.team_id != null ? entry.team_id : '')
+          formData.append(`results[${divisionOrder}][${index}][document]`, entry.file)
         }
       })
     }

@@ -137,7 +137,28 @@
   })
   
   const handleSubmit = async () => {
-    try {
+  // ✅ 年度が西暦4桁でなければエラー
+  if (!/^\d{4}$/.test(form.value.year)) {
+    alert('年度は西暦4桁で入力してください');
+    return;
+  }
+
+  // ディビジョン設定ありのとき、必須チェック
+  if (form.value.divisionflg === '1') {
+    if (form.value.divisions.length === 0) {
+      alert('ディビジョン設定が有効な場合は、ディビジョンを1つ以上追加してください。');
+      return;
+    }
+
+    // 追加：名前未入力の行があるか確認
+    const emptyName = form.value.divisions.some(d => !d.name.trim())
+    if (emptyName) {
+      alert('ディビジョン名をすべて入力してください。');
+      return;
+    }
+  }
+
+  try {
     const formData = {
       name: form.value.name,
       categoly: Number(form.value.categoly),
@@ -146,56 +167,45 @@
       event_period_end: form.value.event_period_end,
       publishing: Number(form.value.publishing),
       divisionflg: Number(form.value.divisionflg),
-      divisions: form.value.divisions?.length ? JSON.stringify(form.value.divisions) : null,
+      divisions: form.value.divisions.length ? JSON.stringify(form.value.divisions) : null,
     };
 
-    console.log('送信内容:', formData); // ← これで送る直前の確認もOK
-    
-      await axios.post('http://127.0.0.1:8000/api/tournaments', formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
-        withCredentials: true
-      })
-      alert('大会情報を登録しました')
-    } catch (err) {
-      console.error('登録失敗', err)
-      alert('登録に失敗しました')
-    }
+    console.log('送信内容:', formData);
+
+    await axios.post('http://127.0.0.1:8000/api/tournaments', formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      withCredentials: true
+    });
+
+    alert('大会情報を登録しました');
+  } catch (err) {
+    console.error('登録失敗', err);
+    alert('登録に失敗しました');
   }
+  }
+
   const validationErrors = ref({})
 
-  const registerTournament = async () => {
-    // ✅ 年度が西暦4桁でなければエラー
-    if (!/^\d{4}$/.test(form.value.year)) {
-      alert('年度は西暦4桁で入力してください');
-      return;
-    }
-
-    try {
-      await axios.post('http://127.0.0.1:8000/api/tournaments', form.value, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
-        withCredentials: true
-      })
-      alert('登録完了しました')
-    } catch (error) {
-      console.error('登録エラー:', error)
-      if (error.response && error.response.data.errors) {
-        validationErrors.value = error.response.data.errors
-      }
-    }
-  }
+  
   //ディビジョン設定
   const newDivisionName = ref('')
 
   const addDivision = () => {
-    form.value.divisions.push({
-  order: form.value.divisions.length + 1,
-  name: newDivisionName.value.trim()
-});
-}
+  const name = newDivisionName.value.trim()
+  if (!name) {
+    alert('ディビジョン名を入力してください')
+    return
+  }
+
+  form.value.divisions.push({
+    order: form.value.divisions.length + 1,
+    name
+  })
+
+  newDivisionName.value = '' // ← 入力欄クリア
+  }
 
 const removeDivision = (index) => {
   form.value.divisions.splice(index, 1);

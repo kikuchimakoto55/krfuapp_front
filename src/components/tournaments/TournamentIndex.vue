@@ -8,8 +8,9 @@
             <th>年度</th>
             <th>カテゴリ</th>
             <th>開催期間</th>
-            <th>公開設定</th>
-            <th>試合情報登録</th>
+            <th>設定</th>
+            <th>試合登録</th>
+            <th>結果登録</th>
             <th>編集</th>
           </tr>
         </thead>
@@ -21,6 +22,7 @@
             <td>{{ formatPeriod(t.event_period_start, t.event_period_end) }}</td>
             <td>{{ Number(t.publishing) === 0 ? '公開' : '非公開' }}</td>
             <td><CButton color="primary" size="sm" @click="goToGameCreate(t.tournament_id)">登録</CButton></td>
+            <td><CButton color="primary" size="sm" @click="goToResultCreate(t.tournament_id)">登録</CButton></td>
             <td><CButton color="primary" size="sm" @click="goToEdit(t.tournament_id)">編集</CButton></td>
           </tr>
         </tbody>
@@ -65,6 +67,10 @@
   //試合情報登録
   const goToGameCreate = (tournamentId) => {
   router.push({ name: 'GameCreate', query: { tournament_id: tournamentId } })
+  }
+
+  const goToResultCreate = (tournamentId) => {
+  router.push(`/tournaments/${tournamentId}/results/create`)
   }
   </script>
   
