@@ -70,16 +70,18 @@ export const getRoundLabel = (roundValue) => {
   return roundOptions[Number(roundValue)] || roundValue || '-';
 };
 
+export const categoryOptions = {
+  1: '有料試合',
+  2: '社会人',
+  3: 'クラブ',
+  4: '大学',
+  5: '高校',
+  6: '中学',
+  7: 'ラグビースクール',
+  8: 'タグラグビー',
+  9: '女子'
+};
+
 export const categoryLabel = (value) => {
-  const num = Number(value);
-  if (num === 1) return '有料試合';
-  if (num === 2) return '社会人';
-  if (num === 3) return 'クラブ';
-  if (num === 4) return '大学';
-  if (num === 5) return '高校';
-  if (num === 6) return '中学';
-  if (num === 7) return 'ラグビースクール';
-  if (num === 8) return 'タグラグビー';
-  if (num === 9) return '女子';
-  return 'その他';
+  return categoryOptions[Number(value)] || 'その他';
 };
