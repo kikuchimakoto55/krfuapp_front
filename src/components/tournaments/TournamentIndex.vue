@@ -10,7 +10,6 @@
             <th>大会名</th>
             <th>年度</th>
             <th>カテゴリ</th>
-            <th>開催期間</th>
             <th>公開設定</th>
             <th>試合登録</th>
             <th>結果登録</th>
@@ -22,7 +21,6 @@
             <td>{{ t.name }}</td>
             <td>{{ t.year }}</td>
             <td>{{ categoryLabel(t.categoly) }}</td>
-            <td>{{ formatPeriod(t.event_period_start, t.event_period_end) }}</td>
             <td>{{ Number(t.publishing) === 0 ? '公開' : '非公開' }}</td>
             <td><CButton color="primary" size="sm" @click="goToGameCreate(t.tournament_id)">登録</CButton></td>
             <td><CButton color="primary" size="sm" @click="goToResultCreate(t.tournament_id)">登録</CButton></td>

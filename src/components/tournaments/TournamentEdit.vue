@@ -115,6 +115,10 @@
           <CCol class="text-center">
             <CButton type="submit" color="primary">更新</CButton>
           </CCol>
+          <CCol class="text-center">
+            <CButton color="danger" @click="handleDelete">削除</CButton>
+          </CCol>
+          
         </CRow>
       </CForm>
     </div>
@@ -127,7 +131,7 @@
   
 const route = useRoute()
 const router = useRouter()
-  const form = ref({
+const form = ref({
     name: '',
     categoly: '',
     year: '',
@@ -156,12 +160,12 @@ onMounted(async () => {
       divisions: Array.isArray(data.divisions) ? data.divisions : [],
     }
   } catch (err) {
-    console.error('取得失敗', err)
+    console.error('取得失敗', err.response?.status, error)
     alert('大会情報の取得に失敗しました')
   }
 })
   
-// 更新処理
+//更新処理
 const handleUpdate = async () => {
   try {
     const formData = {
@@ -170,32 +174,57 @@ const handleUpdate = async () => {
       publishing: Number(form.value.publishing),
       divisionflg: Number(form.value.divisionflg),
       divisions: form.value.divisions?.length ? JSON.stringify(form.value.divisions) : null,
-    }
+    };
 
     await axios.put(`http://127.0.0.1:8000/api/tournaments/${route.params.id}`, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       withCredentials: true,
-    })
+    });
 
-    alert('大会情報を更新しました')
-    router.push('/tournaments') // 更新後一覧ページへ
+    alert('大会情報を更新しました');
+    router.push('/tournaments');
   } catch (err) {
-    console.error('更新失敗', err)
-    alert('更新に失敗しました')
+    console.error('更新失敗', err.response?.status, error);
+    alert('更新に失敗しました');
   }
-}
+};
+
+//削除処理
+const handleDelete = async () => {
+  if (!confirm('この大会を削除してもよろしいですか？削除すると関連する試合情報・スコア情報も削除されます。')) return;
+
+  try {
+    await axios.delete(`http://localhost:8000/api/tournaments/${route.params.id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      withCredentials: true,
+    });
+
+    alert('削除が完了しました');
+    router.push('/tournaments');
+  } catch (error) {
+    console.error('削除エラー:', error.response?.status, error);
+    alert('削除に失敗しました');
+  }
+};
 
  
   //ディビジョン設定
   const newDivisionName = ref('')
 
   const addDivision = () => {
-    form.value.divisions.push({
-  order: form.value.divisions.length + 1,
-  name: newDivisionName.value.trim()
-});
+  if (!newDivisionName.value.trim()) {
+    alert("ディビジョン名を入力してください");
+    return;
+  }
+  form.value.divisions.push({
+    order: form.value.divisions.length + 1,
+    name: newDivisionName.value.trim()
+  });
+  newDivisionName.value = "";
 }
 
 const removeDivision = (index) => {
@@ -213,6 +242,8 @@ const onDateChange = (type, event) => {
     form.value.event_period_end = value
   }
 }
+
+
 //@change イベントに直接代入処理を書くと、構文チェックで赤く表示されることがあるため、関数に切り出して明示的に処理する
 const setDivisionFlg = (value) => {
   form.value.divisionflg = value
