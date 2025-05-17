@@ -167,6 +167,17 @@ onMounted(async () => {
   
 //更新処理
 const handleUpdate = async () => {
+  if (form.value.divisionflg === 1 && form.value.divisions.length === 0) {
+    alert("ディビジョンを1つ以上入力してください");
+    return;
+  }
+
+  const hasEmptyDivisionName = form.value.divisions.some(d => !d.name?.trim());
+  if (form.value.divisionflg === 1 && hasEmptyDivisionName) {
+    alert("すべてのディビジョン名を入力してください");
+    return;
+  }
+
   try {
     const formData = {
       ...form.value,
