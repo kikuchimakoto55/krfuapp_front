@@ -54,27 +54,15 @@
         <CCol md="6" class="text-center">
           <CFormLabel>ディビジョン設定</CFormLabel>
           <div class="d-flex justify-content-center gap-4 mt-2">
-            <CFormCheck
-              type="radio"
-              v-model="form.divisionflg"
-              :value="'0'"
-              name="division-setting"
-              id="division-off"
-            />
+            <CFormCheck type="radio" v-model="form.divisionflg" :value="'0'" name="division-setting" id="division-off" />
             <label for="division-off" class="form-check-label">設定しない</label>
-            <CFormCheck
-              type="radio"
-              v-model="form.divisionflg"
-              :value="'1'"
-              name="division-setting"
-              id="division-on"
-            />
+            <CFormCheck type="radio" v-model="form.divisionflg" :value="'1'" name="division-setting" id="division-on" />
             <label for="division-on" class="form-check-label">設定する</label>
           </div>
         </CCol>
         </CRow>
 
-        <!-- ✅ 設定する を選んだ場合だけ表示 -->
+        <!-- 設定する を選んだ場合だけ表示 -->
         <CRow v-if="form.divisionflg === '1'" class="mb-3">
         <CCol>
           <div class="border p-3">
@@ -122,8 +110,14 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import axios from 'axios'
+  import { useRoute, useRouter } from 'vue-router'
+  
+  
+  const router = useRouter()
+  const route = useRoute()
+
   
   const form = ref({
     name: '',
@@ -180,6 +174,7 @@
     });
 
     alert('大会情報を登録しました');
+    router.push('/tournaments'); // ← 追加：登録後に一覧画面へ移動
   } catch (err) {
     console.error('登録失敗', err);
     alert('登録に失敗しました');
@@ -222,5 +217,35 @@ const onDateChange = (type, event) => {
     form.value.event_period_end = value
   }
 }
+
+onMounted(async () => {
+  const copyFromId = route.query.copyFrom
+  if (copyFromId) {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/tournaments/${copyFromId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        withCredentials: true,
+      })
+
+      const data = res.data
+
+      form.value = {
+        name: data.name + '_複製',
+        categoly: String(data.categoly),
+        year: data.year,
+        event_period_start: data.event_period_start,
+        event_period_end: data.event_period_end,
+        publishing: String(data.publishing),
+        divisionflg: String(data.divisionflg),
+        divisions: Array.isArray(data.divisions) ? data.divisions.map((d, i) => ({ ...d, order: i + 1 })) : [],
+      }
+    } catch (e) {
+      alert('複製元のデータ取得に失敗しました')
+      console.error(e)
+    }
+  }
+})
   </script>
   
