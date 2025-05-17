@@ -59,6 +59,7 @@
         
         <CButton color="primary" type="submit">更新</CButton>
         <CButton color="secondary" class="ms-2" @click="goBack">戻る</CButton>
+        <CButton color="danger" class="ms-2" @click="handleDelete">削除</CButton>
       </CForm>
     </div>
   </template>
@@ -112,6 +113,23 @@
       alert('データの取得に失敗しました');
     }
   });
+
+
+  const handleDelete = async () => {
+  if (!confirm('この会場を削除してもよろしいですか？')) return;
+
+  try {
+    await axios.delete(`http://localhost:8000/api/venues/${route.params.id}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      withCredentials: true
+    });
+    alert('削除が完了しました');
+    router.push('/venues');
+  } catch (error) {
+    console.error('削除エラー:', error);
+    alert('削除に失敗しました');
+  }
+};
   </script>
   
   <style scoped>
