@@ -16,6 +16,7 @@ import GameCreate from '../components/games/GameCreate.vue';
 import GameEdit from '../components/games/GameEdit.vue';
 import VenueIndex from '../components/venues/VenueIndex.vue'
 
+
 const routes = [
   {
     path: '/login',
@@ -54,7 +55,7 @@ const routes = [
       { path: 'teams/complete', name: 'TeamComplete', component: () => import('@/views/teams/TeamComplete.vue'), meta: { title: 'チーム登録完了' }, },
       { path: 'forbidden', name: 'Forbidden', component: () => import('@/views/errors/Forbidden.vue'), meta: { title: 'アクセス拒否' } },
       { path: 'tournaments/:id/results/create', name: 'TournamentResultCreate', component: () => import('@/components/tournaments/TournamentResultCreate.vue'), meta: { title: '大会結果登録', requiresAuth: true } },
-      { path: 'tournaments/:id/results/complete', name: 'TournamentResultComplete', component: TournamentResultComplete, props: true, },
+      { path: 'tournaments/:id/results/complete', name: 'TournamentResultComplete', component: TournamentResultComplete, props: true, meta: { title: '大会結果 登録完了' }},
       { path: 'games', name: 'Games', component: GameIndex, meta: { title: '試合一覧', requiresAuth: true } },
       { path: 'games/create', name: 'GameCreate', component: GameCreate, meta: { title: '試合登録', requiresAuth: true } },
       { path: 'games/edit/:id', name: 'GameEdit', component: GameEdit, meta: { title: '試合編集', requiresAuth: true } },
