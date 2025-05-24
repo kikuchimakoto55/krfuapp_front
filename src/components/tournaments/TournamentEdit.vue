@@ -1,7 +1,6 @@
 <template>
-    <div class="p-4">
-      
-      <CForm @submit.prevent="handleUpdate">
+  <div class="p-4">
+    <CForm @submit.prevent="handleUpdate">
         <CRow class="mb-3">
           <CCol md="6">
             <CFormLabel>大会名</CFormLabel>
@@ -50,7 +49,7 @@
         <CCol md="6" class="text-center">
           <CFormLabel>ディビジョン設定</CFormLabel>
           <div class="d-flex justify-content-center gap-4 mt-2">
-            <!-- ✅ 設定しない -->
+            <!--  設定しない -->
             <CFormCheck
             type="radio"
             :checked="form.divisionflg === 0"
@@ -60,7 +59,7 @@
             />
             <label for="division-off" class="form-check-label">設定しない</label>
 
-            <!-- ✅ 設定する -->
+            <!--  設定する -->
             <CFormCheck
             type="radio"
             :checked="form.divisionflg === 1"
@@ -73,7 +72,7 @@
         </CCol>
         </CRow>
 
-        <!-- ✅ 設定する を選んだ場合だけ表示 -->
+        <!--  設定する を選んだ場合だけ表示 -->
         <CRow v-if="form.divisionflg === 1" class="mb-3">
         <CCol>
           <div class="border p-3">
@@ -110,85 +109,129 @@
           </div>
         </CCol>
         </CRow>
-              
-        <CRow class="mt-4">
-          <CCol class="text-center">
-            <CButton type="submit" color="primary">更新</CButton>
-          </CCol>
-          <CCol class="text-center">
-            <CButton color="danger" @click="handleDelete">削除</CButton>
-          </CCol>
-          <CCol class="text-center">
-            <CButton color="secondary" @click="handleCopy">複製</CButton>
-          </CCol>
-          
-        </CRow>
-      </CForm>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
-  import axios from 'axios'
-  
+
+      <!-- ボタン行 -->
+      <CRow class="mt-4">
+        <CCol class="text-center">
+          <CButton type="submit" color="primary">更新</CButton>
+        </CCol>
+        <CCol class="text-center">
+          <CButton color="danger" @click="handleDelete">削除</CButton>
+        </CCol>
+        <CCol class="text-center">
+          <CButton color="secondary" @click="handleCopy">複製</CButton>
+        </CCol>
+      </CRow>
+
+      <!-- 大会結果編集フォーム -->
+      <CRow class="mt-5">
+        <CCol>
+          <h5>大会結果の編集</h5>
+          <div v-for="(division, dIndex) in resultForm.results" :key="dIndex" class="border p-3 mb-3">
+            <h6 class="mb-2">ディビジョン {{ division.division_order }}：{{ division.division_name }}</h6>
+            <div v-for="(result, rIndex) in division.results" :key="rIndex" class="mb-3">
+              <CRow>
+                <CCol md="3">
+                  <CFormLabel>順位名</CFormLabel>
+                  <CFormInput v-model="result.rank_label" />
+                </CCol>
+                <CCol md="3">
+                  <CFormLabel>チームID</CFormLabel>
+                  <CFormInput v-model="result.team_id" type="number" />
+                </CCol>
+                <CCol md="4">
+                  <CFormLabel>結果レポート</CFormLabel>
+                  <CFormInput v-model="result.report" />
+                </CCol>
+                <CCol md="2">
+                  <CFormLabel>対戦表</CFormLabel>
+                  <CFormInput type="file" @change="e => handleFileUpload(e, dIndex, rIndex)" />
+                </CCol>
+              </CRow>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <CButton color="info" @click="handleResultUpdate">大会結果を編集</CButton>
+          </div>
+        </CCol>
+      </CRow>
+    </CForm>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
+
 const route = useRoute()
 const router = useRouter()
 
+const form = ref({
+  name: '', categoly: '', year: '', event_period_start: '', event_period_end: '',
+  publishing: "0", divisionflg: 0, divisions: []
+})
+
+const resultForm = ref({ results: [] })
+const fileMap = ref({})
+
 //複製処理
 const handleCopy = () => {
-  router.push({
-    path: '/tournaments/create',
-    query: { copyFrom: route.params.id }
-  });
+  router.push({ path: '/tournaments/create', query: { copyFrom: route.params.id } })
 }
-const form = ref({
-    name: '',
-    categoly: '',
-    year: '',
-    event_period_start: '',
-    event_period_end: '',
-    publishing: "0",
-    divisionflg: 0,
-    divisions: [],
-  })
 
-  // 編集対象のデータを取得
+// 編集対象のデータを取得
 onMounted(async () => {
   try {
     const res = await axios.get(`http://127.0.0.1:8000/api/tournaments/${route.params.id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true,
     })
-
     const data = res.data
-    // divisions はJSON文字列 → オブジェクトに変換
+// divisions はJSON文字列 → オブジェクトに変換
     form.value = {
       ...data,
       divisionflg: Number(data.divisionflg),
-      divisions: Array.isArray(data.divisions) ? data.divisions : [],
+      divisions: Array.isArray(data.divisions) ? data.divisions : []
     }
   } catch (err) {
-    console.error('取得失敗', err.response?.status, error)
+    console.error('取得失敗', err)
     alert('大会情報の取得に失敗しました')
   }
+
+  try {
+    const res = await axios.get(`http://localhost:8000/api/tournament-results/${route.params.id}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      withCredentials: true
+    })
+    const raw = res.data
+    const grouped = {}
+    raw.forEach(item => {
+      const key = item.division_order
+      if (!grouped[key]) grouped[key] = { division_order: item.division_order, division_name: item.division_name, results: [] }
+      grouped[key].results.push({
+        rank_label: item.rank_label,
+        team_id: item.team_id,
+        report: item.report || '',
+        document_path: item.document_path || '',
+      })
+    })
+    resultForm.value.results = Object.values(grouped)
+  } catch (err) {
+    console.error('結果取得エラー', err)
+  }
 })
-  
+
 //更新処理
 const handleUpdate = async () => {
   if (form.value.divisionflg === 1 && form.value.divisions.length === 0) {
-    alert("ディビジョンを1つ以上入力してください");
-    return;
+    alert("ディビジョンを1つ以上入力してください"); return;
   }
-
-  const hasEmptyDivisionName = form.value.divisions.some(d => !d.name?.trim());
-  if (form.value.divisionflg === 1 && hasEmptyDivisionName) {
-    alert("すべてのディビジョン名を入力してください");
-    return;
+  const hasEmpty = form.value.divisions.some(d => !d.name?.trim());
+  if (form.value.divisionflg === 1 && hasEmpty) {
+    alert("すべてのディビジョン名を入力してください"); return;
   }
-
   try {
     const formData = {
       ...form.value,
@@ -196,79 +239,96 @@ const handleUpdate = async () => {
       publishing: Number(form.value.publishing),
       divisionflg: Number(form.value.divisionflg),
       divisions: form.value.divisions?.length ? JSON.stringify(form.value.divisions) : null,
-    };
-
+    }
     await axios.put(`http://127.0.0.1:8000/api/tournaments/${route.params.id}`, formData, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      withCredentials: true,
-    });
-
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      withCredentials: true
+    })
     alert('大会情報を更新しました');
-    router.push('/tournaments');
+    router.push('/tournaments')
   } catch (err) {
-    console.error('更新失敗', err.response?.status, error);
-    alert('更新に失敗しました');
+    console.error('更新失敗', err)
+    alert('更新に失敗しました')
   }
-};
+}
 
 //削除処理
 const handleDelete = async () => {
-  if (!confirm('この大会を削除してもよろしいですか？削除すると関連する試合情報・スコア情報も削除されます。')) return;
-
+  if (!confirm('この大会を削除してもよろしいですか？')) return;
   try {
     await axios.delete(`http://localhost:8000/api/tournaments/${route.params.id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      withCredentials: true,
-    });
-
-    alert('削除が完了しました');
-    router.push('/tournaments');
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      withCredentials: true
+    })
+    alert('削除が完了しました')
+    router.push('/tournaments')
   } catch (error) {
-    console.error('削除エラー:', error.response?.status, error);
-    alert('削除に失敗しました');
+    alert('削除に失敗しました')
   }
-};
+}
 
- 
-  //ディビジョン設定
-  const newDivisionName = ref('')
-
-  const addDivision = () => {
+//ディビジョン設定
+const addDivision = () => {
   if (!newDivisionName.value.trim()) {
-    alert("ディビジョン名を入力してください");
-    return;
+    alert("ディビジョン名を入力してください")
+    return
   }
-  form.value.divisions.push({
-    order: form.value.divisions.length + 1,
-    name: newDivisionName.value.trim()
-  });
-  newDivisionName.value = "";
+  form.value.divisions.push({ order: form.value.divisions.length + 1, name: newDivisionName.value.trim() })
+  newDivisionName.value = ""
 }
-
 const removeDivision = (index) => {
-  form.value.divisions.splice(index, 1);
-form.value.divisions.forEach((d, i) => {
-  d.order = i + 1;
-});
+  form.value.divisions.splice(index, 1)
+  form.value.divisions.forEach((d, i) => d.order = i + 1)
 }
-
+const newDivisionName = ref('')
 const onDateChange = (type, event) => {
   const value = event.target.value
-  if (type === 'start') {
-    form.value.event_period_start = value
-  } else {
-    form.value.event_period_end = value
-  }
+  if (type === 'start') form.value.event_period_start = value
+  else form.value.event_period_end = value
 }
-
-
-//@change イベントに直接代入処理を書くと、構文チェックで赤く表示されることがあるため、関数に切り出して明示的に処理する
 const setDivisionFlg = (value) => {
   form.value.divisionflg = value
 }
-  </script>
-  
+
+const handleFileUpload = (e, dIndex, rIndex) => {
+  const file = e.target.files[0]
+  if (!file) return
+  if (!fileMap.value[dIndex]) fileMap.value[dIndex] = {}
+  fileMap.value[dIndex][rIndex] = file
+}
+
+const handleResultUpdate = async () => {
+  const formData = new FormData()
+  formData.append('tournament_id', route.params.id)
+  resultForm.value.results.forEach((division, dIndex) => {
+    division.results.forEach((result, rIndex) => {
+      formData.append(`results[${dIndex}][${rIndex}][division_order]`, division.division_order)
+      formData.append(`results[${dIndex}][${rIndex}][division_name]`, division.division_name)
+      formData.append(`results[${dIndex}][${rIndex}][rank_order]`, rIndex + 1)
+      formData.append(`results[${dIndex}][${rIndex}][rank_label]`, result.rank_label)
+      formData.append(`results[${dIndex}][${rIndex}][team_id]`, result.team_id)
+      formData.append(`results[${dIndex}][${rIndex}][report]`, result.report || '')
+      if (fileMap.value[dIndex]?.[rIndex]) {
+        formData.append(`results[${dIndex}][${rIndex}][document]`, fileMap.value[dIndex][rIndex])
+      }
+    })
+  })
+  try {
+    await axios.post(
+      `http://localhost:8000/api/tournament-results/update-by-tournament/${route.params.id}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true
+      }
+    )
+    alert('大会結果を更新しました')
+  } catch (err) {
+    console.error('大会結果更新エラー', err)
+    alert('更新に失敗しました')
+  }
+}
+</script>

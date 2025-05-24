@@ -31,8 +31,11 @@
                 <td>{{ result.team_name || '（なし）' }}</td>
                 <td class="text-left">{{ result.report || '（なし）' }}</td>
                 <td>
-                  <a v-if="result.document_path" :href="`/storage/${result.document_path}`" target="_blank" class="link">
-                    ファイルを見る
+                  <a v-if="result.document_path"
+                    :href="`http://localhost:8000/storage/${result.document_path}`"
+                    target="_blank"
+                    class="text-blue-500 underline">
+                    {{ result.document_path.split('/').pop() }}
                   </a>
                   <span v-else>なし</span>
                 </td>
@@ -43,8 +46,8 @@
       </div>
 
       <div class="button-wrapper">
-        <CButton color="secondary" @click="goBackToEdit" class="custom-button">修正する</CButton>
         <CButton color="primary" @click="goToList" class="custom-button">大会一覧へ</CButton>
+        <CButton color="warning" @click="goToEdit">大会を編集する</CButton>
       </div>
     </div>
   </div>
@@ -98,18 +101,18 @@ onMounted(async () => {
   }
 })
 
-const goBackToEdit = () => {
-  router.push(`/tournaments/${tournamentId}/results/create`)
-}
-
 const goToList = () => {
   router.push('/tournaments')
+}
+
+const goToEdit = () => {
+  router.push(`/tournaments/edit/${tournamentId}`)
 }
 </script>
 
 <style scoped>
 .result-wrapper {
-  max-width: 1000px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;

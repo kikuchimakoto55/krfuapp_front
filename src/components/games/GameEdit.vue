@@ -8,7 +8,21 @@
           </CCol>
           <CCol md="6">
             <CFormLabel>ディビジョン</CFormLabel>
-            <CFormInput type="text" :value="getDivisionLabel(form.division_order)" readonly />
+
+            <template v-if="shouldShowDivision">
+              <!-- divisionflg = 1 のとき -->
+              <CFormSelect v-model="form.division_order">
+                <option value="">選択してください</option>
+                <option v-for="division in divisions" :key="division.order" :value="division.order">
+                  {{ division.name }}
+                </option>
+              </CFormSelect>
+            </template>
+
+            <template v-else>
+              <!-- divisionflg ≠ 1 のとき（非表示扱いで nameのみ） -->
+              <CFormInput type="text" v-model="form.division_name" readonly />
+            </template>
           </CCol>
         </CRow>
         <CRow class="mb-3">
@@ -236,7 +250,7 @@
 })
 
 const getDivisionLabel = (order) => {
-  const division = divisions.value.find(d => d.order === Number(order));
+  const division = divisions.value.find(d => d.order == order); // `==` で比較（型ずれ対策）
   return division ? division.name : '-';
 };
 
@@ -299,6 +313,7 @@ onMounted(async () => {
     form.value = {
       tournament_id: data.tournament_id,
       division_name: data.division_name,
+      division_order: data.division_order ?? null,
       round_label: data.round_label,
       game_date: data.game_date ? new Date(data.game_date).toISOString().slice(0, 16) : '',
       venue_id: String(data.venue_id),
@@ -385,6 +400,11 @@ console.log('divisions.value:', divisions.value);
     });
     teams.value = teamResponse.data;
 
+    console.log('✅ 最終チェック');
+    console.log('form.division_order =', form.value.division_order);
+    console.log('divisions.value =', divisions.value);
+    console.log('getDivisionLabel(form.division_order) =', getDivisionLabel(form.value.division_order));
+
   } catch (error) {
     console.error('試合情報の取得失敗:', error);
     alert('試合情報の取得に失敗しました');
@@ -407,6 +427,8 @@ const submit = async () => {
   formData.append('doctor', form.value.doctor || '');
   formData.append('game_report', form.value.game_report || '');
   formData.append('publishing', Number(form.value.publishing));
+  formData.append('division_order', form.value.division_order);
+  formData.append('division_name', form.value.division_name);
 
   if (form.value.scorebook_files && form.value.scorebook_files.length > 0) {
   form.value.scorebook_files.forEach(file => {
@@ -449,6 +471,9 @@ const goBack = () => {
   score.value.op2fh_score = calc(score.value.op2fh_t, score.value.op2fh_g, score.value.op2fh_pg, score.value.op2fh_dg)
   score.value.op2hh_score = calc(score.value.op2hh_t, score.value.op2hh_g, score.value.op2hh_pg, score.value.op2hh_dg)
   };
+
+const selectedDivision = divisions.value.find(d => d.order == form.value.division_order);
+form.value.division_name = selectedDivision ? selectedDivision.name : '';
 
   </script>
   
