@@ -226,6 +226,7 @@
               <div class="mt-4 text-center">
           <CButton type="submit" color="primary">更新する</CButton>
           <CButton color="secondary" class="ms-4" @click="goBack">キャンセル</CButton>
+          <CButton color="danger" class="ms-4" style="color: white;" @click="handleDelete">削除</CButton>
         </div>
       </CForm>
     </div>
@@ -400,11 +401,11 @@ console.log('divisions.value:', divisions.value);
     });
     teams.value = teamResponse.data;
 
-    console.log('✅ 最終チェック');
+    console.log(' 最終チェック');
     console.log('form.division_order =', form.value.division_order);
     console.log('divisions.value =', divisions.value);
     console.log('getDivisionLabel(form.division_order) =', getDivisionLabel(form.value.division_order));
-
+    calcScore(); //  最後に得点再計算を強制
   } catch (error) {
     console.error('試合情報の取得失敗:', error);
     alert('試合情報の取得に失敗しました');
@@ -436,7 +437,7 @@ const submit = async () => {
   });
   }
 
-  // ⭐ scoreオブジェクトを個別展開
+  //  scoreオブジェクトを個別展開
   for (const [key, value] of Object.entries(score.value)) {
     formData.append(`score[${key}]`, value);
   }
@@ -455,6 +456,23 @@ const submit = async () => {
   } catch (error) {
     console.error('試合情報の更新失敗:', error);
     alert('試合情報の更新に失敗しました');
+  }
+};
+
+//試合情報削除
+const handleDelete = async () => {
+  if (!confirm('この試合情報を本当に削除してもよろしいですか？')) return;
+
+  try {
+    await axios.delete(`http://localhost:8000/api/games/${gameId}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      withCredentials: true
+    });
+    alert('試合情報を削除しました');
+    router.push('/games');
+  } catch (error) {
+    console.error('削除失敗:', error);
+    alert('削除に失敗しました');
   }
 };
 
