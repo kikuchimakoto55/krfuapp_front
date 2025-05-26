@@ -59,7 +59,7 @@
         
         <CButton color="primary" type="submit">更新</CButton>
         <CButton color="secondary" class="ms-2" @click="goBack">戻る</CButton>
-        <CButton color="danger" class="ms-2" @click="handleDelete">削除</CButton>
+        <CButton color="danger" class="ms-2" style="color: white;" @click="handleDelete">削除</CButton>
       </CForm>
     </div>
   </template>

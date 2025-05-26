@@ -15,7 +15,8 @@ import GameIndex from '../components/games/GameIndex.vue';
 import GameCreate from '../components/games/GameCreate.vue';
 import GameEdit from '../components/games/GameEdit.vue';
 import VenueIndex from '../components/venues/VenueIndex.vue'
-
+import LicensesIndex from '../components/licenses/LicensesIndex.vue';
+import LicensesCreate from '@/components/licenses/LicensesCreate.vue';
 
 const routes = [
   {
@@ -63,6 +64,9 @@ const routes = [
       { path: 'venues/create', name: 'VenueCreate', component: () => import('@/components/venues/VenueCreate.vue'), meta: { title: '会場登録' } },
       { path: 'venues', name: 'VenueIndex', component: VenueIndex, meta: { title: '会場一覧' } },
       { path: 'venues/edit/:id', name: 'VenueEdit', component: () => import('@/components/venues/VenueEdit.vue'), meta: { title: '会場編集' } },
+      { path: '/licenses', name: 'LicensesIndex', component: LicensesIndex, meta: { title: '資格一覧' } },
+      { path: '/licenses/create', name: 'LicensesCreate', component: LicensesCreate, meta: { title: '資格登録' } },
+      { path: '/licenses/edit/:id', name: 'LicensesEdit', component: () => import('@/components/licenses/LicensesEdit.vue'), meta: { title: '資格編集' } },
     ]
   }
 ];

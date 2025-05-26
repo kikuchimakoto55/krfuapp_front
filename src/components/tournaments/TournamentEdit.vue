@@ -116,7 +116,7 @@
           <CButton type="submit" color="primary">更新</CButton>
         </CCol>
         <CCol class="text-center">
-          <CButton color="danger" @click="handleDelete">削除</CButton>
+          <CButton color="danger" style="color: white;" @click="handleDelete">削除</CButton>
         </CCol>
         <CCol class="text-center">
           <CButton color="secondary" @click="handleCopy">複製</CButton>

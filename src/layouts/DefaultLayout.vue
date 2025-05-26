@@ -109,6 +109,25 @@
           </CDropdownItem>
         </CDropdownMenu>
       </CDropdown>
+
+      <!-- 資格管理 -->
+      <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+        <CDropdownToggle class="c-dropdown-toggle">
+          <i class="cil-education dropdown-icon"></i> 資格管理
+        </CDropdownToggle>
+        <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/licenses/create" class="dropdown-link">
+              <i class="cil-plus dropdown-item-icon"></i> <span>資格登録</span>
+            </router-link>
+          </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/licenses" class="dropdown-link">
+              <i class="cil-list dropdown-item-icon"></i> <span>資格一覧</span>
+            </router-link>
+          </CDropdownItem>
+        </CDropdownMenu>
+      </CDropdown>
   </c-sidebar-nav>
 </c-sidebar>
 

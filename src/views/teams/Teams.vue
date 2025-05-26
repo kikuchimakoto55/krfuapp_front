@@ -44,7 +44,7 @@
           <td>{{ team.representative_name }}</td>
           <td>
             <CButton color="primary" size="sm" @click="goToEdit(team.id)">編集</CButton>
-            <CButton color="danger" size="sm" class="ms-2" @click="confirmDelete(team.id)">削除</CButton>
+            <CButton color="danger" size="sm" class="ms-2" style="color: white;" @click="confirmDelete(team.id)">削除</CButton>
           </td>
         </tr>
       </tbody>
