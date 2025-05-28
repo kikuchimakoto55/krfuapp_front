@@ -1,6 +1,5 @@
 <template>
     <div>
-      <h2>マイページ</h2>
     
       <CCard>
         <CCardBody>
@@ -172,10 +171,35 @@
             </ul>
           </CCol>
         </CRow>
+        <CRow>
+          <CCol md="12" class="info-col">
+            <span class="info-label">保有資格</span>
+            <ul class="info-value">
+              <!-- 有効な資格が1件もない場合 -->
+              <li v-if="!credentials.some(c => Number(c.valid_flg) === 1)">
+                保有資格は登録されていません
+              </li>
+
+              <!-- 有効な資格のみを表示 -->
+              <template v-for="(cred, index) in credentials" :key="index">
+                <li v-if="Number(cred.valid_flg) === 1">
+                  資格名：{{ cred.license?.licensekindsname || '未設定' }} |
+                  取得日：{{ cred.acquisition_date || '未設定' }} |
+                  有効期限：{{ getValidityMessage(cred) }}
+                </li>
+              </template>
+            </ul>
+          </CCol>
+        </CRow>
          <CRow class="mt-4">
             <CCol>
               <CButton color="primary" @click="goToEdit">編集する</CButton>
               <CButton color="secondary" class="ms-2" @click="router.back()">戻る</CButton>
+              <RouterLink :to="`/members/${member.member_id}/credentials/edit`">
+                <CButton color="dark" class="ms-2">
+                  保有資格を編集
+                </CButton>
+              </RouterLink>            
             </CCol>
           </CRow>
           <CRow class="mt-2">
@@ -213,6 +237,7 @@
 
   const isAdmin = ref(false)
   const families = ref([])
+  const credentials = ref([])
   
   onMounted(async () => {
     try {
@@ -299,7 +324,37 @@ const closeFamilyModal = () => {
 
 const handleFamilyRegistered = () => {
   showFamilyModal.value = false
-  // ✅ 家族一覧を再取得したい場合ここに fetchFamilies() などを追加
+  // 家族一覧を再取得したい場合ここに fetchFamilies() などを追加
+}
+
+onMounted(async () => {
+  try {
+    const res = await axios.get(`http://127.0.0.1:8000/api/members/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      withCredentials: true
+    })
+    member.value = res.data.member
+    families.value = res.data.families || []
+    credentials.value = res.data.h_credentials || []
+  } catch (err) {
+    console.error('会員情報の取得に失敗しました', err)
+  }
+})
+
+const getValidityMessage = (cred) => {
+  if (!cred.acquisition_date) return '取得日を設定してください';
+  if (!cred.license?.valid_period) return '有効期限不明';
+
+  const acquired = new Date(cred.acquisition_date)
+  const expires = new Date(acquired.getTime() + cred.license.valid_period * 24 * 60 * 60 * 1000)
+  const today = new Date()
+
+  const diffDays = Math.floor((expires - today) / (1000 * 60 * 60 * 24))
+
+  if (diffDays < 0) return '有効期限は切れています'
+  return `${diffDays}日後まで有効`
 }
 
   </script>
