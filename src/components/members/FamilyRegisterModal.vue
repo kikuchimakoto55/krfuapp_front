@@ -1,11 +1,13 @@
-// カタカナ→ひらがな変換
+const errorMessage = ref('')
+
 <template>
-  <CModal v-model:visible="internalVisible" size="lg" @close="closeModal">
+  <CModal :visible="visible" size="lg" @close="closeModal">
     <CModalHeader>
       <CModalTitle>家族登録</CModalTitle>
     </CModalHeader>
     <CModalBody>
-      <!-- 入力が変わるたびにサーバーへ問い合わせる（簡易 debounce 推奨） -->
+      <div v-if="errorMessage" class="text-danger mb-2">{{ errorMessage }}</div>
+
       <CFormInput
         v-model="searchKeyword"
         type="text"
@@ -14,7 +16,11 @@
       />
 
       <div v-if="filteredMembers.length === 0">該当する会員が見つかりません。</div>
-      <div v-for="member in filteredMembers" :key="member.member_id" class="mb-2 pb-2 border-bottom">
+      <div
+        v-for="member in filteredMembers"
+        :key="member.member_id"
+        class="mb-2 pb-2 border-bottom"
+      >
         <div class="d-flex align-items-center mb-2">
           <input type="checkbox" v-model="member.selected" class="custom-checkbox" />
           <span>{{ member.username_sei }} {{ member.username_mei }}</span>
@@ -44,10 +50,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import axios from 'axios'
-import {
-  CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter,
-  CButton, CFormCheck, CFormSelect, CFormInput
-} from '@coreui/vue'
+import { CModalHeader, CModalTitle, CModalBody, CModalFooter, CModal, CButton, CFormSelect, CFormInput } from '@coreui/vue'
 
 // props
 const props = defineProps({
@@ -57,18 +60,12 @@ const props = defineProps({
 
 // emit
 const emit = defineEmits(['close', 'success'])
-const internalVisible = ref(false)
-
-watch(() => props.visible, (val) => {
-  internalVisible.value = val
-})
 
 const closeModal = () => {
-  internalVisible.value = false
   emit('close')
 }
 
-// 会員データと検索キーワード
+// 検索用
 const members = ref([])
 const searchKeyword = ref('')
 let debounceTimer = null
@@ -88,26 +85,26 @@ const searchMembers = async () => {
     members.value = []
     return
   }
-  // 検索ワードをサーバーに送信（URL例：/api/members/search?keyword=武田）
+// 検索ワードをサーバーに送信（URL例：/api/members/search?keyword=武田）
   try {
-  const res = await axios.get('http://127.0.0.1:8000/api/members/search', {
-    params: { keyword },
-    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    withCredentials: true
-  })
+    const res = await axios.get('http://127.0.0.1:8000/api/members/search', {
+      params: { keyword },
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      withCredentials: true
+    })
 
-  members.value = res.data.data.map(m => ({
-    ...m,
-    selected: false,
-    relationship: ''
-  }))
+    members.value = res.data.data.map(m => ({
+      ...m,
+      selected: false,
+      relationship: ''
+    }))
   } catch (error) {
-      console.error('検索エラー:', error)
-    }
+    console.error('検索エラー:', error)
+  }
 }
 
-// 🔄 入力監視して、0.5秒後に検索実行
-watch(searchKeyword, (newVal) => {
+// 入力監視して、0.5秒後に検索実行
+watch(searchKeyword, () => {
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
     searchMembers()
@@ -117,9 +114,20 @@ watch(searchKeyword, (newVal) => {
 // 検索結果をそのまま使用
 const filteredMembers = computed(() => members.value)
 
+const errorMessage = ref('')
+
 // 家族登録
 const registerFamilies = async () => {
-  const selected = members.value.filter(m => m.selected && m.relationship)
+  const selected = members.value.filter(m => m.selected)
+
+  // バリデーション
+  const hasInvalid = selected.some(m => !m.relationship)
+  if (hasInvalid) {
+    errorMessage.value = '続柄を選択していない項目があります。'
+    return
+  }
+
+ // 登録処理（選択されていて続柄ありのものだけ）
   for (const m of selected) {
     await axios.post('http://127.0.0.1:8000/api/families', {
       member_id: props.memberId,
@@ -130,7 +138,6 @@ const registerFamilies = async () => {
       withCredentials: true
     })
 
-    // 逆方向（兄→弟 だけでなく 弟→兄）
     await axios.post('http://127.0.0.1:8000/api/families', {
       member_id: m.member_id,
       family_id: props.memberId,
@@ -140,41 +147,44 @@ const registerFamilies = async () => {
       withCredentials: true
     })
   }
-  emit('success')
+
+  errorMessage.value = ''
+  emit('success')  // ? 先に emit してから閉じる
   closeModal()
 }
-  // 続柄逆変換
-  const getReverseRelation = (relation) => {
-    const map = {
-      1: 7, // 父⇔子
-      2: 7, // 母⇔子
-      3: 5, // 兄→弟
-      4: 6, // 姉→妹
-      5: 3, // 弟→兄
-      6: 4, // 妹→姉
-      7: 7  // その他→その他
+// 続柄逆変換
+const getReverseRelation = (relation) => {
+  const map = {
+    1: 7, // 父⇔子
+    2: 7, // 母⇔子
+    3: 5, // 兄→弟
+    4: 6, // 姉→妹
+    5: 3, // 弟→兄
+    6: 4, // 妹→姉
+    7: 7, // その他→その他
+    8: 8, // 親戚 ⇔ 親戚
+    9: 9  // その他 ⇔ その他
   }
   return map[relation] || 7
 }
 
 </script>
+
 <style scoped>
 .custom-checkbox {
   width: 1.2em;
   height: 1.2em;
-  border: 2px solid #555; /* 🔍 太さと色をカスタム */
-  border-radius: 4px;      /* 角丸（必要なら） */
-  appearance: none;        /* デフォルトスタイル無効化 */
+  border: 2px solid #555;
+  border-radius: 4px;
+  appearance: none;
   cursor: pointer;
   position: relative;
   margin-right: 8px;
 }
-
 .custom-checkbox:checked {
-  background-color: #0d6efd; /* チェック時の背景色 */
+  background-color: #0d6efd;
   border-color: #0d6efd;
 }
-
 .custom-checkbox:checked::after {
   content: '';
   position: absolute;

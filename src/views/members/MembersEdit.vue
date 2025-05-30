@@ -276,12 +276,12 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>パスワード<span class="required">必須</span></CFormLabel>
-          <CFormInput type="password" v-model="form.password" required />
+          <CFormInput type="password" v-model="form.password" autocomplete="new-password" required />
           <div v-if="validationErrors.password" class="text-danger">{{ validationErrors.password[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>パスワード（確認）<span class="required">必須</span></CFormLabel>
-          <CFormInput type="password" v-model="form.password_confirmation" required />
+          <CFormInput type="password" v-model="form.password_confirmation" autocomplete="new-password" required />
           <div v-if="validationErrors.password_confirmation" class="text-danger">{{ validationErrors.password_confirmation[0] }}</div>
         </CCol>
       </CRow>
@@ -315,6 +315,7 @@
         </CCol>
       </CRow>
       <CButton type="submit" class="custom-submit-button">更新</CButton>
+      <CButton type="button" class="btn btn-secondary ms-2" @click="router.back()">戻る</CButton>
       <CButton v-if="currentUserAuthority === 1 || currentUserAuthority === 2" class="custom-submit-deletebutton" @click="handleDelete(form.member_id)">削除</CButton>
       </form>
     </div>
