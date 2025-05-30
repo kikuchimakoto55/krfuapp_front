@@ -85,3 +85,16 @@ export const categoryOptions = {
 export const categoryLabel = (value) => {
   return categoryOptions[Number(value)] || 'その他';
 };
+
+
+export const eventKindsOptions = {
+  1: '公式戦',
+  2: '練習試合',
+  3: '合宿',
+  4: '遠征',
+  5: 'その他イベント',
+};
+
+export const getEventKindLabel = (value) => {
+  return eventKindsOptions[Number(value)] || '-';
+};

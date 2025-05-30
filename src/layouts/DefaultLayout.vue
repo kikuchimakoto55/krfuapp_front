@@ -128,6 +128,25 @@
           </CDropdownItem>
         </CDropdownMenu>
       </CDropdown>
+
+      <!-- イベント管理 -->
+      <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+        <CDropdownToggle class="c-dropdown-toggle">
+          <i class="cil-calendar dropdown-icon"></i> イベント管理
+        </CDropdownToggle>
+        <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/events/create" class="dropdown-link">
+              <i class="cil-plus dropdown-item-icon"></i> <span>イベント登録</span>
+            </router-link>
+          </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/events" class="dropdown-link">
+              <i class="cil-list-rich dropdown-item-icon"></i> <span>イベント一覧</span>
+            </router-link>
+          </CDropdownItem>
+        </CDropdownMenu>
+      </CDropdown>
   </c-sidebar-nav>
 </c-sidebar>
 

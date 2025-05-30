@@ -68,6 +68,9 @@ const routes = [
       { path: '/licenses', name: 'LicensesIndex', component: LicensesIndex, meta: { title: '資格一覧' } },
       { path: '/licenses/create', name: 'LicensesCreate', component: LicensesCreate, meta: { title: '資格登録' } },
       { path: '/licenses/edit/:id', name: 'LicensesEdit', component: () => import('@/components/licenses/LicensesEdit.vue'), meta: { title: '資格編集' } },
+      { path: '/events/create', name: 'EventCreate', component: () => import('@/components/event/EventCreate.vue'), meta: { title: 'イベント登録' } },
+      { path: '/events', name: 'EventIndex', component: () => import('@/components/event/EventIndex.vue'), meta: { title: 'イベント一覧' } },
+      { path: '/events/edit/:id', name: 'EventEdit', component: () => import('@/components/event/EventEdit.vue'), meta: { title: 'イベント編集' } },
     ]
   }
 ];
