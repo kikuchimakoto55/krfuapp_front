@@ -299,7 +299,7 @@
             >
             {{ family.username_sei }} {{ family.username_mei }}（{{ relationshipText(family.relationship) }}）
             <div>
-              <CButton size="sm" color="primary" class="me-2" @click="editFamily(family)">家族編集</CButton>
+              <CButton size="sm" color="primary" class="me-2" @click="editFamily(family)">続柄編集</CButton>
               <CButton size="sm" color="danger" class="text-white" @click="removeFamily(family)">家族解除</CButton>
             </div>
             </li>
@@ -426,27 +426,21 @@ const relationshipText = (val) => {
 };
 
 onMounted(async () => {
-  passwordMismatchError.value = '';// ← 念のため初期化
   try {
     const res = await axios.get(`http://127.0.0.1:8000/api/members/${id}`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-      withCredentials: true
+      withCredentials: true,
     });
-    const member = res.data.member;
-    families.value = res.data.families || []
 
-    // 🔽 ここで数値 → 文字列 に変換（CFormSelect 警告対策）
+    const member = res.data.member;
+    families.value = res.data.families || [];
+
+    // 文字列変換（select 用）
     const fieldsToCastToString = [
-      'coach_flg',
-      'grade_category',
-      'sex',
-      'relationship',
-      'classification',
-      'blood_type',
-      'status',
-      'authoritykinds_id'
+      'coach_flg', 'grade_category', 'sex', 'relationship',
+      'classification', 'blood_type', 'status', 'authoritykinds_id',
     ];
     fieldsToCastToString.forEach((key) => {
       if (member[key] !== null && member[key] !== undefined) {
@@ -455,6 +449,10 @@ onMounted(async () => {
     });
 
     form.value = member;
+
+    // ここが抜けていると reverse 解除で undefined が出る！
+    form.value.member_id = member.member_id;
+
   } catch (err) {
     console.error('取得失敗', err);
   }
@@ -469,7 +467,7 @@ const updateMember = async () => {
     passwordMismatchError.value = '';
   };
 
-  // 🔽 文字列 → 数値に戻す（APIに適切な型で送る）
+  // 文字列 → 数値に戻す（APIに適切な型で送る）
   const keysToNumber = [
     'coach_flg',
     'grade_category',
@@ -498,8 +496,8 @@ const updateMember = async () => {
       withCredentials: true
     });
 
-    // ✅ トースト表示だけにする
-    toastMessage.value = '✅ 更新が完了しました'
+    // トースト表示だけにする
+    toastMessage.value = '更新が完了しました'
     showToast.value = true
 
     setTimeout(() => {
@@ -547,7 +545,7 @@ const showFamilyEditModal = ref(false)
 const selectedFamily = ref(null)
 
 const editFamily = (family) => {
-  console.log('family:', family) // ← これ追加
+  console.log('family:', family) 
   selectedFamily.value = { ...family }
   showFamilyEditModal.value = true
 };
@@ -588,9 +586,12 @@ const fetchMemberWithFamily = async () => {
 };
 // 家族解除処理
 const removeFamily = async (family) => {
+  console.log('reverse削除', family.member_id, form.value.member_id);
+
   if (!confirm(`${family.username_sei} ${family.username_mei} さんの家族情報を解除しますか？`)) return;
 
   try {
+    // 自分 → 相手
     await axios.delete(`http://127.0.0.1:8000/api/families/${family.id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -598,10 +599,20 @@ const removeFamily = async (family) => {
       withCredentials: true,
     });
 
+    // 相手 → 自分（URLクエリにパラメータを埋め込む）
+    await axios.delete(
+      `http://127.0.0.1:8000/api/families/reverse?member_id=${family.member_id}&family_id=${form.value.member_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        withCredentials: true,
+      }
+    );
+
     toastMessage.value = '家族情報を解除しました';
     showToast.value = true;
-
-    fetchMemberWithFamily(); // 最新データ取得
+    fetchMemberWithFamily();
 
     setTimeout(() => {
       showToast.value = false;
@@ -612,6 +623,7 @@ const removeFamily = async (family) => {
     alert('家族情報の解除に失敗しました');
   }
 };
+
 </script>
 
 <style scoped>
