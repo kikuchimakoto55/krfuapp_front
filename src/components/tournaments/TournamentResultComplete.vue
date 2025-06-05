@@ -122,6 +122,10 @@ const goToEdit = () => {
   font-weight: bold;
   margin-bottom: 1.5rem;
 }
+.division-block + .division-block {
+  margin-top: 2rem; /* ここで2ブロック目以降に上マージンを追加 */
+}
+
 .subtitle {
   font-size: 1.2rem;
   font-weight: bold;

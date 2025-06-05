@@ -70,12 +70,22 @@ const isLoading = ref(true)
 
 onMounted(async () => {
   try {
+    //  ① 既に結果が登録済みかチェック
+    const existingRes = await axios.get(`http://localhost:8000/api/tournament-results?tournament_id=${tournamentId}`)
+    if (existingRes.data.length > 0) {
+      alert('この大会にはすでに結果が登録されています。編集画面に移動します。')
+      router.push({ name: 'TournamentResultEdit', params: { id: tournamentId } })
+      return
+    }
+
+    //  ② 大会情報の取得（既存のコード）
     const tournamentRes = await axios.get(`http://localhost:8000/api/tournaments/${tournamentId}`)
     tournament.value = tournamentRes.data
 
     const teamsRes = await axios.get('http://localhost:8000/api/teams')
     teams.value = teamsRes.data
 
+    //  ③ divisionflg による分岐
     if (tournament.value.divisionflg === 0) {
       divisions.value = [{ order: 1, name: 'メイン' }]
     } else {
@@ -88,6 +98,7 @@ onMounted(async () => {
       }
     }
 
+    //  ④ 初期結果データの構築
     results.value = {}
     divisions.value.forEach((division) => {
       results.value[division.order] = [

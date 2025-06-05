@@ -8,7 +8,7 @@
           </CCol>
           <CCol md="3">
             <CFormLabel>カテゴリ</CFormLabel>
-            <CFormSelect v-model="form.categoly" required>
+            <CFormSelect v-model="form.categoly">
               <option value="1">有料試合</option>
               <option value="2">社会人</option>
               <option value="3">クラブ</option>
@@ -136,8 +136,13 @@
                   <CFormInput v-model="result.rank_label" />
                 </CCol>
                 <CCol md="3">
-                  <CFormLabel>チームID</CFormLabel>
-                  <CFormInput v-model="result.team_id" type="number" />
+                  <CFormLabel>チーム</CFormLabel>
+                  <CFormSelect v-model="result.team_id_str">
+                    <option value="">-- 選択してください --</option>
+                    <option v-for="team in teams" :key="team.id" :value="String(team.id)">
+                      {{ team.team_name }}
+                    </option>
+                  </CFormSelect>
                 </CCol>
                 <CCol md="4">
                   <CFormLabel>結果レポート</CFormLabel>
@@ -167,14 +172,22 @@ import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
+const teams = ref([])
 
 const form = ref({
-  name: '', categoly: '', year: '', event_period_start: '', event_period_end: '',
-  publishing: "0", divisionflg: 0, divisions: []
+  name: '', 
+  categoly: '1', 
+  year: '', 
+  event_period_start: '', 
+  event_period_end: '',
+  publishing: "0", 
+  divisionflg: 0, 
+  divisions: []
 })
 
 const resultForm = ref({ results: [] })
 const fileMap = ref({})
+const newDivisionName = ref('')
 
 //複製処理
 const handleCopy = () => {
@@ -184,7 +197,7 @@ const handleCopy = () => {
 // 編集対象のデータを取得
 onMounted(async () => {
   try {
-    const res = await axios.get(`http://127.0.0.1:8000/api/tournaments/${route.params.id}`, {
+    const res = await axios.get(`http://localhost:8000/api/tournaments/${route.params.id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true,
     })
@@ -192,7 +205,9 @@ onMounted(async () => {
 // divisions はJSON文字列 → オブジェクトに変換
     form.value = {
       ...data,
-      divisionflg: Number(data.divisionflg),
+      categoly: String(data.categoly),       // ← 文字列に変換
+      publishing: String(data.publishing),   // ← 同上
+      divisionflg: Number(data.divisionflg), // ← こちらは数値のままでOK
       divisions: Array.isArray(data.divisions) ? data.divisions : []
     }
   } catch (err) {
@@ -204,23 +219,36 @@ onMounted(async () => {
     const res = await axios.get(`http://localhost:8000/api/tournament-results/${route.params.id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true
-    })
+    });
+    console.log("🎯 結果APIレスポンス", res.data);
     const raw = res.data
     const grouped = {}
     raw.forEach(item => {
       const key = item.division_order
       if (!grouped[key]) grouped[key] = { division_order: item.division_order, division_name: item.division_name, results: [] }
       grouped[key].results.push({
+        result_id: item.result_id,
         rank_label: item.rank_label,
         team_id: item.team_id,
+        team_id_str: String(item.team_id),
         report: item.report || '',
-        document_path: item.document_path || '',
+        document_path: item.document_path || ''
       })
     })
     resultForm.value.results = Object.values(grouped)
   } catch (err) {
     console.error('結果取得エラー', err)
   }
+
+  try {
+  const res = await axios.get('http://localhost:8000/api/teams', {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    withCredentials: true
+  })
+  teams.value = res.data
+} catch (err) {
+  console.error('チーム一覧取得失敗', err)
+}
 })
 
 //更新処理
@@ -240,7 +268,7 @@ const handleUpdate = async () => {
       divisionflg: Number(form.value.divisionflg),
       divisions: form.value.divisions?.length ? JSON.stringify(form.value.divisions) : null,
     }
-    await axios.put(`http://127.0.0.1:8000/api/tournaments/${route.params.id}`, formData, {
+    await axios.put(`http://localhost:8000/api/tournaments/${route.params.id}`, formData, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true
     })
@@ -280,7 +308,7 @@ const removeDivision = (index) => {
   form.value.divisions.splice(index, 1)
   form.value.divisions.forEach((d, i) => d.order = i + 1)
 }
-const newDivisionName = ref('')
+
 const onDateChange = (type, event) => {
   const value = event.target.value
   if (type === 'start') form.value.event_period_start = value
@@ -298,37 +326,56 @@ const handleFileUpload = (e, dIndex, rIndex) => {
 }
 
 const handleResultUpdate = async () => {
-  const formData = new FormData()
-  formData.append('tournament_id', route.params.id)
-  resultForm.value.results.forEach((division, dIndex) => {
+  const formData = new FormData(); // ← 先に宣言
+  formData.append('_method', 'PUT'); 
+  formData.append('tournament_id', String(route.params.id));
+
+  let index = 0;
+  resultForm.value.results.forEach((division) => {
     division.results.forEach((result, rIndex) => {
-      formData.append(`results[${dIndex}][${rIndex}][division_order]`, division.division_order)
-      formData.append(`results[${dIndex}][${rIndex}][division_name]`, division.division_name)
-      formData.append(`results[${dIndex}][${rIndex}][rank_order]`, rIndex + 1)
-      formData.append(`results[${dIndex}][${rIndex}][rank_label]`, result.rank_label)
-      formData.append(`results[${dIndex}][${rIndex}][team_id]`, result.team_id)
-      formData.append(`results[${dIndex}][${rIndex}][report]`, result.report || '')
-      if (fileMap.value[dIndex]?.[rIndex]) {
-        formData.append(`results[${dIndex}][${rIndex}][document]`, fileMap.value[dIndex][rIndex])
+      formData.append(`results[${index}][division_order]`, String(division.division_order))
+      formData.append(`results[${index}][division_name]`, division.division_name || '')
+      formData.append(`results[${index}][rank_order]`, String(rIndex + 1))
+      formData.append(`results[${index}][rank_label]`, result.rank_label || '')
+      formData.append(`results[${index}][team_id]`, Number(result.team_id_str))
+      formData.append(`results[${index}][report]`, result.report || '')      
+
+      const file = fileMap.value?.[division.division_order]?.[rIndex];
+      if (file instanceof File) {
+        formData.append(`results[${index}][document]`, file);
       }
-    })
-  })
-  try {
-    await axios.post(
-      `http://localhost:8000/api/tournament-results/update-by-tournament/${route.params.id}`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'multipart/form-data'
-        },
-        withCredentials: true
-      }
-    )
-    alert('大会結果を更新しました')
-  } catch (err) {
-    console.error('大会結果更新エラー', err)
-    alert('更新に失敗しました')
+
+      index++;
+    });
+  });
+
+  // ←ここでログを出す
+  console.log("▶ FormData送信内容:");
+  for (let [key, value] of formData.entries()) {
+    console.log(key, value);
   }
-}
+
+  try {
+    await axios.post(`http://localhost:8000/api/tournament-results/${route.params.id}`,
+  formData,
+  {
+    headers: {
+      // Content-Type は Axios に任せる（自動で boundary 付加される）
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    withCredentials: true,
+  }
+  );
+    alert('大会結果を更新しました');
+  } catch (err) {
+    console.error('大会結果更新エラー', err);
+    if (err.response?.data?.errors) {
+      console.error('バリデーションエラー詳細:', err.response.data.messages);
+      alert('入力内容に誤りがあります。詳細はコンソールをご確認ください');
+    } else {
+      alert('更新に失敗しました');
+    }
+  }
+};
+
 </script>

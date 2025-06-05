@@ -16,12 +16,12 @@
           placeholder="順位名"
           class="mb-2"
         />
-        <CFormSelect v-model="division.team_id" class="mb-2">
-          <option disabled value="">チームを選択</option>
-          <option v-for="team in teams" :key="team.id" :value="team.id">
+        <select v-model="division.team_id" class="form-select mb-2">
+          <option value="">-- チームを選択 --</option>
+          <option v-for="team in teams" :key="team.id" :value="String(team.id)">
             {{ team.name }}
           </option>
-        </CFormSelect>
+        </select>
         <CFormTextarea
           v-model="division.report"
           rows="4"
@@ -56,35 +56,60 @@ onMounted(async () => {
       withCredentials: true
     })
     results.value = res.data.map(r => ({
-      ...r,
-      team_id: null // チームIDが必要であれば取得してマッピング
+      division_order: r.division_order,
+      division_name: r.division_name,
+      rank_order: r.rank_order,
+      rank_label: r.rank_label,
+      team_id: r.team_id != null ? String(r.team_id) : '',
+      report: r.report,
+      document_path: r.document_path, // 必要に応じて,
+
     }))
 
     const teamRes = await axios.get('http://localhost:8000/api/teams', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true
     })
-    teams.value = teamRes.data
+    teams.value = teamRes.data.map(t => ({
+      id: Number(t.id), // ← t_teams.id がここに来ていることを前提
+      name: t.team_name || t.name // ← カラム名に応じて補正
+    }))
   } catch (e) {
     console.error(e)
     alert('データの取得に失敗しました')
   } finally {
     isLoading.value = false
   }
+
+  console.log('team_id 初期値:', results.value.map(r => r.team_id))
+  console.log('typeof team_id:', typeof results.value[0]?.team_id)
 })
+
+const getProcessedResults = () => {
+  return results.value.map(item => ({
+    ...item,
+    team_id: item.team_id === "" ? null : Number(item.team_id)
+  }))
+}
 
 const handleUpdate = async () => {
   try {
+    const payload = results.value.map(item => ({
+      ...item,
+      team_id: item.team_id === '' ? null : Number(item.team_id)
+    }))
+
     await axios.put(`http://localhost:8000/api/tournament-results/${tournamentId}`, {
-      results: results.value
+      results: payload
     }, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true
     })
+
     alert('更新が完了しました')
     router.push('/tournaments')
   } catch (e) {
-    console.error(e)
+    console.error('Validation Errors:', e.response?.data?.errors)
     alert('更新に失敗しました')
   }
 }
