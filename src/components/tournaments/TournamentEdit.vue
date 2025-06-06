@@ -101,7 +101,8 @@
                 <input v-model="newDivisionName" placeholder="ディビジョン名を入力" class="form-control" />
                 </td>
                 <td>
-                <CButton size="sm" color="primary" @click="addDivision">追加</CButton>
+                <CButton size="sm" color="primary" @click="addDivision" :disabled="divisionLocked" >追加</CButton>
+                <p v-if="divisionLocked" class="text-danger mt-2">※大会結果が登録されているため、ディビジョンは追加できません。</p>
                 </td>
               </tr>
               </tbody>
@@ -377,5 +378,17 @@ const handleResultUpdate = async () => {
     }
   }
 };
+
+const divisionLocked = ref(false)
+
+onMounted(async () => {
+  try {
+    const res = await axios.get(`/api/tournament-results/${route.params.id}/exists`);
+    divisionLocked.value = res.data.hasResults;
+  } catch (e) {
+    console.error('divisionLocked check failed', e)
+  }
+});
+
 
 </script>
