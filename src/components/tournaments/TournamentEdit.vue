@@ -149,17 +149,25 @@
                   <CFormLabel>結果レポート</CFormLabel>
                   <CFormInput v-model="result.report" />
                 </CCol>
-                <CCol md="2">
+                <CCol md="12">
                   <CFormLabel>対戦表</CFormLabel>
                   <CFormInput type="file" @change="e => handleFileUpload(e, dIndex, rIndex)" />
+                  <div v-if="result.document_path" class="mt-1 text-muted" style="font-size: 0.875rem;">
+                    添付済み: {{ result.document_path.split('/').pop() }}
+                  </div>
                 </CCol>
               </CRow>
             </div>
           </div>
 
-          <div class="text-center">
-            <CButton color="info" @click="handleResultUpdate">大会結果を編集</CButton>
-          </div>
+          <CRow class="mt-4">
+            <CCol class="text-center">
+              <CButton color="info" @click="handleResultUpdate">大会結果を編集</CButton>
+            </CCol>
+            <CCol class="text-center">
+              <CButton color="danger" style="color: white;" size="sm" @click="handleDeleteResults">結果を削除</CButton>
+            </CCol>
+          </CRow>
         </CCol>
       </CRow>
     </CForm>
@@ -320,64 +328,63 @@ const setDivisionFlg = (value) => {
 }
 
 const handleFileUpload = (e, dIndex, rIndex) => {
-  const file = e.target.files[0]
-  if (!file) return
-  if (!fileMap.value[dIndex]) fileMap.value[dIndex] = {}
-  fileMap.value[dIndex][rIndex] = file
-}
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // 🔽 division_order（実際の値）をキーに使う
+  const divisionOrder = String(resultForm.value.results[dIndex].division_order);
+
+  if (!fileMap.value[divisionOrder]) fileMap.value[divisionOrder] = {};
+  fileMap.value[divisionOrder][rIndex] = file;
+};
 
 const handleResultUpdate = async () => {
-  const formData = new FormData(); // ← 先に宣言
-  formData.append('_method', 'PUT'); 
+  const formData = new FormData();
+  formData.append('_method', 'PUT');
   formData.append('tournament_id', String(route.params.id));
 
   let index = 0;
   resultForm.value.results.forEach((division) => {
     division.results.forEach((result, rIndex) => {
-      formData.append(`results[${index}][division_order]`, String(division.division_order))
-      formData.append(`results[${index}][division_name]`, division.division_name || '')
-      formData.append(`results[${index}][rank_order]`, String(rIndex + 1))
-      formData.append(`results[${index}][rank_label]`, result.rank_label || '')
-      formData.append(`results[${index}][team_id]`, Number(result.team_id_str))
-      formData.append(`results[${index}][report]`, result.report || '')      
+      formData.append(`results[${index}][division_order]`, String(division.division_order));
+      formData.append(`results[${index}][division_name]`, division.division_name || '');
+      formData.append(`results[${index}][rank_order]`, String(rIndex + 1));
+      formData.append(`results[${index}][rank_label]`, result.rank_label || '');
+      formData.append(`results[${index}][team_id]`, result.team_id_str || '');
+      formData.append(`results[${index}][report]`, result.report || '');
 
-      const file = fileMap.value?.[division.division_order]?.[rIndex];
+      const dKey = String(division.division_order);
+      const file = fileMap.value?.[dKey]?.[rIndex];
       if (file instanceof File) {
         formData.append(`results[${index}][document]`, file);
+      } else if (result.document_path) {
+        // ✅ 新規ファイルがない場合、既存の path を維持して送信
+        formData.append(`results[${index}][document_path]`, result.document_path);
       }
 
       index++;
     });
   });
 
-  // ←ここでログを出す
-  console.log("▶ FormData送信内容:");
-  for (let [key, value] of formData.entries()) {
-    console.log(key, value);
+  // debug用
+  for (let [k, v] of formData.entries()) {
+    console.log(k, v);
   }
 
   try {
-    await axios.post(`http://localhost:8000/api/tournament-results/${route.params.id}`,
-  formData,
-  {
-    headers: {
-      // Content-Type は Axios に任せる（自動で boundary 付加される）
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-    withCredentials: true,
-  }
-  );
+    await axios.post(`http://localhost:8000/api/tournament-results/${route.params.id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      withCredentials: true
+    });
     alert('大会結果を更新しました');
   } catch (err) {
     console.error('大会結果更新エラー', err);
-    if (err.response?.data?.errors) {
-      console.error('バリデーションエラー詳細:', err.response.data.messages);
-      alert('入力内容に誤りがあります。詳細はコンソールをご確認ください');
-    } else {
-      alert('更新に失敗しました');
-    }
+    alert('更新に失敗しました');
   }
 };
+
 
 const divisionLocked = ref(false)
 
@@ -390,5 +397,26 @@ onMounted(async () => {
   }
 });
 
+//大会結果削除
+const handleDeleteResults = async () => {
+  if (!confirm('本当に大会結果を削除しますか？')) return;
+
+  try {
+    await axios.delete(`http://localhost:8000/api/tournament-results/by-tournament/${route.params.id}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      withCredentials: true
+    });
+    alert('大会結果を削除しました');
+
+    //  削除後に resultForm を初期化
+    resultForm.value.results = [];
+
+    //  divisionLocked も再判定（ディビジョン追加を再許可）
+    divisionLocked.value = false;
+  } catch (err) {
+    console.error('削除失敗', err);
+    alert('削除に失敗しました');
+  }
+};
 
 </script>
