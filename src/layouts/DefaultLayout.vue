@@ -32,6 +32,11 @@
               <i class="cil-user-follow dropdown-item-icon"></i> <span>新規会員登録</span>
             </router-link>
           </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/members/import" class="dropdown-link">
+              <i class="cil-cloud-upload dropdown-item-icon"></i> <span>会員インポート</span>
+            </router-link>
+          </CDropdownItem>
         </CDropdownMenu>
       </CDropdown>
 
