@@ -58,6 +58,7 @@ const routes = [
       { path: 'teams/edit/:id', name: 'TeamEdit', component: () => import('@/views/teams/TeamEdit.vue'), meta: { title: 'チーム編集', requiresAuth: true, requiresOperation: true } },
       { path: 'teams/create', name: 'TeamCreate', component: () => import('@/views/teams/TeamCreate.vue'), meta: { title: 'チーム新規登録' }, },
       { path: 'teams/complete', name: 'TeamComplete', component: () => import('@/views/teams/TeamComplete.vue'), meta: { title: 'チーム登録完了' }, },
+      { path: 'teams/import', name: 'TeamsImport', component: () => import('@/views/teams/TeamsImport.vue'), meta: { title: 'チーム一括登録', requiresAuth: true } },
       { path: 'forbidden', name: 'Forbidden', component: () => import('@/views/errors/Forbidden.vue'), meta: { title: 'アクセス拒否' } },
       { path: 'tournaments/:id/results/create', name: 'TournamentResultCreate', component: () => import('@/components/tournaments/TournamentResultCreate.vue'), meta: { title: '大会結果登録', requiresAuth: true } },
       { path: 'tournaments/:id/results/complete', name: 'TournamentResultComplete', component: TournamentResultComplete, props: true, meta: { title: '大会結果 登録完了' }},

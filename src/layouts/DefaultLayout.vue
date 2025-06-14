@@ -34,7 +34,7 @@
           </CDropdownItem>
           <CDropdownItem class="c-nav-item" style="padding: 0;">
             <router-link to="/members/import" class="dropdown-link">
-              <i class="cil-cloud-upload dropdown-item-icon"></i> <span>会員インポート</span>
+              <i class="cil-cloud-upload dropdown-item-icon"></i> <span>会員一括管理</span>
             </router-link>
           </CDropdownItem>
         </CDropdownMenu>
@@ -92,6 +92,11 @@
           <CDropdownItem class="c-nav-item" style="padding: 0;">
             <router-link to="/teams" class="dropdown-link">
               <i class="cil-list-rich dropdown-item-icon"></i> <span>チーム一覧</span>
+            </router-link>
+          </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/teams/import" class="dropdown-link">
+              <i class="cil-cloud-upload dropdown-item-icon"></i> <span>チーム一括管理</span>
             </router-link>
           </CDropdownItem>
         </CDropdownMenu>
