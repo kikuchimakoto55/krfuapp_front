@@ -14,18 +14,57 @@
           />
         </div>
 
-        <CButton color="primary" @click="handleImport" :disabled="!selectedFile">インポートする</CButton>
+        <CRow class="mt-3">
+          <CCol>
+            <div class="d-flex gap-2">
+              <CButton color="primary" @click="handleImport" :disabled="!selectedFile">インポートする</CButton>
+              <CButton color="secondary" variant="ghost" @click="downloadSample">サンプルCSVをダウンロード</CButton>
+              <CButton color="success" style="color: white;" @click="downloadMembers">会員データCSVをダウンロード</CButton>
+            </div>
+          </CCol>
+        </CRow>
       </CCardBody>
 
     </CCard>
+    <!-- ContactForm7 インポートエリア -->
+    <CCard class="mb-4">
+      <CCardBody>
+        <h5 class="mb-3">ContactForm7 インポート</h5>
+        <div class="mb-3">
+          <CFormLabel for="cf7File">CSVファイルを選択（またはドラッグ＆ドロップ）</CFormLabel>
+          <CFormInput
+            type="file"
+            id="cf7File"
+            accept=".csv"
+            @change="handleCf7FileUpload"
+          />
+        </div>
 
-    <!-- サンプルCSVダウンロード -->
-    <div class="text-end">
-      <CButton color="secondary" variant="ghost" @click="downloadSample">サンプルCSVをダウンロード</CButton>
-    </div>
-    <div class="text-end">
-      <CButton color="success" style="color: white;" class="mt-3" @click="downloadMembers">会員データCSVをダウンロード</CButton>
-    </div>
+        <CRow class="mt-3">
+          <CCol>
+            <div class="d-flex gap-2">
+              <CButton color="primary" @click="handleCf7Import" :disabled="!cf7File">インポートする</CButton>
+              <CButton color="secondary" variant="ghost" @click="downloadCf7Sample">サンプルCSVをダウンロード</CButton>
+            </div>
+          </CCol>
+        </CRow>
+
+        <div v-if="cf7File" class="mt-4">
+          <p><strong>選択されたファイル:</strong> {{ cf7File.name }}</p>
+        </div>
+
+        <div v-if="cf7ImportErrors.length > 0" class="mt-3 text-danger">
+          <h6>エラー行:</h6>
+          <ul class="preview-list">
+            <li v-for="(err, i) in cf7ImportErrors" :key="'cf7err-' + i">
+              {{ err.row }}行目: {{ err.errors.join(' / ') }}
+            </li>
+          </ul>
+        </div>
+      </CCardBody>
+    </CCard>
+    
+
 
     <!-- アップロード済みファイル名 -->
     <div v-if="selectedFile" class="mt-4">
@@ -67,6 +106,8 @@ import axios from 'axios'
 const selectedFile = ref(null)
 const previewResult = ref(null)
 const errorMessages = ref([])
+const cf7File = ref(null)
+const cf7ImportErrors = ref([])
 
 const handleFileUpload = (e) => {
   selectedFile.value = e.target.files[0]
@@ -150,6 +191,42 @@ const downloadMembers = async () => {
     console.error('ダウンロード失敗:', err)
     alert('CSVのダウンロードに失敗しました')
   }
+}
+
+const handleCf7FileUpload = (e) => {
+  cf7File.value = e.target.files[0]
+}
+
+const handleCf7Import = async () => {
+  if (!cf7File.value) return
+
+  const formData = new FormData()
+  formData.append('file', cf7File.value)
+
+  try {
+    const res = await axios.post('http://localhost:8000/api/members/import-from-contact', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      withCredentials: true,
+    })
+
+    if (res.data.results?.length > 0) {
+      cf7ImportErrors.value = res.data.results
+      alert('一部のデータでバリデーションエラーがありました')
+    } else {
+      cf7ImportErrors.value = []
+      alert('ContactForm7のインポートが完了しました！')
+      cf7File.value = null
+      document.getElementById('cf7File').value = ''
+    }
+
+  } catch (err) {
+    console.error('CF7インポートエラー', err)
+    alert('インポートに失敗しました')
+  }
+}
+
+const downloadCf7Sample = () => {
+  window.open('http://localhost:8000/sample/member_cf7_sample.csv', '_blank')
 }
 
 
