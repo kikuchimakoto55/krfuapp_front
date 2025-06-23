@@ -14,7 +14,10 @@
           />
         </div>
 
-        <CButton color="primary" @click="handleImport" :disabled="!selectedFile">ファイルを取りこむ</CButton>
+        <CButton color="primary" @click="handleImport" :disabled="!selectedFile || isImporting">
+          ファイルを取りこむ
+          <CSpinner class="ms-2" v-if="isImporting" />
+        </CButton>
       </CCardBody>
     </CCard>
 
@@ -32,8 +35,10 @@
     </div>
 
     <!-- 登録ボタン -->
-    <CButton color="success" class="mt-3" style="color: white;" @click="handleRegister" v-if="previewResult && previewResult.length > 0">
+    <CButton color="success" class="mt-3" style="color: white;" @click="handleRegister"
+      :disabled="isRegistering || !previewResult || previewResult.length === 0">
       登録
+      <CSpinner class="ms-2" v-if="isRegistering" />
     </CButton>
 
     <!-- プレビュー結果表示 -->
@@ -66,6 +71,8 @@ import axios from 'axios'
 const selectedFile = ref(null)
 const previewResult = ref(null)
 const errorMessages = ref([])
+const isImporting = ref(false)
+const isRegistering = ref(false)
 
 const handleFileUpload = (e) => {
   selectedFile.value = e.target.files[0]
@@ -103,6 +110,7 @@ const handleImport = async () => {
   const formData = new FormData()
   formData.append('file', selectedFile.value)
 
+  isImporting.value = true
   try {
     const res = await axios.post('http://localhost:8000/api/teams/import-preview', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -125,11 +133,14 @@ const handleImport = async () => {
       alert('インポートに失敗しました:\n' + msg)
     } else {
       alert('インポートに失敗しました')
-    }
+    } 
+  } finally {
+    isImporting.value = false
   }
 }
 
 const handleRegister = async () => {
+  isRegistering.value = true
   try {
     const res = await axios.post('http://localhost:8000/api/teams/import', {
       data: previewResult.value,
@@ -148,6 +159,8 @@ const handleRegister = async () => {
     } else {
       alert('登録に失敗しました')
     }
+  } finally {
+    isRegistering.value = false
   }
 }
 
