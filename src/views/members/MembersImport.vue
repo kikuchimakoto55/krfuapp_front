@@ -17,7 +17,10 @@
         <CRow class="mt-3">
           <CCol>
             <div class="d-flex gap-2">
-              <CButton color="primary" @click="handleImport" :disabled="!selectedFile">インポートする</CButton>
+              <CButton color="primary" @click="handleImport" :disabled="!selectedFile || isImporting">
+                インポートする
+                <CSpinner class="ms-2" v-if="isImporting" />
+              </CButton>
               <CButton color="secondary" variant="ghost" @click="downloadSample">サンプルCSVをダウンロード</CButton>
               <CButton color="success" style="color: white;" @click="downloadMembers">会員データCSVをダウンロード</CButton>
             </div>
@@ -43,7 +46,10 @@
         <CRow class="mt-3">
           <CCol>
             <div class="d-flex gap-2">
-              <CButton color="primary" @click="handleCf7Import" :disabled="!cf7File">インポートする</CButton>
+              <CButton color="primary" @click="handleCf7Import" :disabled="!cf7File || isCf7Importing">
+                インポートする
+                <CSpinner class="ms-2" v-if="isCf7Importing" />
+              </CButton>
               <CButton color="secondary" variant="ghost" @click="downloadCf7Sample">サンプルCSVをダウンロード</CButton>
             </div>
           </CCol>
@@ -108,6 +114,8 @@ const previewResult = ref(null)
 const errorMessages = ref([])
 const cf7File = ref(null)
 const cf7ImportErrors = ref([])
+const isImporting = ref(false)
+const isCf7Importing = ref(false)
 
 const handleFileUpload = (e) => {
   selectedFile.value = e.target.files[0]
@@ -119,6 +127,7 @@ const handleImport = async () => {
   const formData = new FormData()
   formData.append('file', selectedFile.value)
 
+  isImporting.value = true
   try {
     const res = await axios.post('http://localhost:8000/api/members/import-preview', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -137,6 +146,8 @@ const handleImport = async () => {
   } catch (err) {
     console.error('インポートエラー', err)
     alert('インポートに失敗しました')
+  } finally {
+    isImporting.value = false
   }
 }
 
@@ -203,6 +214,7 @@ const handleCf7Import = async () => {
   const formData = new FormData()
   formData.append('file', cf7File.value)
 
+  isCf7Importing.value = true
   try {
     const res = await axios.post('http://localhost:8000/api/members/import-from-contact', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -222,6 +234,8 @@ const handleCf7Import = async () => {
   } catch (err) {
     console.error('CF7インポートエラー', err)
     alert('インポートに失敗しました')
+  } finally {
+    isCf7Importing.value = false
   }
 }
 
