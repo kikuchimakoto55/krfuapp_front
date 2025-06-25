@@ -49,6 +49,7 @@ const routes = [
       { path: 'members/complete', component: MemberComplete, meta: { title: '登録完了' } },
       { path: 'members/show/:id', name: 'MembersShow', component: () => import('@/views/members/MembersShow.vue'), meta: { title: '会員詳細' } },
       { path: 'members/edit-password/:id', name: 'PasswordChange', component: () => import('@/views/members/PasswordChange.vue'), meta: { title: 'パスワード変更', requiresAuth: true } },
+      { path: 'admin/members/:id/password-change', name: 'AdminPasswordChange', component: () => import('@/views/members/AdminPasswordChange.vue'), meta: { title: '管理者用パスワード変更', requiresAuth: true, requiresAdmin: true } },
       { path: 'members/:id/credentials/edit', name: 'HCredentialsEdit', component: () => import('@/components/credentials/HCredentialsEdit.vue'), meta: { title: '保有資格編集', requiresAuth: true, requiresGeneral: true } },
       { path: 'families/search', name: 'FamiliesSearch', component: () => import('@/components/members/FamiliesSearch.vue'), meta: { title: '家族検索' } },
       { path: 'tournaments/create', name: 'TournamentCreate', component: () => import('@/components/tournaments/TournamentCreate.vue'), meta: { title: '大会情報登録' } },

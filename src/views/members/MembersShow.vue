@@ -205,6 +205,10 @@
             <RouterLink :to="`/members/${member.member_id}/credentials/edit`">
               <CButton color="dark" class="ms-2">保有資格を編集</CButton>
             </RouterLink>
+                <!-- ✅ パスワード変更ボタン（管理者のみ表示） -->
+            <RouterLink v-if="isAdmin" :to="`/admin/members/${member.member_id}/password-change`">
+              <CButton color="warning" class="ms-2">管理者パスワード変更</CButton>
+            </RouterLink>
           </CCol>
         </CRow>
 
@@ -280,6 +284,10 @@ const getValidityMessage = (cred) => {
 
 const goToEdit = () => {
   router.push(`/members/edit/${id}`)
+}
+
+const goToPasswordEdit = () => {
+  router.push(`/members/edit-password/${id}`)
 }
 
 const genderText = val => val === 1 ? '男' : val === 2 ? '女' : ''

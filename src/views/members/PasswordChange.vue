@@ -1,6 +1,5 @@
 <template>
     <div>
-      <h2>パスワード変更</h2>
       <CCard>
         <CCardBody>
           <CForm @submit.prevent="handleSubmit">
@@ -46,6 +45,8 @@
   })
   
   const handleSubmit = async () => {
+    console.log('current_password:', currentPassword.value)
+    console.log('new_password:', newPassword.value)
     if (passwordMismatch.value) return
   
     try {
@@ -60,7 +61,7 @@
       })
   
       alert('パスワードを変更しました')
-      // ✅ ローカルストレージから user_id を取得してから遷移
+      //  ローカルストレージから user_id を取得してから遷移
     const userId = parseInt(localStorage.getItem('user_id'))
     if (userId) {
       router.push(`/members/show/${userId}`)
