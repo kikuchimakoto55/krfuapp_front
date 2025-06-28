@@ -9,7 +9,7 @@
       <c-nav-item href="/contact"><i class="cil-phone nav-icon"></i> Contact</c-nav-item>
       <c-nav-item v-if="isAdmin" href="/admin"><i class="cil-settings nav-icon"></i> Admin</c-nav-item>
       <c-nav-item v-if="isOperator" href="/management"><i class="cil-task nav-icon"></i> Management</c-nav-item>-->
-      <c-nav-item href="#" @click.prevent="handleLogout"><i class="cil-account-logout nav-icon"></i> Logout</c-nav-item>
+      <c-nav-item href="#" @click="handleLogout"><i class="cil-account-logout nav-icon"></i> Logout </c-nav-item>
 
       <!--  会員管理 -->
       <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
@@ -202,10 +202,10 @@ const toggleSidebar = () => {
   sidebarVisible.value = !sidebarVisible.value; // スマホ用切り替え
 };
 
-// 🔥 ログアウト処理
+//  ログアウト処理
 const handleLogout = async () => {
   try {
-    // 🚨 CSRFトークンを明示的に取得
+    // CSRFトークンを明示的に取得
     await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true });
     await axios.post('http://localhost:8000/api/logout', {}, {
       headers: {
@@ -215,7 +215,7 @@ const handleLogout = async () => {
       withCredentials: true
     });
 
-    // 🔄 ローカルストレージを削除
+    // ローカルストレージを削除
     localStorage.removeItem('token');
     localStorage.removeItem('authoritykinds_id');
     localStorage.removeItem('authoritykindsname');
@@ -245,13 +245,13 @@ onBeforeUnmount(() => {
 });
 
 
-// 🟢 追加：ログイン状態を判定する computed
+//  追加：ログイン状態を判定する computed
 const isUserLoggedIn = computed(() => !!localStorage.getItem('token'));
 </script>
 
 <style scoped>
 
-/* 🔥 CoreUI のデフォルトの枠線を強制削除 */
+/*  CoreUI のデフォルトの枠線を強制削除 */
 .c-dropdown-menu,
 .c-dropdown-menu.show,
 .c-dropdown-menu[aria-labelledby] {

@@ -8,5 +8,9 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src') // `@` を `src` にマッピング
     }
+  },
+  optimizeDeps: {
+    include: ['@coreui/coreui', '@coreui/icons']
   }
 });
+

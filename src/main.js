@@ -3,9 +3,10 @@ import './style.css';
 import App from './App.vue';
 import router from './router';
 import CoreuiVue from '@coreui/vue';
-import '@coreui/coreui/dist/css/coreui.min.css';
-import '@coreui/icons/css/all.min.css';
 import axios from 'axios';
+import '@coreui/coreui/dist/css/coreui.min.css';
+console.log('✅ coreui.min.css imported');
+import '@coreui/icons/css/all.min.css';
 
 // ✅ Axios の設定
 axios.defaults.baseURL = 'http://127.0.0.1:8000';

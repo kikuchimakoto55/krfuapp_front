@@ -19,6 +19,7 @@ import LicensesIndex from '../components/licenses/LicensesIndex.vue';
 import LicensesCreate from '../components/licenses/LicensesCreate.vue';
 import TournamentResultEdit from '../components/tournaments/TournamentResultEdit.vue'
 import MembersImport from '../views/members/MembersImport.vue'
+import PasswordChangeInitial from '../views/members/PasswordChangeInitial.vue'
 
 const routes = [
   {
@@ -50,6 +51,7 @@ const routes = [
       { path: 'members/show/:id', name: 'MembersShow', component: () => import('@/views/members/MembersShow.vue'), meta: { title: '会員詳細' } },
       { path: 'members/edit-password/:id', name: 'PasswordChange', component: () => import('@/views/members/PasswordChange.vue'), meta: { title: 'パスワード変更', requiresAuth: true } },
       { path: 'admin/members/:id/password-change', name: 'AdminPasswordChange', component: () => import('@/views/members/AdminPasswordChange.vue'), meta: { title: '管理者用パスワード変更', requiresAuth: true, requiresAdmin: true } },
+      { path: 'members/edit-password-initial/:id', name: 'PasswordChangeInitial', component: PasswordChangeInitial, meta: { title: '初回パスワード変更', requiresAuth: true } },
       { path: 'members/:id/credentials/edit', name: 'HCredentialsEdit', component: () => import('@/components/credentials/HCredentialsEdit.vue'), meta: { title: '保有資格編集', requiresAuth: true, requiresGeneral: true } },
       { path: 'families/search', name: 'FamiliesSearch', component: () => import('@/components/members/FamiliesSearch.vue'), meta: { title: '家族検索' } },
       { path: 'tournaments/create', name: 'TournamentCreate', component: () => import('@/components/tournaments/TournamentCreate.vue'), meta: { title: '大会情報登録' } },
@@ -63,7 +65,7 @@ const routes = [
       { path: 'forbidden', name: 'Forbidden', component: () => import('@/views/errors/Forbidden.vue'), meta: { title: 'アクセス拒否' } },
       { path: 'tournaments/:id/results/create', name: 'TournamentResultCreate', component: () => import('@/components/tournaments/TournamentResultCreate.vue'), meta: { title: '大会結果登録', requiresAuth: true } },
       { path: 'tournaments/:id/results/complete', name: 'TournamentResultComplete', component: TournamentResultComplete, props: true, meta: { title: '大会結果 登録完了' }},
-      { path: '/tournaments/:id/results/edit', name: 'TournamentResultEdit', component: TournamentResultEdit, meta: { title: '大会結果編集', requiresAuth: true } },
+      { path: 'tournaments/:id/results/edit', name: 'TournamentResultEdit', component: TournamentResultEdit, meta: { title: '大会結果編集', requiresAuth: true } },
       { path: 'games', name: 'Games', component: GameIndex, meta: { title: '試合一覧', requiresAuth: true } },
       { path: 'games/create', name: 'GameCreate', component: GameCreate, meta: { title: '試合登録', requiresAuth: true } },
       { path: 'games/edit/:id', name: 'GameEdit', component: GameEdit, meta: { title: '試合編集', requiresAuth: true } },

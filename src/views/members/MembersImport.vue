@@ -217,7 +217,10 @@ const handleCf7Import = async () => {
   isCf7Importing.value = true
   try {
     const res = await axios.post('http://localhost:8000/api/members/import-from-contact', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
       withCredentials: true,
     })
 

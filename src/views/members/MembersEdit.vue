@@ -1,11 +1,10 @@
 <template>
     <div>
-      <h2>会員情報編集</h2>
       <form @submit.prevent="updateMember">
         <CRow class="mb-3">
         <CCol md="4">
           <CFormLabel>指導員フラグ<span class="required">必須</span></CFormLabel>
-            <CFormSelect v-model="form.coach_flg" required>
+            <CFormSelect v-model="form.coach_flg" required :invalid="!!validationErrors.coach_flg">
               <option value="">選択してください</option>
               <option value="0">選手</option>
               <option value="1">指導員</option>
@@ -20,19 +19,19 @@
       <CRow class="mb-3">
         <CCol md="4">
           <CFormLabel>学年カテゴリ<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.grade_category" :options="gradeCategoryOptions" required />
+          <CFormSelect v-model="form.grade_category" :options="gradeCategoryOptions" required :invalid="!!validationErrors.grade_category" />
           <div v-if="validationErrors.grade_category" class="text-danger">{{ validationErrors.grade_category[0] }}</div>
         </CCol>
 
         <CCol md="4">
           <CFormLabel>氏名 (姓)<span class="required">必須</span></CFormLabel>
-          <CFormInput v-model="form.username_sei" required maxlength="15" />
+          <CFormInput v-model="form.username_sei" required maxlength="15" :invalid="!!validationErrors.username_sei" />
           <div v-if="validationErrors.username_sei" class="text-danger">{{ validationErrors.username_sei[0] }}</div>
         </CCol>
 
         <CCol md="4">
           <CFormLabel>氏名 (名)<span class="required">必須</span></CFormLabel>
-          <CFormInput v-model="form.username_mei" required maxlength="15" />
+          <CFormInput v-model="form.username_mei" required maxlength="15" :invalid="!!validationErrors.username_mei" />
           <div v-if="validationErrors.username_mei" class="text-danger">{{ validationErrors.username_mei[0] }}</div>
         </CCol>
       </CRow>
@@ -40,17 +39,17 @@
       <CRow class="mb-3">
         <CCol md="4">
           <CFormLabel>氏名カナ (姓)<span class="required">必須</span></CFormLabel>
-          <CFormInput v-model="form.username_kana_s" required maxlength="30" pattern="^[ァ-ヶー]+$" title="全角カタカナで入力してください"/>
+          <CFormInput v-model="form.username_kana_s" required maxlength="30" pattern="^[ァ-ヶー]+$" title="全角カタカナで入力してください" :invalid="!!validationErrors.username_kana_s" />
           <div v-if="validationErrors.username_kana_s" class="text-danger">{{ validationErrors.username_kana_s[0] }}</div>
         </CCol>
         <CCol md="4">
           <CFormLabel>氏名カナ (名)<span class="required">必須</span></CFormLabel>
-          <CFormInput v-model="form.username_kana_m" required maxlength="30" pattern="^[ァ-ヶー]+$" title="全角カタカナで入力してください"/>
+          <CFormInput v-model="form.username_kana_m" required maxlength="30" pattern="^[ァ-ヶー]+$" title="全角カタカナで入力してください" :invalid="!!validationErrors.username_kana_m" />
           <div v-if="validationErrors.username_kana_m" class="text-danger">{{ validationErrors.username_kana_m[0] }}</div>
         </CCol>
         <CCol md="4">
           <CFormLabel>性別<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.sex" required>
+          <CFormSelect v-model="form.sex" required :invalid="!!validationErrors.sex">
             <option value="">選択してください</option>
             <option value="1">男</option>
             <option value="2">女</option>
@@ -61,12 +60,12 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>氏名 (姓) 英<span class="required">必須</span></CFormLabel>
-          <CFormInput v-model="form.username_en_s" required />
+          <CFormInput v-model="form.username_en_s" :invalid="!!validationErrors.username_en_s"/>
           <div v-if="validationErrors.username_en_s" class="text-danger">{{ validationErrors.username_en_s[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>氏名 (名) 英<span class="required">必須</span></CFormLabel>
-          <CFormInput v-model="form.username_en_m" required />
+          <CFormInput v-model="form.username_en_m" :invalid="!!validationErrors.username_en_m"/>
           <div v-if="validationErrors.username_en_m" class="text-danger">{{ validationErrors.username_en_m[0] }}</div>
         </CCol>
       </CRow>
@@ -74,17 +73,17 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>生年月日</CFormLabel>
-          <CFormInput type="date" v-model="form.birthday" required />
+          <CFormInput type="date" v-model="form.birthday" :invalid="!!validationErrors.birthday"/>
           <div v-if="validationErrors.birthday" class="text-danger">{{ validationErrors.birthday[0] }}</div>
         </CCol>
         <CCol md="3">
           <CFormLabel>身長（cm）</CFormLabel>
-          <CFormInput type="number" v-model="form.height" min="50" max="250" />
+          <CFormInput type="number" v-model="form.height" min="50" max="250" :invalid="!!validationErrors.height"/>
           <div v-if="validationErrors.height" class="text-danger">{{ validationErrors.height[0] }}</div>
         </CCol>
         <CCol md="3">
           <CFormLabel>体重（kg）</CFormLabel>
-          <CFormInput type="number" v-model="form.weight" min="10" max="250" />
+          <CFormInput type="number" v-model="form.weight" min="10" max="250" :invalid="!!validationErrors.weight"/>
           <div v-if="validationErrors.weight" class="text-danger">{{ validationErrors.weight[0] }}</div>
         </CCol>
       </CRow>
@@ -92,7 +91,7 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>血液型</CFormLabel>
-          <CFormSelect v-model="form.blood_type">
+          <CFormSelect v-if="form.blood_type !== null" v-model="form.blood_type" :invalid="!!validationErrors.blood_type">
             <option value="">選択してください</option>
             <option value="1">A</option>
             <option value="2">B</option>
@@ -104,7 +103,7 @@
         </CCol>
         <CCol md="6">
           <CFormLabel>郵便番号<span class="required">必須</span></CFormLabel>
-            <CFormInput v-model="form.zip" required type="text" maxlength="7" pattern="^[0-9]{7}$" title="7桁の半角数字で入力してください" />
+            <CFormInput v-model="form.zip" required type="text" maxlength="7" pattern="^[0-9]{7}$" title="7桁の半角数字で入力してください" :invalid="!!validationErrors.zip"/>
             <div v-if="validationErrors.zip" class="text-danger">{{ validationErrors.zip[0] }}</div>
         </CCol>
       </CRow>
@@ -112,17 +111,17 @@
       <CRow class="mb-3">
         <CCol md="4">
           <CFormLabel>都道府県<span class="required">必須</span></CFormLabel>
-          <CFormInput v-model="form.address1" required />
+          <CFormInput v-model="form.address1" required :invalid="!!validationErrors.address1"/>
           <div v-if="validationErrors.address1" class="text-danger">{{ validationErrors.address1[0] }}</div>
         </CCol>
         <CCol md="4">
           <CFormLabel>市区町村<span class="required">必須</span></CFormLabel>
-          <CFormInput v-model="form.address2" required />
+          <CFormInput v-model="form.address2" required :invalid="!!validationErrors.address2"/>
           <div v-if="validationErrors.address2" class="text-danger">{{ validationErrors.address2[0] }}</div>
         </CCol>
         <CCol md="4">
           <CFormLabel>住所３</CFormLabel>
-          <CFormInput v-model="form.address3" />
+          <CFormInput v-model="form.address3" :invalid="!!validationErrors.address3"/>
           <div v-if="validationErrors.address3" class="text-danger">{{ validationErrors.address3[0] }}</div>
         </CCol>
       </CRow>
@@ -130,12 +129,12 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>在籍学校・園名</CFormLabel>
-          <CFormInput v-model="form.enrolled_school" />
+          <CFormInput v-model="form.enrolled_school" :invalid="!!validationErrors.enrolled_school"/>
           <div v-if="validationErrors.enrolled_school" class="text-danger">{{ validationErrors.enrolled_school[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>保護者氏名<span class="required">必須</span></CFormLabel>
-          <CFormInput v-model="form.guardian_name" required />
+          <CFormInput v-model="form.guardian_name" required :invalid="!!validationErrors.guardian_name"/>
           <div v-if="validationErrors.guardian_name" class="text-danger">{{ validationErrors.guardian_name[0] }}</div>
         </CCol>
       </CRow>
@@ -143,12 +142,12 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>保護者メールアドレス<span class="required">必須</span></CFormLabel>
-          <CFormInput type="email" v-model="form.guardian_email" required />
+          <CFormInput type="email" v-model="form.guardian_email" required :invalid="!!validationErrors.guardian_email"/>
           <div v-if="validationErrors.guardian_email" class="text-danger">{{ validationErrors.guardian_email[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>保護者電話番号<span class="required">必須</span></CFormLabel>
-            <CFormInput v-model="form.guardian_tel" required type="tel" maxlength="11" pattern="^[0-9]{10,11}$" title="10〜11桁の半角数字で入力してください" />
+            <CFormInput v-model="form.guardian_tel" required type="tel" maxlength="11" pattern="^[0-9]{10,11}$" title="10〜11桁の半角数字で入力してください" :invalid="!!validationErrors.guardian_tel"/>
             <div v-if="validationErrors.guardian_tel" class="text-danger">{{ validationErrors.guardian_tel[0] }}</div>
         </CCol>
       </CRow>
@@ -156,7 +155,7 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>続柄<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.relationship" required>
+          <CFormSelect v-model="form.relationship" required :invalid="!!validationErrors.relationship">
             <option value="">選択してください</option>
             <option value="1">父</option>
             <option value="2">母</option>
@@ -169,7 +168,7 @@
         </CCol>
         <CCol md="6">
           <CFormLabel>緊急連絡先・氏名<span class="required">必須</span></CFormLabel>
-          <CFormInput v-model="form.emergency_name1" required />
+          <CFormInput v-model="form.emergency_name1" required :invalid="!!validationErrors.emergency_name1"/>
           <div v-if="validationErrors.emergency_name1" class="text-danger">{{ validationErrors.emergency_name1[0] }}</div>
         </CCol>
       </CRow>
@@ -177,12 +176,12 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>緊急連絡先・メールアドレス<span class="required">必須</span></CFormLabel>
-          <CFormInput type="email" v-model="form.emergency_email1" required />
+          <CFormInput type="email" v-model="form.emergency_email1" required :invalid="!!validationErrors.emergency_email1"/>
           <div v-if="validationErrors.emergency_email1" class="text-danger">{{ validationErrors.emergency_email1[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>緊急連絡先・電話番号<span class="required">必須</span></CFormLabel>
-          <CFormInput type="tel" v-model="form.emergency_tel1" required maxlength="11" />
+          <CFormInput type="tel" v-model="form.emergency_tel1" required maxlength="11" :invalid="!!validationErrors.emergency_tel1"/>
           <div v-if="validationErrors.emergency_tel1" class="text-danger">{{ validationErrors.emergency_tel1[0] }}</div>
         </CCol>
       </CRow>
@@ -190,12 +189,12 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>本人メールアドレス<span v-if="isEmailRequired" class="required">必須</span></CFormLabel>
-          <CFormInput type="email" v-model="form.email" :required="isEmailRequired" placeholder="メールアドレスを入力してください"/>
+          <CFormInput type="email" v-model="form.email" :required="isEmailRequired" placeholder="メールアドレスを入力してください" :invalid="!!validationErrors.email"/>
           <div v-if="validationErrors.email" class="text-danger">{{ validationErrors.email[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>本人電話番号</CFormLabel>
-          <CFormInput type="tel" v-model="form.tel" maxlength="11" />
+          <CFormInput type="tel" v-model="form.tel" maxlength="11" :invalid="!!validationErrors.tel"/>
           <div v-if="validationErrors.tel" class="text-danger">{{ validationErrors.tel[0] }}</div>
         </CCol>
       </CRow>
@@ -203,7 +202,7 @@
       <CRow class="mb-3">
         <CCol md="12">
           <CFormLabel>備考</CFormLabel>
-          <CFormTextarea v-model="form.remarks" rows="3" />
+          <CFormTextarea v-model="form.remarks" rows="3" :invalid="!!validationErrors.remarks"/>
           <div v-if="validationErrors.remarks" class="text-danger">{{ validationErrors.remarks[0] }}</div>
         </CCol>
       </CRow>
@@ -211,7 +210,7 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>所属区分<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.classification" required>
+          <CFormSelect v-model="form.classification" required :invalid="!!validationErrors.classification">
             <option value="">選択してください</option>
             <option value="1">代表者</option>
             <option value="2">監督</option>
@@ -227,7 +226,7 @@
         </CCol>
         <CCol md="6">
           <CFormLabel>保険登録番号</CFormLabel>
-          <CFormInput v-model="form.membershipfee_conf" />
+          <CFormInput v-model="form.membershipfee_conf" :invalid="!!validationErrors.membershipfee_conf"/>
           <div v-if="validationErrors.membershipfee_conf" class="text-danger">{{ validationErrors.membershipfee_conf[0] }}</div>
         </CCol>
       </CRow>
@@ -235,12 +234,12 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>協会登録番号</CFormLabel>
-          <CFormInput v-model="form.association_id" />
+          <CFormInput v-model="form.association_id" :invalid="!!validationErrors.association_id"/>
           <div v-if="validationErrors.association_id" class="text-danger">{{ validationErrors.association_id[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>在籍状況<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.status" required>
+          <CFormSelect v-model="form.status" required :invalid="!!validationErrors.status">
             <option value="">選択してください</option>
             <option value="1">在籍</option>
             <option value="2">転籍</option>
@@ -256,12 +255,12 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>卒業年度</CFormLabel>
-          <CFormInput type="number" v-model="form.graduation_year" />
+          <CFormInput type="number" v-model="form.graduation_year" :invalid="!!validationErrors.graduation_year"/>
           <div v-if="validationErrors.graduation_year" class="text-danger">{{ validationErrors.graduation_year[0] }}</div>
         </CCol>
         <CCol md="6">
           <CFormLabel>権限種別ID<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.authoritykinds_id" required>
+          <CFormSelect v-model="form.authoritykinds_id" required :invalid="!!validationErrors.authoritykinds_id">
             <option value="">選択してください</option>
             <option value="1">管理者</option>
             <option value="2">運営権限</option>
@@ -269,20 +268,6 @@
             <option value="4">使用者権限</option>
           </CFormSelect>
           <div v-if="validationErrors.authoritykinds_id" class="text-danger">{{ validationErrors.authoritykinds_id[0] }}</div>
-        </CCol>
-      </CRow>
-
-
-      <CRow class="mb-3">
-        <CCol md="6">
-          <CFormLabel>パスワード<span class="required">必須</span></CFormLabel>
-          <CFormInput type="password" v-model="form.password" autocomplete="new-password" required />
-          <div v-if="validationErrors.password" class="text-danger">{{ validationErrors.password[0] }}</div>
-        </CCol>
-        <CCol md="6">
-          <CFormLabel>パスワード（確認）<span class="required">必須</span></CFormLabel>
-          <CFormInput type="password" v-model="form.password_confirmation" autocomplete="new-password" required />
-          <div v-if="validationErrors.password_confirmation" class="text-danger">{{ validationErrors.password_confirmation[0] }}</div>
         </CCol>
       </CRow>
 
@@ -331,7 +316,7 @@
   </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import FamilyEditModal from '@/components/members/FamilyEditModal.vue'
@@ -340,7 +325,6 @@ import FamilyEditModal from '@/components/members/FamilyEditModal.vue'
 const route = useRoute()
 const router = useRouter()
 const id = route.params.id
-const passwordMismatchError = ref('');
 const showToast = ref(false)
 const toastMessage = ref('')
 const currentUserAuthority = Number(localStorage.getItem('authoritykinds_id'));
@@ -385,8 +369,6 @@ const form = ref({
   authoritykinds_id: '',
   coach_flg: '',
   del_flg: 0,
-  password: '',
-  password_confirmation: ''
 })
 
 const gradeCategoryOptions = [
@@ -414,8 +396,9 @@ const gradeCategoryOptions = [
   { value: '21', label: '社会人' },
 ];
 
+// 1 のときだけ必須（指導員）
 const isEmailRequired = computed(() => {
-  return form.value.coach_flg === '1'; // 1 のときだけ必須（指導員）
+  return form.value.coach_flg === '1'; 
 });
 
 const validationErrors = ref({})
@@ -427,7 +410,7 @@ const relationshipText = (val) => {
 
 onMounted(async () => {
   try {
-    const res = await axios.get(`http://127.0.0.1:8000/api/members/${id}`, {
+    const res = await axios.get(`http://localhost:8000/api/members/${id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -448,9 +431,7 @@ onMounted(async () => {
       }
     });
 
-    form.value = member;
-
-    // ここが抜けていると reverse 解除で undefined が出る！
+    form.value = member;   // ここが抜けていると reverse 解除で undefined が出る！
     form.value.member_id = member.member_id;
 
   } catch (err) {
@@ -459,13 +440,6 @@ onMounted(async () => {
 });
 
 const updateMember = async () => {
-  // パスワード一致チェック
-  if (form.value.password !== form.value.password_confirmation) {
-    passwordMismatchError.value = 'パスワードが一致しません';
-    return;
-  } else {
-    passwordMismatchError.value = '';
-  };
 
   // 文字列 → 数値に戻す（APIに適切な型で送る）
   const keysToNumber = [
@@ -489,7 +463,7 @@ const updateMember = async () => {
     : null;
 
     try {
-    await axios.put(`http://127.0.0.1:8000/api/members/${id}`, form.value, {
+    await axios.put(`http://localhost:8000/api/members/${id}`, form.value, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       },
@@ -507,8 +481,20 @@ const updateMember = async () => {
 
   } catch (err) {
     console.error('更新失敗', err);
+
+    if (err.response && err.response.status === 403) {
+    alert(err.response.data.message || 'この操作を行う権限がありません。');
+    return;
+    }
     if (err.response && err.response.data.errors) {
       validationErrors.value = err.response.data.errors;
+
+      nextTick(() => {
+        const firstErrorEl = document.querySelector('.is-invalid');
+        if (firstErrorEl) {
+          firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
     }
   }
 
@@ -519,14 +505,14 @@ const updateMember = async () => {
   if (!confirm('この会員を本当に削除しますか？')) return;
 
   try {
-    await axios.delete(`http://127.0.0.1:8000/api/members/${memberId}`, {
+    await axios.delete(`http://localhost:8000/api/members/${memberId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       },
       withCredentials: true
     });
 
-    toastMessage.value = '✅ 削除が完了しました';
+    toastMessage.value = ' 削除が完了しました';
     showToast.value = true;
 
     setTimeout(() => {
@@ -563,7 +549,7 @@ const handleFamilyUpdated = () => {
 // 家族編集用モーダル表示
 const fetchMemberWithFamily = async () => {
   try {
-    const res = await axios.get(`http://127.0.0.1:8000/api/members/${id}`, {
+    const res = await axios.get(`http://localhost:8000/api/members/${id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       },
@@ -587,12 +573,10 @@ const fetchMemberWithFamily = async () => {
 // 家族解除処理
 const removeFamily = async (family) => {
   console.log('reverse削除', family.member_id, form.value.member_id);
-
   if (!confirm(`${family.username_sei} ${family.username_mei} さんの家族情報を解除しますか？`)) return;
-
   try {
     // 自分 → 相手
-    await axios.delete(`http://127.0.0.1:8000/api/families/${family.id}`, {
+    await axios.delete(`http://localhost:8000/api/families/${family.id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -601,7 +585,7 @@ const removeFamily = async (family) => {
 
     // 相手 → 自分（URLクエリにパラメータを埋め込む）
     await axios.delete(
-      `http://127.0.0.1:8000/api/families/reverse?member_id=${family.member_id}&family_id=${form.value.member_id}`,
+      `http://localhost:8000/api/families/reverse?member_id=${family.member_id}&family_id=${form.value.member_id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,

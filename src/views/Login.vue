@@ -39,11 +39,13 @@ const email = ref('');
 const password = ref('');
 
 const handleLogin = async () => {
+  console.log("🟡 handleLogin 実行開始");
   try {
     // CSRFトークンを取得
     await axios.get('http://localhost:8000/sanctum/csrf-cookie', {
       withCredentials: true
     });
+    console.log("✅ CSRF取得完了");
 
     // ログインリクエスト
     const response = await axios.post('http://localhost:8000/api/login', {
@@ -64,8 +66,17 @@ const handleLogin = async () => {
     localStorage.setItem('authoritykindsname', response.data.user.authoritykindsname);
 
     // ダッシュボードへ遷移
+   // reset_required のチェックを追加
+  if (response.data.reset_required === true) {
+    console.log(" reset_required → true：パスワード変更へ遷移します");
+    router.push(`/members/edit-password-initial/${response.data.user.member_id}`);
+  } else {
+    console.log(" reset_required → false：通常ダッシュボードへ遷移");
     router.push('/');
+  }
+  console.log(" ログイン成功", response);
   } catch (error) {
+    console.error(" ログイン失敗", error);
     alert('ログインに失敗しました。');
     console.error('ログインエラー詳細:', error);
     if (error.response) {
