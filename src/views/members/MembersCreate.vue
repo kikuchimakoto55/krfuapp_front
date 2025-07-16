@@ -370,6 +370,7 @@ const gradeCategoryOptions = [
   { value: '19', label: '大３' },
   { value: '20', label: '大４' },
   { value: '21', label: '社会人' },
+  { value: '22', label: '卒業' },
 ]
 
 // coach_flg が '1' または '2' の場合に email を必須にする

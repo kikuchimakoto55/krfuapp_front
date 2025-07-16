@@ -394,6 +394,7 @@ const gradeCategoryOptions = [
   { value: '19', label: '大３' },
   { value: '20', label: '大４' },
   { value: '21', label: '社会人' },
+  { value: '22', label: '卒業' },
 ];
 
 // 1 のときだけ必須（指導員）
