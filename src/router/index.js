@@ -79,6 +79,7 @@ const routes = [
       { path: '/events/create', name: 'EventCreate', component: () => import('@/components/event/EventCreate.vue'), meta: { title: 'イベント登録' } },
       { path: '/events', name: 'EventIndex', component: () => import('@/components/event/EventIndex.vue'), meta: { title: 'イベント一覧' } },
       { path: '/events/edit/:id', name: 'EventEdit', component: () => import('@/components/event/EventEdit.vue'), meta: { title: 'イベント編集' } },
+      { path: '/rankup/import', name: 'RankupImport', component: () => import('@/views/rankup/RankupImport.vue'),  meta: { title: '年度更新インポート' } },
     ]
   }
 ];

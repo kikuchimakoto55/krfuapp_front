@@ -37,8 +37,13 @@
               <i class="cil-cloud-upload dropdown-item-icon"></i> <span>会員一括管理</span>
             </router-link>
           </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+              <router-link to="/rankup/import" class="dropdown-link">
+                <i class="cil-arrow-thick-to-top dropdown-item-icon"></i> <span>年度更新管理</span>
+              </router-link>
+          </CDropdownItem>
         </CDropdownMenu>
-      </CDropdown>
+        </CDropdown>
 
       <!--  大会管理 -->
       <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
