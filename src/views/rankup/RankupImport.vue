@@ -25,6 +25,8 @@
       <CButton color="success" style="color: white;" @click="handleProcess">
         年度更新を実行
       </CButton>
+      <CButton color="danger" style="color: white;" @click="handleDeleteAll('unprocessed')">未処理データを全件削除</CButton>
+      <CButton color="danger" style="color: white;" @click="handleDeleteAll('all')">全削除</CButton>
     </div>
 
     <div class="mt-4">
@@ -225,6 +227,32 @@ const handleProcess = async () => {
 
   await fetchRankupList()
 }
+
+const handleDeleteAll = async (mode = 'unprocessed') => {
+  const confirmText =
+    mode === 'all'
+      ? '本当にすべての取込データを削除しますか？（処理済みも含みます）'
+      : '本当に未処理の取込データをすべて削除しますか？';
+
+  if (!confirm(confirmText)) return;
+
+  try {
+    await axios.delete('http://localhost:8000/api/rankup/delete-all', {
+      data: { mode }, // DELETE にも `data` を指定可能（axios対応済み）
+      withCredentials: true,
+    });
+
+    await fetchRankupList();
+
+    successMessage.value =
+      mode === 'all'
+        ? 'すべてのインポートデータを削除しました。'
+        : '未処理の取込データを削除しました。';
+  } catch (error) {
+    errorMessage.value = '削除中にエラーが発生しました。';
+  }
+};
+
 
 
 
