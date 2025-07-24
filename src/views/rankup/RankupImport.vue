@@ -13,8 +13,18 @@
           />
         </CCol>
         <CCol md="3">
-          <CButton type="submit" color="primary" :disabled="!file">
-            インポート実行
+          <CButton
+            type="submit"
+            color="primary"
+            :disabled="!file || isImporting"
+          >
+            <template v-if="isImporting">
+              <CSpinner component="span" size="sm" class="me-2" />
+              インポート中...
+            </template>
+            <template v-else>
+              インポート実行
+            </template>
           </CButton>
         </CCol>
       </CRow>
@@ -22,11 +32,23 @@
      <hr class="my-4" />
 
     <div class="d-flex gap-3">
-      <CButton color="success" style="color: white;" @click="handleProcess">
-        年度更新を実行
+      <CButton
+        color="success"
+        style="color: white;"
+        @click="handleProcess"
+        :disabled="isProcessing"
+      >
+        <template v-if="isProcessing">
+          <CSpinner component="span" size="sm" class="me-2" />
+          処理中...
+        </template>
+        <template v-else>
+          年度更新を実行
+        </template>
       </CButton>
       <CButton color="danger" style="color: white;" @click="handleDeleteAll('unprocessed')">未処理データを全件削除</CButton>
       <CButton color="danger" style="color: white;" @click="handleDeleteAll('all')">全削除</CButton>
+      <CButton color="warning" style="color: white;" @click="downloadUnmatchedMembers">未手続リストを出力</CButton>
     </div>
 
     <div class="mt-4">
@@ -97,6 +119,7 @@ import {
 } from '@coreui/vue'
 
 
+
 const file = ref(null)
 const successMessage = ref('')
 const errorMessage = ref('')
@@ -105,6 +128,8 @@ const unmatchedData = ref([]) // 不一致データの格納用
 const handleFileChange = (e) => {
   file.value = e.target.files[0]
 }
+const isImporting = ref(false)
+const isProcessing = ref(false)
 
 const fetchRankupList = async () => {
   try {
@@ -129,6 +154,8 @@ const handleImport = async () => {
     return
   }
 
+  isImporting.value = true
+
   const formData = new FormData()
   formData.append('file', file.value)
 
@@ -143,11 +170,16 @@ const handleImport = async () => {
   } catch (error) {
     errorMessage.value =
       error.response?.data?.message || 'インポート中にエラーが発生しました。'
+  } finally {
+    isImporting.value = false
   }
   await fetchRankupList()
 }
 
 const handleProcess = async () => {
+  console.log('[開始] handleProcess')
+  isProcessing.value = true
+  console.log('isLoading:', isLoading.value)
   successMessage.value = ''
   errorMessage.value = ''
   unmatchedData.value = []
@@ -159,6 +191,7 @@ const handleProcess = async () => {
     })
 
     const contentType = response.headers['content-type']
+    // ① CSV ファイル（不一致あり）
     if (contentType.includes('text/csv')) {
       // CSV処理（①ダウンロード）
       const blob = new Blob([response.data], { type: 'text/csv' })
@@ -169,25 +202,18 @@ const handleProcess = async () => {
       document.body.appendChild(link)
       link.click()
       link.remove()
+      window.URL.revokeObjectURL(url)
+
       successMessage.value = '一部のデータが不一致でした。不一致リストをダウンロードしました。'
 
       // CSV処理（② unmatchedData にパース表示）
       const text = await blob.text()
       const lines = text.trim().split('\n')
-
-      // ヘッダーを分解し、各項目のインデックスを取得
-      const header = lines[0].split(',')
-
-      const idxKanaSurname = header.indexOf('Text 99')      // キクチ
-      const idxKanaName    = header.indexOf('Text 120')     // マコト
-      const idxSex         = header.indexOf('Select 531')   // 男 or 女
-      const idxYear        = header.indexOf('Select 258')   // 2012
-      const idxMonth       = header.indexOf('Select 757')   // 8
-      const idxDay         = header.indexOf('Select 567')   // 6
-      const idxReason      = header.length - 1              // 最後の列が理由だと仮定（※必要に応じて調整）
+      const header = lines[0].split(',')// ヘッダーを分解し、各項目のインデックスを取得
 
       unmatchedData.value = lines.slice(1).map((line, i) => {
       const cols = line.split(',')
+
       const kana_s = cols[0] || ''
       const kana_m = cols[1] || ''
       const sex = cols[2] || ''
@@ -205,7 +231,9 @@ const handleProcess = async () => {
         reason,
       }
     })
-    } else if (contentType.includes('application/json')) {
+    } 
+    // ② JSON 応答（全件一致したなど）
+    else if (contentType.includes('application/json')) {
         //  Blob をテキストに変換してから JSON にパースする
         const text = await response.data.text();
         const json = JSON.parse(text);
@@ -223,6 +251,9 @@ const handleProcess = async () => {
   } catch (error) {
     console.error('年度更新エラー:', error)
     errorMessage.value = '年度更新中にエラーが発生しました。'
+  } finally {
+    isProcessing.value = false
+    console.log('[完了] isLoading false')
   }
 
   await fetchRankupList()
@@ -252,6 +283,26 @@ const handleDeleteAll = async (mode = 'unprocessed') => {
     errorMessage.value = '削除中にエラーが発生しました。';
   }
 };
+
+const downloadUnmatchedMembers = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/rankup/unmatched-members', {
+      responseType: 'blob',
+      withCredentials: true
+    });
+
+    const blob = new Blob([response.data], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'unmatched_members.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('未手続リストのダウンロードに失敗しました', error);
+  }
+};
+
 
 
 

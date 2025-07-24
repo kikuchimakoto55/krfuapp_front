@@ -98,3 +98,25 @@ export const eventKindsOptions = {
 export const getEventKindLabel = (value) => {
   return eventKindsOptions[Number(value)] || '-';
 };
+
+
+export const gradeCategoryOptions = {
+  1: '年年少', 2: '年少', 3: '年中', 4: '年長', 5: '小1',
+  6: '小2', 7: '小3', 8: '小4', 9: '小5', 10: '小6',
+  11: '中1', 12: '中2', 13: '中3', 14: '高1', 15: '高2',
+  16: '高3', 17: '大1', 18: '大2', 19: '大3', 20: '大4',
+  21: '社会人', 22: '卒業'
+};
+
+export const getGradeCategoryLabel = (value) => {
+  return gradeCategoryOptions[Number(value)] || '-';
+};
+
+export const sexOptions = {
+  1: '男',
+  2: '女',
+};
+
+export const getSexLabel = (value) => {
+  return sexOptions[Number(value)] || '-';
+};
