@@ -16,12 +16,12 @@
     xs="6" sm="4" md="3" lg="2"
     class="mb-3"
   >
-    <CCard class="text-center shadow-sm" style="height: auto;">
-      <CCardBody class="p-2">
-        <div class="fw-semibold text-secondary" style="font-size: 0.9rem;">
+    <CCard class="text-center shadow-sm custom-card">
+      <CCardBody class="py-1 px-2">
+        <div class="fw-semibold text-secondary" style="font-size: 0.85rem;">
           {{ grade.grade_name }}
         </div>
-        <div class="fw-bold text-dark" style="font-size: 1.3rem;">
+        <div class="fw-bold text-dark" style="font-size: 1.2rem;">
           {{ grade.count }} 名
         </div>
       </CCardBody>
@@ -33,9 +33,15 @@
     <!-- 資格別カード -->
     <h5 class="mb-3">🎖️ 有効資格保有者数</h5>
     <CRow>
-      <CCol v-for="license in licenseStats" :key="license.licensekindsname" sm="6" md="3">
-        <CCard class="text-center border-success" style="min-height: 100px;">
-          <CCardBody class="py-2 px-2">
+      <CCol
+        v-for="license in licenseStats"
+        :key="license.licensekindsname"
+        sm="6"
+        md="3"
+        class="mb-3"
+      >
+        <CCard class="text-center border-success" style="min-height: 80px;">
+          <CCardBody class="py-1 px-1">
             <h6 class="card-title mb-1" style="font-size: 0.95rem;">
               {{ license.licensekindsname }}
             </h6>
@@ -86,3 +92,9 @@ const fetchDashboardData = async () => {
 
 onMounted(fetchDashboardData)
 </script>
+
+<style scoped>
+.custom-card {
+  padding: 1em;
+}
+</style>
