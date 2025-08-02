@@ -109,6 +109,7 @@ export const gradeCategoryOptions = {
 };
 
 export const getGradeCategoryLabel = (value) => {
+  if (value === null || value === undefined) return '-';
   return gradeCategoryOptions[Number(value)] || '-';
 };
 
@@ -119,4 +120,75 @@ export const sexOptions = {
 
 export const getSexLabel = (value) => {
   return sexOptions[Number(value)] || '-';
+};
+
+export const coachFlgOptions = {
+  0: '選手',
+  1: '指導員',
+  2: 'その他'
+};
+
+export const getCoachFlgLabel = (value) => {
+  if (value === null || value === undefined) return '-';
+  return coachFlgOptions[Number(value)] || '-';
+};
+
+export const statusOptions = {
+  1: '在籍',
+  2: '転籍',
+  3: '休校',
+  4: '退校',
+  5: '卒業',
+  6: 'その他'
+};
+
+export const getStatusLabel = (value) => {
+  if (value === null || value === undefined) return '-';
+  return statusOptions[Number(value)] || '-';
+};
+
+export const classificationOptions = {
+  1: '代表者',
+  2: '監督',
+  3: 'コーチ',
+  4: 'プレイヤー',
+  5: 'マネージャー',
+  6: 'メディカルサポーター',
+  7: 'トレーナー',
+  8: 'チームドクター'
+};
+
+export const getClassificationLabel = (value) => {
+  if (value === null || value === undefined) return '-';
+  return classificationOptions[Number(value)] || '-';
+};
+
+export const authorityOptions = {
+  1: '管理者',
+  2: '運営権限',
+  3: '一般権限',
+  4: '使用者権限'
+};
+
+export const getAuthorityLabel = (value) => {
+  if (value === null || value === undefined) return '-';
+  return authorityOptions[Number(value)] || '-';
+};
+
+
+export const bloodTypeOptions = {
+  1: 'A',
+  2: 'B',
+  3: 'AB',
+  4: 'O',
+  5: 'その他'
+};
+
+export const relationshipOptions = {
+  1: '父',
+  2: '母',
+  3: '祖父',
+  4: '祖母',
+  5: 'その他',
+  6: '本人'
 };

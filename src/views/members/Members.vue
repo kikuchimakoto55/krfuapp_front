@@ -14,7 +14,7 @@
       <CFormLabel>学年カテゴリ</CFormLabel>
       <CFormSelect v-model="search.grade_category">
         <option value="">全て</option>
-        <option v-for="(label, value) in gradeCategories" :key="value" :value="value">{{ label }}</option>
+        <option v-for="(label, value) in gradeCategoryOptions" :key="value" :value="value">{{ label }}</option>
       </CFormSelect>
     </CCol>
     <CCol md="4">
@@ -128,8 +128,7 @@
       <CFormLabel>指導員フラグ</CFormLabel>
       <CFormSelect v-model="search.coach_flg">
         <option value="">全て</option>
-        <option value="0">生徒</option>
-        <option value="1">指導員</option>
+        <option v-for="(label, value) in coachFlgOptions" :key="value" :value="value">{{ label }}</option>
       </CFormSelect>
     </CCol>
   </CRow>
@@ -155,11 +154,11 @@
         <CTableRow v-for="member in members" :key="member.member_id">
           <CTableDataCell>{{ member.username_sei }} {{ member.username_mei }}</CTableDataCell>
           <CTableDataCell>{{ member.email }}</CTableDataCell>
-          <CTableDataCell>{{ gradeCategories[member.grade_category] }}</CTableDataCell>
-          <CTableDataCell>{{ statusOptions[member.status] }}</CTableDataCell>
-          <CTableDataCell>{{ classificationOptions[member.classification] }}</CTableDataCell>
-          <CTableDataCell>{{ authorityOptions[member.authoritykinds_id] }}</CTableDataCell>
-          <CTableDataCell>{{ coachFlgOptions[member.coach_flg] }}</CTableDataCell>
+          <CTableDataCell>{{ getGradeCategoryLabel(member.grade_category) }}</CTableDataCell>
+          <CTableDataCell>{{ getStatusLabel(member.status) }}</CTableDataCell>
+          <CTableDataCell>{{ getClassificationLabel(member.classification) }}</CTableDataCell>
+          <CTableDataCell>{{ getAuthorityLabel(member.authoritykinds_id) }}</CTableDataCell>
+          <CTableDataCell>{{ getCoachFlgLabel(member.coach_flg) }}</CTableDataCell>
           <CTableDataCell>
           <router-link :to="`/members/show/${member.member_id}`">
           <CButton color="info" size="sm" class="custom-detail-btn">詳細</CButton>
@@ -199,26 +198,35 @@
 import { ref, onMounted } from 'vue';
 import axios from '@/utils/axios';;
 
-// 🔽 データ管理
+// 追加：labels.js から読み込み
+import {
+  gradeCategoryOptions,
+  classificationOptions,
+  statusOptions,
+  authorityOptions,
+  coachFlgOptions,
+  getGradeCategoryLabel,
+  getClassificationLabel,
+  getStatusLabel,
+  getAuthorityLabel,
+  getCoachFlgLabel
+} from '@/components/constants/labels.js';
+
+//  データ管理
 const members = ref([]);
 const pagination = ref({ last_page: 1 });
 const search = ref({});
 const currentPage = ref(1); // 🔹 現在のページ番号
 const showSearchForm = ref(false);
 
-// 🔽 プルダウンオプション
-const gradeCategories = { 1: '年年少', 2: '年少', 3: '年中', 4: '年長', 5: '小1', 6: '小2', 7: '小3', 8: '小4', 9: '小5', 10: '小6', 11: '中1', 12: '中2', 13: '中3', 14: '高1', 15: '高2', 16: '高3', 17: '大1', 18: '大2', 19: '大3', 20: '大4', 21: '社会人', 22: '卒業' };
-const classificationOptions = { 1: '代表者', 2: '監督', 3: 'コーチ', 4: 'プレイヤー', 5: 'マネージャー', 6: 'メディカルサポーター', 7: 'トレーナー', 8: 'チームドクター' };
-const statusOptions = { 1: '在籍', 2: '転籍', 3: '休校', 4: '退校', 5: '卒業', 6: 'その他' };
-const authorityOptions = { 1: '管理者', 2: '運営権限', 3: '一般権限', 4: '使用者権限' };
-const coachFlgOptions = { 0: '選手', 1: '指導員', 2: 'その他' };
 
-// 🔽 検索条件を開閉
+
+//  検索条件を開閉
 const toggleSearchForm = () => {
   showSearchForm.value = !showSearchForm.value;
 };
 
-// 🔽 データ取得関数
+//  データ取得関数
 const fetchMembers = async (page = 1) => {
   try {
     currentPage.value = page; // 🔹 ページを更新
@@ -249,7 +257,7 @@ const fetchMembers = async (page = 1) => {
   }
 };
 
-// 🔽 初回表示時にデータ取得
+//  初回表示時にデータ取得
 onMounted(() => fetchMembers());
 </script>
 

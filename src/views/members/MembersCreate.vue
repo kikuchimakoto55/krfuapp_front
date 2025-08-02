@@ -9,9 +9,7 @@
           <CFormLabel>指導員フラグ<span class="required">必須</span></CFormLabel>
             <CFormSelect v-model="form.coach_flg" required>
               <option value="">選択してください</option>
-              <option value="0">選手</option>
-              <option value="1">指導員</option>
-              <option value="2">その他</option>
+              <option v-for="option in coachFlgOptionsArray" :key="option.value" :value="option.value">{{ option.label }}</option>
             </CFormSelect>
             <div v-if="validationErrors.coach_flg" class="text-danger">
               {{ validationErrors.coach_flg[0] }}
@@ -22,7 +20,10 @@
       <CRow class="mb-3">
         <CCol md="4">
           <CFormLabel>学年カテゴリ<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.grade_category" :options="gradeCategoryOptions" required />
+          <CFormSelect v-model="form.grade_category" required>
+            <option value="">選択してください</option>
+            <option v-for="option in gradeCategoryOptionsArray" :key="option.value" :value="option.value">{{ option.label }}</option>
+          </CFormSelect>
           <div v-if="validationErrors.grade_category" class="text-danger">{{ validationErrors.grade_category[0] }}</div>
         </CCol>
 
@@ -52,11 +53,10 @@
         </CCol>
         <CCol md="4">
           <CFormLabel>性別<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.sex" required>
-            <option value="">選択してください</option>
-            <option value="1">男</option>
-            <option value="2">女</option>
-          </CFormSelect>
+            <CFormSelect v-model="form.sex" required>
+              <option value="">選択してください</option>
+              <option v-for="option in sexOptionsArray" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </CFormSelect>
           <div v-if="validationErrors.sex" class="text-danger">{{ validationErrors.sex[0] }}</div>
         </CCol>
       </CRow>
@@ -94,14 +94,10 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>血液型</CFormLabel>
-          <CFormSelect v-model="form.blood_type">
-            <option value="">選択してください</option>
-            <option value="1">A</option>
-            <option value="2">B</option>
-            <option value="3">AB</option>
-            <option value="4">O</option>
-            <option value="5">その他</option>
-          </CFormSelect>
+            <CFormSelect v-model="form.blood_type">
+              <option value="">選択してください</option>
+              <option v-for="option in bloodTypeOptionsArray" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </CFormSelect>
           <div v-if="validationErrors.blood_type" class="text-danger">{{ validationErrors.blood_type[0] }}</div>
         </CCol>
         <CCol md="6">
@@ -158,15 +154,10 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>続柄<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.relationship" required>
-            <option value="">選択してください</option>
-            <option value="1">父</option>
-            <option value="2">母</option>
-            <option value="3">祖父</option>
-            <option value="4">祖母</option>
-            <option value="5">その他</option>
-            <option value="6">本人</option>
-          </CFormSelect>
+            <CFormSelect v-model="form.relationship" required>
+              <option value="">選択してください</option>
+              <option v-for="option in relationshipOptionsArray" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </CFormSelect>
           <div v-if="validationErrors.relationship" class="text-danger">{{ validationErrors.relationship[0] }}</div>
         </CCol>
         <CCol md="6">
@@ -214,18 +205,10 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>所属区分<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.classification" required>
-            <option value="">選択してください</option>
-            <option value="1">代表者</option>
-            <option value="2">監督</option>
-            <option value="3">コーチ</option>
-            <option value="4">プレイヤー</option>
-            <option value="5">マネージャー</option>
-            <option value="6">メディカルサポーター</option>
-            <option value="7">トレーナー</option>
-            <option value="8">チームドクター</option>
-            <option value="9">その他</option>
-          </CFormSelect>
+            <CFormSelect v-model="form.classification" required>
+              <option value="">選択してください</option>
+              <option v-for="option in classificationOptionsArray" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </CFormSelect>
           <div v-if="validationErrors.classification" class="text-danger">{{ validationErrors.classification[0] }}</div>
         </CCol>
         <CCol md="6">
@@ -243,15 +226,10 @@
         </CCol>
         <CCol md="6">
           <CFormLabel>在籍状況<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.status" required>
-            <option value="">選択してください</option>
-            <option value="1">在籍</option>
-            <option value="2">転籍</option>
-            <option value="3">休校</option>
-            <option value="4">退校</option>
-            <option value="5">卒業</option>
-            <option value="6">その他</option>
-          </CFormSelect>
+            <CFormSelect v-model="form.status" required>
+              <option value="">選択してください</option>
+              <option v-for="option in statusOptionsArray" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </CFormSelect>
           <div v-if="validationErrors.status" class="text-danger">{{ validationErrors.status[0] }}</div>
         </CCol>
       </CRow>
@@ -264,13 +242,10 @@
         </CCol>
         <CCol md="6">
           <CFormLabel>権限種別ID<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.authoritykinds_id" required>
-            <option value="">選択してください</option>
-            <option value="1">管理者</option>
-            <option value="2">運営権限</option>
-            <option value="3">一般権限</option>
-            <option value="4">使用者権限</option>
-          </CFormSelect>
+            <CFormSelect v-model="form.authoritykinds_id" required>
+              <option value="">選択してください</option>
+              <option v-for="option in authorityOptionsArray" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </CFormSelect>
           <div v-if="validationErrors.authoritykinds_id" class="text-danger">{{ validationErrors.authoritykinds_id[0] }}</div>
         </CCol>
       </CRow>
@@ -299,6 +274,16 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router'
 import axios from 'axios';
+import {
+  gradeCategoryOptions,
+  classificationOptions,
+  statusOptions,
+  authorityOptions,
+  coachFlgOptions,
+  sexOptions,
+  bloodTypeOptions,
+  relationshipOptions
+} from '@/components/constants/labels.js';
 
 const passwordMismatchError = ref(''); //パスワード一致チェックを追加
 const emailDuplicateError = ref('');
@@ -346,32 +331,6 @@ const form = ref({
   password_confirmation: ''
 });
 
-
-const gradeCategoryOptions = [
-  { value: '', label: '選択してください' },
-  { value: '1', label: '年年少' },
-  { value: '2', label: '年少' },
-  { value: '3', label: '年中' },
-  { value: '4', label: '年長' },
-  { value: '5', label: '小１' },
-  { value: '6', label: '小２' },
-  { value: '7', label: '小３' },
-  { value: '8', label: '小４' },
-  { value: '9', label: '小５' },
-  { value: '10', label: '小６' },
-  { value: '11', label: '中１' },
-  { value: '12', label: '中２' },
-  { value: '13', label: '中３' },
-  { value: '14', label: '高１' },
-  { value: '15', label: '高２' },
-  { value: '16', label: '高３' },
-  { value: '17', label: '大１' },
-  { value: '18', label: '大２' },
-  { value: '19', label: '大３' },
-  { value: '20', label: '大４' },
-  { value: '21', label: '社会人' },
-  { value: '22', label: '卒業' },
-]
 
 // coach_flg が '1' または '2' の場合に email を必須にする
 const isEmailRequired = computed(() => ['1', '2'].includes(form.value.coach_flg));
@@ -516,9 +475,39 @@ const checkEmailDuplicate = async () => {
   }
 };
 
+const gradeCategoryOptionsArray = computed(() =>
+  Object.entries(gradeCategoryOptions).map(([value, label]) => ({ value: String(value), label }))
+);
+const classificationOptionsArray = computed(() =>
+  Object.entries(classificationOptions).map(([value, label]) => ({ value: String(value), label }))
+);
+const statusOptionsArray = computed(() =>
+  Object.entries(statusOptions).map(([value, label]) => ({ value: String(value), label }))
+);
+const authorityOptionsArray = computed(() =>
+  Object.entries(authorityOptions).map(([value, label]) => ({ value: String(value), label }))
+);
+const coachFlgOptionsArray = computed(() =>
+  Object.entries(coachFlgOptions).map(([value, label]) => ({ value: String(value), label }))
+);
+const sexOptionsArray = computed(() =>
+  Object.entries(sexOptions).map(([value, label]) => ({ value: String(value), label }))
+);
+const bloodTypeOptionsArray = computed(() =>
+  Object.entries(bloodTypeOptions).map(([value, label]) => ({ value: String(value), label }))
+);
+const relationshipOptionsArray = computed(() =>
+  Object.entries(relationshipOptions).map(([value, label]) => ({ value: String(value), label }))
+);
+
 </script>
 
 <style scoped>
+
+select.form-select {
+  border: 1px solid #ced4da !important;
+}
+
 .form-title {
   font-size: 1.5rem;
   font-weight: bold;
