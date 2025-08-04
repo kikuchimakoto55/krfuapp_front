@@ -4,22 +4,19 @@
         <CRow class="mb-3">
         <CCol md="4">
           <CFormLabel>指導員フラグ<span class="required">必須</span></CFormLabel>
-            <CFormSelect v-model="form.coach_flg" required :invalid="!!validationErrors.coach_flg">
-              <option value="">選択してください</option>
-              <option value="0">選手</option>
-              <option value="1">指導員</option>
-              <option value="2">その他</option>
-            </CFormSelect>
-            <div v-if="validationErrors.coach_flg" class="text-danger">
-              {{ validationErrors.coach_flg[0] }}
-            </div>
-          </CCol>
+          <CFormSelect v-model="form.coach_flg" required :invalid="!!validationErrors.coach_flg">
+            <option v-for="option in coachFlgOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+          </CFormSelect>
+          <div v-if="validationErrors.coach_flg" class="text-danger">{{ validationErrors.coach_flg[0] }}</div>
+        </CCol>
         </CRow>
 
       <CRow class="mb-3">
         <CCol md="4">
           <CFormLabel>学年カテゴリ<span class="required">必須</span></CFormLabel>
-          <CFormSelect v-model="form.grade_category" :options="gradeCategoryOptions" required :invalid="!!validationErrors.grade_category" />
+          <CFormSelect v-model="form.grade_category" required :invalid="!!validationErrors.grade_category">
+            <option v-for="option in gradeCategoryOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+          </CFormSelect>
           <div v-if="validationErrors.grade_category" class="text-danger">{{ validationErrors.grade_category[0] }}</div>
         </CCol>
 
@@ -50,9 +47,7 @@
         <CCol md="4">
           <CFormLabel>性別<span class="required">必須</span></CFormLabel>
           <CFormSelect v-model="form.sex" required :invalid="!!validationErrors.sex">
-            <option value="">選択してください</option>
-            <option value="1">男</option>
-            <option value="2">女</option>
+            <option v-for="option in sexOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
           </CFormSelect>
           <div v-if="validationErrors.sex" class="text-danger">{{ validationErrors.sex[0] }}</div>
         </CCol>
@@ -91,13 +86,8 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>血液型</CFormLabel>
-          <CFormSelect v-if="form.blood_type !== null" v-model="form.blood_type" :invalid="!!validationErrors.blood_type">
-            <option value="">選択してください</option>
-            <option value="1">A</option>
-            <option value="2">B</option>
-            <option value="3">AB</option>
-            <option value="4">O</option>
-            <option value="5">その他</option>
+          <CFormSelect v-model="form.blood_type" :invalid="!!validationErrors.blood_type">
+            <option v-for="option in bloodTypeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
           </CFormSelect>
           <div v-if="validationErrors.blood_type" class="text-danger">{{ validationErrors.blood_type[0] }}</div>
         </CCol>
@@ -147,7 +137,7 @@
         </CCol>
         <CCol md="6">
           <CFormLabel>保護者電話番号<span class="required">必須</span></CFormLabel>
-            <CFormInput v-model="form.guardian_tel" required type="tel" maxlength="11" pattern="^[0-9]{10,11}$" title="10〜11桁の半角数字で入力してください" :invalid="!!validationErrors.guardian_tel"/>
+            <CFormInput v-model="form.guardian_tel" required type="tel" maxlength="11" pattern="^[0-9]{10,11}$" title="10?11桁の半角数字で入力してください" :invalid="!!validationErrors.guardian_tel"/>
             <div v-if="validationErrors.guardian_tel" class="text-danger">{{ validationErrors.guardian_tel[0] }}</div>
         </CCol>
       </CRow>
@@ -156,13 +146,7 @@
         <CCol md="6">
           <CFormLabel>続柄<span class="required">必須</span></CFormLabel>
           <CFormSelect v-model="form.relationship" required :invalid="!!validationErrors.relationship">
-            <option value="">選択してください</option>
-            <option value="1">父</option>
-            <option value="2">母</option>
-            <option value="3">祖父</option>
-            <option value="4">祖母</option>
-            <option value="5">その他</option>
-            <option value="6">本人</option>
+            <option v-for="option in relationshipOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
           </CFormSelect>
           <div v-if="validationErrors.relationship" class="text-danger">{{ validationErrors.relationship[0] }}</div>
         </CCol>
@@ -211,16 +195,7 @@
         <CCol md="6">
           <CFormLabel>所属区分<span class="required">必須</span></CFormLabel>
           <CFormSelect v-model="form.classification" required :invalid="!!validationErrors.classification">
-            <option value="">選択してください</option>
-            <option value="1">代表者</option>
-            <option value="2">監督</option>
-            <option value="3">コーチ</option>
-            <option value="4">プレイヤー</option>
-            <option value="5">マネージャー</option>
-            <option value="6">メディカルサポーター</option>
-            <option value="7">トレーナー</option>
-            <option value="8">チームドクター</option>
-            <option value="9">その他</option>
+            <option v-for="option in classificationOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
           </CFormSelect>
           <div v-if="validationErrors.classification" class="text-danger">{{ validationErrors.classification[0] }}</div>
         </CCol>
@@ -240,13 +215,7 @@
         <CCol md="6">
           <CFormLabel>在籍状況<span class="required">必須</span></CFormLabel>
           <CFormSelect v-model="form.status" required :invalid="!!validationErrors.status">
-            <option value="">選択してください</option>
-            <option value="1">在籍</option>
-            <option value="2">転籍</option>
-            <option value="3">休校</option>
-            <option value="4">退校</option>
-            <option value="5">卒業</option>
-            <option value="6">その他</option>
+            <option v-for="option in statusOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
           </CFormSelect>
           <div v-if="validationErrors.status" class="text-danger">{{ validationErrors.status[0] }}</div>
         </CCol>
@@ -261,11 +230,7 @@
         <CCol md="6">
           <CFormLabel>権限種別ID<span class="required">必須</span></CFormLabel>
           <CFormSelect v-model="form.authoritykinds_id" required :invalid="!!validationErrors.authoritykinds_id">
-            <option value="">選択してください</option>
-            <option value="1">管理者</option>
-            <option value="2">運営権限</option>
-            <option value="3">一般権限</option>
-            <option value="4">使用者権限</option>
+            <option v-for="option in authorityOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
           </CFormSelect>
           <div v-if="validationErrors.authoritykinds_id" class="text-danger">{{ validationErrors.authoritykinds_id[0] }}</div>
         </CCol>
@@ -316,20 +281,38 @@
   </template>
 
 <script setup>
-import { onMounted, ref, computed, nextTick } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
-import FamilyEditModal from '@/components/members/FamilyEditModal.vue'
+import { onMounted, ref, computed, nextTick } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios';
+import FamilyEditModal from '@/components/members/FamilyEditModal.vue';
+import {
+  gradeCategoryOptions as gradeCategoryOptionsObj,
+  coachFlgOptions as coachFlgOptionsObj,
+  sexOptions as sexOptionsObj,
+  bloodTypeOptions as bloodTypeOptionsObj,
+  classificationOptions as classificationOptionsObj,
+  statusOptions as statusOptionsObj,
+  authorityOptions as authorityOptionsObj,
+  relationshipOptions as relationshipOptionsObj
+} from '@/components/constants/labels.js';
 
-
-const route = useRoute()
-const router = useRouter()
-const id = route.params.id
-const showToast = ref(false)
-const toastMessage = ref('')
+const route = useRoute();
+const router = useRouter();
+const id = route.params.id;
+const showToast = ref(false);
+const toastMessage = ref('');
 const currentUserAuthority = Number(localStorage.getItem('authoritykinds_id'));
-const families = ref([])
+const families = ref([]);
+const passwordMismatchError = ref('');
 
+const coachFlgOptions = computed(() => Object.entries(coachFlgOptionsObj).map(([value, label]) => ({ value, label })));
+const gradeCategoryOptions = computed(() => Object.entries(gradeCategoryOptionsObj).map(([value, label]) => ({ value, label })));
+const sexOptions = computed(() => Object.entries(sexOptionsObj).map(([value, label]) => ({ value, label })));
+const bloodTypeOptions = computed(() => Object.entries(bloodTypeOptionsObj).map(([value, label]) => ({ value, label })));
+const classificationOptions = computed(() => Object.entries(classificationOptionsObj).map(([value, label]) => ({ value, label })));
+const statusOptions = computed(() => Object.entries(statusOptionsObj).map(([value, label]) => ({ value, label })));
+const authorityOptions = computed(() => Object.entries(authorityOptionsObj).map(([value, label]) => ({ value, label })));
+const relationshipOptions = computed(() => Object.entries(relationshipOptionsObj).map(([value, label]) => ({ value, label })));
 
 
 const form = ref({
@@ -369,52 +352,23 @@ const form = ref({
   authoritykinds_id: '',
   coach_flg: '',
   del_flg: 0,
-})
-
-const gradeCategoryOptions = [
-  { value: '', label: '選択してください' },
-  { value: '1', label: '年年少' },
-  { value: '2', label: '年少' },
-  { value: '3', label: '年中' },
-  { value: '4', label: '年長' },
-  { value: '5', label: '小１' },
-  { value: '6', label: '小２' },
-  { value: '7', label: '小３' },
-  { value: '8', label: '小４' },
-  { value: '9', label: '小５' },
-  { value: '10', label: '小６' },
-  { value: '11', label: '中１' },
-  { value: '12', label: '中２' },
-  { value: '13', label: '中３' },
-  { value: '14', label: '高１' },
-  { value: '15', label: '高２' },
-  { value: '16', label: '高３' },
-  { value: '17', label: '大１' },
-  { value: '18', label: '大２' },
-  { value: '19', label: '大３' },
-  { value: '20', label: '大４' },
-  { value: '21', label: '社会人' },
-  { value: '22', label: '卒業' },
-];
-
-// 1 のときだけ必須（指導員）
-const isEmailRequired = computed(() => {
-  return form.value.coach_flg === '1'; 
 });
 
-const validationErrors = ref({})
+
+// 1 のときだけ必須（指導員）
+const isEmailRequired = computed(() => form.value.coach_flg === '1');
+const validationErrors = ref({});
 
 //家族情報
-const relationshipText = (val) => {
-  return { 1: '父', 2: '母', 3: '兄', 4: '姉', 5: '弟', 6: '妹', 7: '子', 8: '親戚', 9: 'その他'}[val] || ''
+const relationshipLabel = (value) => {
+  const option = relationshipOptions.find(opt => opt.value === Number(value));
+  return option ? option.label : '';
 };
 
 onMounted(async () => {
   try {
     const res = await axios.get(`http://localhost:8000/api/members/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       withCredentials: true,
     });
 
@@ -431,14 +385,12 @@ onMounted(async () => {
         member[key] = String(member[key]);
       }
     });
-
     form.value = member;   // ここが抜けていると reverse 解除で undefined が出る！
     form.value.member_id = member.member_id;
-
-  } catch (err) {
-    console.error('取得失敗', err);
-  }
-});
+    } catch (err) {
+      console.error('取得失敗', err);
+    }
+  });
 
 const updateMember = async () => {
 
@@ -458,10 +410,7 @@ const updateMember = async () => {
       form.value[key] = Number(form.value[key]);
     }
   });
-
-  form.value.graduation_year = form.value.graduation_year
-    ? Number(form.value.graduation_year)
-    : null;
+  form.value.graduation_year = form.value.graduation_year ? Number(form.value.graduation_year) : null;
 
     try {
     await axios.put(`http://localhost:8000/api/members/${id}`, form.value, {
@@ -472,32 +421,28 @@ const updateMember = async () => {
     });
 
     // トースト表示だけにする
-    toastMessage.value = '更新が完了しました'
-    showToast.value = true
-
+    toastMessage.value = '更新が完了しました';
+    showToast.value = true;
     setTimeout(() => {
-      showToast.value = false
-      toastMessage.value = ''
-    }, 3000)
-
-  } catch (err) {
-    console.error('更新失敗', err);
-
-    if (err.response && err.response.status === 403) {
-    alert(err.response.data.message || 'この操作を行う権限がありません。');
-    return;
+      showToast.value = false;
+      toastMessage.value = '';
+    }, 3000);
+    } catch (err) {
+      console.error('更新失敗', err);
+      if (err.response && err.response.status === 403) {
+      alert(err.response.data.message || 'この操作を行う権限がありません。');
+      return;
+      }
+      if (err.response && err.response.data.errors) {
+        validationErrors.value = err.response.data.errors;
+        nextTick(() => {
+          const firstErrorEl = document.querySelector('.is-invalid');
+          if (firstErrorEl) {
+            firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+      }
     }
-    if (err.response && err.response.data.errors) {
-      validationErrors.value = err.response.data.errors;
-
-      nextTick(() => {
-        const firstErrorEl = document.querySelector('.is-invalid');
-        if (firstErrorEl) {
-          firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      });
-    }
-  }
 
   };
 
@@ -515,36 +460,34 @@ const updateMember = async () => {
 
     toastMessage.value = ' 削除が完了しました';
     showToast.value = true;
-
     setTimeout(() => {
       showToast.value = false;
       toastMessage.value = '';
       router.push('/members/'); // 一覧ページに戻す
     }, 3000);
-
   } catch (err) {
     console.error('削除失敗', err);
     alert('削除中にエラーが発生しました');
   }
   };
 
-const showFamilyEditModal = ref(false)
-const selectedFamily = ref(null)
+const showFamilyEditModal = ref(false);
+const selectedFamily = ref(null);
 
 const editFamily = (family) => {
   console.log('family:', family) 
-  selectedFamily.value = { ...family }
-  showFamilyEditModal.value = true
+  selectedFamily.value = { ...family };
+  showFamilyEditModal.value = true;
 };
 
 const closeFamilyEditModal = () => {
-  showFamilyEditModal.value = false
-  selectedFamily.value = null
+  showFamilyEditModal.value = false;
+  selectedFamily.value = null;
 };
 
 const handleFamilyUpdated = () => {
-  showFamilyEditModal.value = false
-  fetchMemberWithFamily() // ← 再取得用の関数（onMounted内のaxiosを関数化すると便利）
+  showFamilyEditModal.value = false;
+  fetchMemberWithFamily(); // ← 再取得用の関数（onMounted内のaxiosを関数化すると便利）
 };
 
 // 家族編集用モーダル表示
@@ -558,14 +501,12 @@ const fetchMemberWithFamily = async () => {
     });
     const member = res.data.member;
     families.value = res.data.families || [];
-
     const fieldsToCastToString = [ 'coach_flg', 'grade_category', 'sex', 'relationship', 'classification', 'blood_type', 'status', 'authoritykinds_id' ];
     fieldsToCastToString.forEach((key) => {
       if (member[key] !== null && member[key] !== undefined) {
         member[key] = String(member[key]);
       }
     });
-
     form.value = member;
   } catch (err) {
     console.error('取得失敗', err);
