@@ -21,7 +21,9 @@
           <label>カテゴリ*</label>
           <select v-model="selectedCategory" class="form-control">
             <option value="">カテゴリを選択</option>
-            <option v-for="cat in categories" :key="cat" :value="cat">{{ categoryLabel(cat) }}</option>
+            <option v-for="option in categorySelectOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
           </select>
         </div>
   
@@ -47,12 +49,16 @@
   import { ref, onMounted, computed } from 'vue'
   import axios from 'axios'
   import { useRouter } from 'vue-router'
+  import { categoryOptions } from '@/components/constants/labels.js';
   
-  const router = useRouter()
+  const router = useRouter();
   
   const selectedYear = ref('')
   const selectedCategory = ref('')
   const selectedTournament = ref('')
+  const categorySelectOptions = computed(() =>
+  Object.entries(categoryOptions).map(([value, label]) => ({ value: Number(value), label }))
+);
   
   // 次へ進む処理
   const goNext = () => {
@@ -100,21 +106,7 @@
     return tournaments.value.filter(t => t.year === selectedYear.value && t.categoly === Number(selectedCategory.value))
   })
   
-  // カテゴリのラベル変換
-  const categoryLabel = (value) => {
-    const mapping = {
-      1: '有料試合',
-      2: '社会人',
-      3: 'クラブ',
-      4: '大学',
-      5: '高校',
-      6: '中学',
-      7: 'ラグビースクール',
-      8: 'タグラグビー',
-      9: '女子'
-    }
-    return mapping[value] || 'その他'
-  }
+
   </script>
   
   <style scoped>

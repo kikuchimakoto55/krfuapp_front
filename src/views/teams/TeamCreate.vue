@@ -76,15 +76,9 @@
           <CCol md="3">
             <CFormLabel>カテゴリ</CFormLabel>
             <CFormSelect v-model="form.category" required>
-              <option value="1">有料試合</option>
-              <option value="2">社会人</option>
-              <option value="3">クラブ</option>
-              <option value="4">大学</option>
-              <option value="5">高校</option>
-              <option value="6">中学</option>
-              <option value="7">ラグビースクール</option>
-              <option value="8">タグラグビー</option>
-              <option value="9">女子</option>
+              <option v-for="option in categorySelectOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
             </CFormSelect>
             <p class="text-danger" v-if="errors.category">{{ errors.category }}</p>
           </CCol>
@@ -121,11 +115,17 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
-  import axios from 'axios'
-  import { useRouter } from 'vue-router'
   
-  const router = useRouter()
+  import { computed, ref } from 'vue';
+  import { useRouter } from 'vue-router';
+  import axios from 'axios';
+  import { categoryOptions } from '@/components/constants/labels.js';
+
+  const categorySelectOptions = computed(() =>
+  Object.entries(categoryOptions).map(([value, label]) => ({ value, label }))
+);
+  
+  const router = useRouter();
   const errors = ref({})
 
   const validateForm = () => {
@@ -192,7 +192,7 @@
         await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true, });
 
         // 📦 チームデータを送信
-        await axios.post('http://127.0.0.1:8000/api/teams', form.value, {
+        await axios.post('http://127.0.0.1:8000/api/teams', formData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

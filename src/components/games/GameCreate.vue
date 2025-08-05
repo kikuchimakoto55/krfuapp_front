@@ -37,74 +37,12 @@
       <CRow class="mb-3">
         <CCol md="6">
           <CFormLabel>回戦情報</CFormLabel>
-          <CFormSelect v-model="form.round_info" required>
-            <option value="">選択してください</option>
-            <option value="9">Aリーグ</option>
-            <option value="10">Bリーグ</option>
-            <option value="11">Cリーグ</option>
-            <option value="12">Dリーグ</option>
-            <option value="44">Eリーグ</option>
-            <option value="45">Fリーグ</option>
-            <option value="46">Gリーグ</option>
-            <option value="47">Hリーグ</option>
-            <option value="48">Iリーグ</option>
-            <option value="49">Jリーグ</option>
-            <option value="50">Kリーグ</option>
-            <option value="51">Lリーグ</option>
-            <option value="52">Mリーグ</option>
-            <option value="53">Nリーグ</option>
-            <option value="54">Oリーグ</option>
-            <option value="55">Pリーグ</option>
-            <option value="56">Qリーグ</option>
-            <option value="57">Rリーグ</option>
-            <option value="58">Sリーグ</option>
-            <option value="59">Tリーグ</option>
-            <option value="60">Uリーグ</option>
-            <option value="61">Vリーグ</option>
-            <option value="62">Wリーグ</option>
-            <option value="63">Xリーグ</option>
-            <option value="64">Yリーグ</option>
-            <option value="65">Zリーグ</option>
-            <option value="1">1回戦</option>
-            <option value="2">2回戦</option>
-            <option value="3">3回戦</option>
-            <option value="4">4回戦</option>
-            <option value="5">5回戦</option>
-            <option value="13">6回戦</option>
-            <option value="14">7回戦</option>
-            <option value="15">8回戦</option>
-            <option value="16">9回戦</option>
-            <option value="17">10回戦</option>
-            <option value="18">11回戦</option>
-            <option value="19">12回戦</option>
-            <option value="20">13回戦</option>
-            <option value="21">14回戦</option>
-            <option value="22">15回戦</option>
-            <option value="23">16回戦</option>
-            <option value="24">17回戦</option>
-            <option value="25">18回戦</option>
-            <option value="26">19回戦</option>
-            <option value="27">20回戦</option>
-            <option value="28">21回戦</option>
-            <option value="29">22回戦</option>
-            <option value="30">23回戦</option>
-            <option value="31">24回戦</option>
-            <option value="32">25回戦</option>
-            <option value="33">26回戦</option>
-            <option value="34">27回戦</option>
-            <option value="35">28回戦</option>
-            <option value="36">29回戦</option>
-            <option value="37">30回戦</option>
-            <option value="38">準々決勝</option>
-            <option value="6">準決勝</option>
-            <option value="7">決勝</option>
-            <option value="8">3位決定戦</option>
-            <option value="39">4位決定戦</option>
-            <option value="40">5位決定戦</option>
-            <option value="41">6位決定戦</option>
-            <option value="42">7位決定戦</option>
-            <option value="43">8位決定戦</option>
-          </CFormSelect>
+            <CFormSelect v-model="form.round_info" required>
+              <option value="">選択してください</option>
+              <option v-for="option in roundSelectOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </CFormSelect>
         </CCol>
         <CCol md="6">
           <CFormLabel>開催日時</CFormLabel>
@@ -168,9 +106,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import { roundOptions } from '@/components/constants/labels.js';
 
 // useRouteで現在のルート情報を取得
 const route = useRoute()
@@ -183,6 +122,10 @@ const isDivisionLoaded = ref(false) // isDivisionLoaded だけを別に定義
 const validationErrors = ref({}) //バリデーションエラー
 const divisionflg = ref(null)  //ディビジョン表示
 const isLoaded = ref(false)  //ディビジョン表示タイミング調整
+
+const roundSelectOptions = computed(() =>
+  Object.entries(roundOptions).map(([value, label]) => ({ value: Number(value), label }))
+);
 
 const form = ref({
   tournament_id: '',

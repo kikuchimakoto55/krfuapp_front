@@ -192,3 +192,11 @@ export const relationshipOptions = {
   5: 'その他',
   6: '本人'
 };
+
+
+export const weatherOptions = {
+  1: '晴れ',
+  2: 'くもり',
+  3: '雨',
+  4: '雪',
+};

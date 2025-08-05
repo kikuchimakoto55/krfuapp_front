@@ -27,10 +27,9 @@
           <CFormLabel>天気</CFormLabel>
           <CFormSelect v-model="form.weather">
             <option value="">選択なし</option>
-            <option value="1">晴れ</option>
-            <option value="2">くもり</option>
-            <option value="3">雨</option>
-            <option value="4">雪</option>
+            <option v-for="option in weatherSelectOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
           </CFormSelect>
           <small v-if="errors.weather" class="text-danger">{{ errors.weather[0] }}</small>
         </CCol>
@@ -70,13 +69,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
-import { eventKindsOptions } from '@/components/constants/labels'
+import { weatherOptions, eventKindsOptions } from '@/components/constants/labels.js';
+
 
 const router = useRouter()
 const errors = ref({})
+const weatherSelectOptions = computed(() =>
+  Object.entries(weatherOptions).map(([value, label]) => ({ value: Number(value), label }))
+);
 
 const form = ref({
   event_name: '',
