@@ -27,6 +27,19 @@
       </CCardBody>
     </CCard>
   </CCol>
+  <CCol xs="6" sm="4" md="3" lg="2" class="mb-3">
+    <CCard class="text-center shadow-sm custom-card bg-light">
+      <CCardBody class="py-1 px-2">
+        <div class="fw-semibold text-secondary" style="font-size: 0.85rem;">
+          総数
+        </div>
+        <div class="fw-bold text-dark" style="font-size: 1.2rem;">
+          {{ totalCount }} 名
+        </div>
+      </CCardBody>
+    </CCard>
+  </CCol>
+
 </CRow>
 
 
@@ -56,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import axios from '@/utils/axios'
 import { gradeCategoryOptions } from '@/components/constants/labels.js'
 
@@ -65,10 +78,18 @@ const user = ref(null)
 const gradeStats = ref([])
 const licenseStats = ref([])
 
+// 総数計算
+const totalCount = computed(() => {
+  if (!gradeStats.value || gradeStats.value.length === 0) return 0
+  return gradeStats.value.reduce((sum, grade) => sum + (grade.count || 0), 0)
+})
+
 // ラベル表示用
 const getGradeLabel = (category) => {
  return gradeCategoryOptions[category] || `学年 ${category}`
 }
+
+
 
 // データ取得
 const fetchDashboardData = async () => {
