@@ -8,17 +8,12 @@
           </CCol>
           <CCol md="3">
             <CFormLabel>カテゴリ</CFormLabel>
-            <CFormSelect v-model="form.categoly">
-              <option value="1">有料試合</option>
-              <option value="2">社会人</option>
-              <option value="3">クラブ</option>
-              <option value="4">大学</option>
-              <option value="5">高校</option>
-              <option value="6">中学</option>
-              <option value="7">ラグビースクール</option>
-              <option value="8">タグラグビー</option>
-              <option value="9">女子</option>
-            </CFormSelect>
+              <CFormSelect v-model="form.categoly">
+                <option value="">カテゴリを選択</option>
+                <option v-for="option in categorySelectOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </CFormSelect>
           </CCol>
           <CCol md="3">
             <CFormLabel>年度（西暦）</CFormLabel>
@@ -175,13 +170,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import { categoryOptions } from '@/components/constants/labels.js';
 
 const route = useRoute()
-const router = useRouter()
+const router = useRouter();
 const teams = ref([])
+
+const categorySelectOptions = computed(() =>
+  Object.entries(categoryOptions).map(([value, label]) => ({ value: Number(value), label }))
+);
 
 const form = ref({
   name: '', 
