@@ -162,6 +162,25 @@
           </CDropdownItem>
         </CDropdownMenu>
       </CDropdown>
+
+      <!-- 役職管理 -->
+      <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+        <CDropdownToggle class="c-dropdown-toggle">
+          <i class="cil-briefcase dropdown-icon"></i> 役職管理
+        </CDropdownToggle>
+        <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/coach-kinds/create" class="dropdown-link">
+              <i class="cil-plus dropdown-item-icon"></i> <span>役職登録</span>
+            </router-link>
+          </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/coach-kinds" class="dropdown-link">
+              <i class="cil-list dropdown-item-icon"></i> <span>役職一覧</span>
+            </router-link>
+          </CDropdownItem>
+        </CDropdownMenu>
+      </CDropdown>
   </c-sidebar-nav>
 </c-sidebar>
 

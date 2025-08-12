@@ -17,9 +17,12 @@ import GameEdit from '../components/games/GameEdit.vue';
 import VenueIndex from '../components/venues/VenueIndex.vue'
 import LicensesIndex from '../components/licenses/LicensesIndex.vue';
 import LicensesCreate from '../components/licenses/LicensesCreate.vue';
-import TournamentResultEdit from '../components/tournaments/TournamentResultEdit.vue'
-import MembersImport from '../views/members/MembersImport.vue'
-import PasswordChangeInitial from '../views/members/PasswordChangeInitial.vue'
+import TournamentResultEdit from '../components/tournaments/TournamentResultEdit.vue';
+import MembersImport from '../views/members/MembersImport.vue';
+import PasswordChangeInitial from '../views/members/PasswordChangeInitial.vue';
+import CoachKindCreate from '../views/coachKinds/CoachKindCreate.vue'
+import CoachKindIndex from '../views/coachKinds/CoachKindIndex.vue'
+import CoachKindEdit  from '../views/coachKinds/CoachKindEdit.vue'
 
 const routes = [
   {
@@ -80,6 +83,9 @@ const routes = [
       { path: '/events', name: 'EventIndex', component: () => import('@/components/event/EventIndex.vue'), meta: { title: 'イベント一覧' } },
       { path: '/events/edit/:id', name: 'EventEdit', component: () => import('@/components/event/EventEdit.vue'), meta: { title: 'イベント編集' } },
       { path: '/rankup/import', name: 'RankupImport', component: () => import('@/views/rankup/RankupImport.vue'),  meta: { title: '年度更新インポート' } },
+      { path: '/coach-kinds/create', component: CoachKindCreate, meta: { title: '役職登録', requiresAuth: true } },
+      { path: '/coach-kinds', name: 'CoachKindIndex', component: CoachKindIndex, meta: { title: '役職一覧', requiresAuth: true } },
+      { path: '/coach-kinds/edit/:id',   name: 'CoachKindEdit',  component: CoachKindEdit,   meta: { title: '役職編集',  requiresAuth: true } },
     ]
   }
 ];
