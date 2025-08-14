@@ -23,6 +23,9 @@ import PasswordChangeInitial from '../views/members/PasswordChangeInitial.vue';
 import CoachKindCreate from '../views/coachKinds/CoachKindCreate.vue'
 import CoachKindIndex from '../views/coachKinds/CoachKindIndex.vue'
 import CoachKindEdit  from '../views/coachKinds/CoachKindEdit.vue'
+import CommitteeKindCreate from '../views/committeeKinds/CommitteeKindCreate.vue'
+import CommitteeKindIndex  from '../views/committeeKinds/CommitteeKindIndex.vue'
+import CommitteeKindEdit   from '../views/committeeKinds/CommitteeKindEdit.vue'
 
 const routes = [
   {
@@ -86,6 +89,9 @@ const routes = [
       { path: '/coach-kinds/create', component: CoachKindCreate, meta: { title: '役職登録', requiresAuth: true } },
       { path: '/coach-kinds', name: 'CoachKindIndex', component: CoachKindIndex, meta: { title: '役職一覧', requiresAuth: true } },
       { path: '/coach-kinds/edit/:id',   name: 'CoachKindEdit',  component: CoachKindEdit,   meta: { title: '役職編集',  requiresAuth: true } },
+      { path: 'committee-kinds',           name: 'CommitteeKindIndex', component: CommitteeKindIndex,  meta: { title: '委員会種別一覧',  requiresAuth: true } },
+      { path: 'committee-kinds/create', component: CommitteeKindCreate, meta: { title: '委員会種別登録', requiresAuth: true } },
+      { path: 'committee-kinds/edit/:id', name: 'CommitteeKindEdit',   component: CommitteeKindEdit,   meta: { title: '委員会種別編集',  requiresAuth: true } },
     ]
   }
 ];

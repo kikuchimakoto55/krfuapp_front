@@ -181,6 +181,25 @@
           </CDropdownItem>
         </CDropdownMenu>
       </CDropdown>
+
+      <!-- 委員会種別 管理 -->
+      <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+        <CDropdownToggle class="c-dropdown-toggle">
+          <i class="cil-briefcase dropdown-icon"></i> 委員会管理
+        </CDropdownToggle>
+        <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/committee-kinds/create" class="dropdown-link">
+              <i class="cil-plus dropdown-item-icon"></i> <span>委員会種別 登録</span>
+            </router-link>
+          </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/committee-kinds" class="dropdown-link">
+              <i class="cil-list dropdown-item-icon"></i> <span>委員会種別 一覧</span>
+            </router-link>
+          </CDropdownItem>
+        </CDropdownMenu>
+      </CDropdown>
   </c-sidebar-nav>
 </c-sidebar>
 
