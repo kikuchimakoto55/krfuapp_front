@@ -1,6 +1,5 @@
 <template>
   <div class="p-3">
-    <h5 class="mb-3">委員会種別 登録</h5>
 
     <CAlert color="danger" v-if="errorMessage">{{ errorMessage }}</CAlert>
     <CAlert color="success" v-if="successMessage">{{ successMessage }}</CAlert>
@@ -19,7 +18,7 @@
           <template v-else>登録する</template>
         </CButton>
         <CButton color="secondary" variant="outline" @click="$router.push('/committee-kinds')" :disabled="submitting">
-          一覧へ戻る
+          一覧へ
         </CButton>
       </div>
     </CForm>

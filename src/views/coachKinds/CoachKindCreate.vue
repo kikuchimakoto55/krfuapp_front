@@ -1,7 +1,7 @@
 <template>
   <div class="p-4">
-    <h4>指導員種別 登録</h4>
-    <CForm @submit.prevent="handleSubmit">
+    
+    <CForm @submit.prevent="handleSubmit" class="mb-3">
       <CFormLabel for="name">指導員種別名称</CFormLabel>
       <CFormInput
         id="name"
@@ -10,11 +10,17 @@
         placeholder="例: 主任指導員"
         :invalid="!!errors.c_categorykindsname" 
       />
+      <div class="form-text">100文字以内、HTMLタグ不可</div>
       <div v-if="errors.c_categorykindsname" class="text-danger small">
         {{ errors.c_categorykindsname }}
       </div>
 
-      <CButton type="submit" color="primary" class="mt-3">登録</CButton>
+      <div class="d-flex gap-2 mt-3">
+        <CButton type="submit" color="primary">登録</CButton>
+        <CButton color="secondary" variant="outline" @click="$router.push('/coach-kinds')">
+          一覧へ
+        </CButton>
+      </div>
     </CForm>
 
     <CAlert

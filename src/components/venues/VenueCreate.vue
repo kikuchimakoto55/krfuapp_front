@@ -58,7 +58,6 @@
         </CRow>
   
         <CButton color="primary" type="submit">登録</CButton>
-        <CButton color="secondary" class="ms-2" @click="goBack">戻る</CButton>
       </CForm>
     </div>
   </template>

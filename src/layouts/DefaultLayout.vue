@@ -190,12 +190,31 @@
         <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
           <CDropdownItem class="c-nav-item" style="padding: 0;">
             <router-link to="/committee-kinds/create" class="dropdown-link">
-              <i class="cil-plus dropdown-item-icon"></i> <span>委員会種別 登録</span>
+              <i class="cil-plus dropdown-item-icon"></i> <span>委員会登録</span>
             </router-link>
           </CDropdownItem>
           <CDropdownItem class="c-nav-item" style="padding: 0;">
             <router-link to="/committee-kinds" class="dropdown-link">
-              <i class="cil-list dropdown-item-icon"></i> <span>委員会種別 一覧</span>
+              <i class="cil-list dropdown-item-icon"></i> <span>委員会一覧</span>
+            </router-link>
+          </CDropdownItem>
+        </CDropdownMenu>
+      </CDropdown>
+
+      <!-- 協会担当種別 管理 -->
+      <CDropdown inNav class="c-nav-item-dropdown" v-if="isMember">
+        <CDropdownToggle class="c-dropdown-toggle">
+          <i class="cil-briefcase dropdown-icon"></i> 協会担当管理
+        </CDropdownToggle>
+        <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/a-position-kinds/create" class="dropdown-link">
+              <i class="cil-plus dropdown-item-icon"></i> <span>協会担当登録</span>
+            </router-link>
+          </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/a-position-kinds" class="dropdown-link">
+              <i class="cil-list dropdown-item-icon"></i> <span>協会担当一覧</span>
             </router-link>
           </CDropdownItem>
         </CDropdownMenu>
