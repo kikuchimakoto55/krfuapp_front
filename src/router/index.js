@@ -29,6 +29,8 @@ import CommitteeKindEdit   from '../views/committeeKinds/CommitteeKindEdit.vue'
 import APositionKindCreate from '../views/aPositionKinds/APositionKindCreate.vue'
 import APositionKindIndex from '../views/aPositionKinds/APositionKindIndex.vue'
 import APositionKindEdit from '../views/aPositionKinds/APositionKindEdit.vue'
+import CoachesCreate from '../views/coaches/CoachesCreate.vue'
+import CoachesIndex from '../views/coaches/CoachesIndex.vue'
 
 const routes = [
   {
@@ -91,13 +93,15 @@ const routes = [
       { path: '/rankup/import', name: 'RankupImport', component: () => import('@/views/rankup/RankupImport.vue'),  meta: { title: '年度更新インポート' } },
       { path: '/coach-kinds/create', component: CoachKindCreate, meta: { title: '役職登録', requiresAuth: true } },
       { path: '/coach-kinds', name: 'CoachKindIndex', component: CoachKindIndex, meta: { title: '役職一覧', requiresAuth: true } },
-      { path: '/coach-kinds/edit/:id',   name: 'CoachKindEdit',  component: CoachKindEdit,   meta: { title: '役職編集',  requiresAuth: true } },
-      { path: 'committee-kinds',           name: 'CommitteeKindIndex', component: CommitteeKindIndex,  meta: { title: '委員会種別一覧',  requiresAuth: true } },
-      { path: 'committee-kinds/create', component: CommitteeKindCreate, meta: { title: '委員会種別登録', requiresAuth: true } },
-      { path: 'committee-kinds/edit/:id', name: 'CommitteeKindEdit',   component: CommitteeKindEdit,   meta: { title: '委員会種別編集',  requiresAuth: true } },
-      { path: 'a-position-kinds', name: 'APositionKindIndex', component: APositionKindIndex, meta: { title: '協会担当種別一覧', requiresAuth: true } },
-      { path: 'a-position-kinds/create', component: APositionKindCreate, meta: { title: '協会担当種別登録', requiresAuth: true } },
-      { path: 'a-position-kinds/edit/:id', name: 'APositionKindEdit', component: APositionKindEdit, meta: { title: '協会担当種別編集', requiresAuth: true } },
+      { path: '/coach-kinds/edit/:id', name: 'CoachKindEdit',  component: CoachKindEdit,   meta: { title: '役職編集',  requiresAuth: true } },
+      { path: '/committee-kinds', name: 'CommitteeKindIndex', component: CommitteeKindIndex,  meta: { title: '委員会種別一覧',  requiresAuth: true } },
+      { path: '/committee-kinds/create', component: CommitteeKindCreate, meta: { title: '委員会種別登録', requiresAuth: true } },
+      { path: '/committee-kinds/edit/:id', name: 'CommitteeKindEdit',   component: CommitteeKindEdit,   meta: { title: '委員会種別編集',  requiresAuth: true } },
+      { path: '/a-position-kinds', name: 'APositionKindIndex', component: APositionKindIndex, meta: { title: '協会担当種別一覧', requiresAuth: true } },
+      { path: '/a-position-kinds/create', component: APositionKindCreate, meta: { title: '協会担当種別登録', requiresAuth: true } },
+      { path: '/a-position-kinds/edit/:id', name: 'APositionKindEdit', component: APositionKindEdit, meta: { title: '協会担当種別編集', requiresAuth: true } },
+      { path: '/coaches', name: 'CoachesIndex', component: CoachesIndex, meta: { title: '指導員情報一覧', requiresAuth: true }, },
+      { path: '/coaches/create', name: 'CoachesCreate', component: CoachesCreate, meta: { title: '指導員情報管理', requiresAuth: true }, },
     ]
   }
 ];

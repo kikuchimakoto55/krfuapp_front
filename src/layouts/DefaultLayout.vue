@@ -42,6 +42,11 @@
                 <i class="cil-arrow-thick-to-top dropdown-item-icon"></i> <span>年度更新管理</span>
               </router-link>
           </CDropdownItem>
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/coaches/create" class="dropdown-link">
+              <i class="cil-school dropdown-item-icon"></i> <span>指導員情報登録</span>
+            </router-link>
+          </CDropdownItem>
         </CDropdownMenu>
         </CDropdown>
 
