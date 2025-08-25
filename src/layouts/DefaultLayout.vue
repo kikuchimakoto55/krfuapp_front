@@ -42,11 +42,6 @@
                 <i class="cil-arrow-thick-to-top dropdown-item-icon"></i> <span>年度更新管理</span>
               </router-link>
           </CDropdownItem>
-          <CDropdownItem class="c-nav-item" style="padding: 0;">
-            <router-link to="/coaches/create" class="dropdown-link">
-              <i class="cil-school dropdown-item-icon"></i> <span>指導員情報登録</span>
-            </router-link>
-          </CDropdownItem>
         </CDropdownMenu>
         </CDropdown>
 
@@ -174,6 +169,22 @@
           <i class="cil-briefcase dropdown-icon"></i> 役職管理
         </CDropdownToggle>
         <CDropdownMenu class="dropdown-menu-custom" style="border: none;">
+
+          <!-- ★ 追加: 指導員役職管理（一覧） -->
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/coaches" class="dropdown-link">
+              <i class="cil-list dropdown-item-icon"></i> <span>指導員役職管理（一覧）</span>
+            </router-link>
+          </CDropdownItem>
+
+          <!-- ★ 追加: 指導員情報登録 -->
+          <CDropdownItem class="c-nav-item" style="padding: 0;">
+            <router-link to="/coaches/create" class="dropdown-link">
+              <i class="cil-school dropdown-item-icon"></i> <span>指導員情報登録</span>
+            </router-link>
+          </CDropdownItem>
+
+          <!-- 既存: 役職種別（CoachKinds） -->
           <CDropdownItem class="c-nav-item" style="padding: 0;">
             <router-link to="/coach-kinds/create" class="dropdown-link">
               <i class="cil-plus dropdown-item-icon"></i> <span>役職登録</span>

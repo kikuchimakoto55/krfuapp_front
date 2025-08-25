@@ -5,6 +5,7 @@
       <CTableHead>
         <CTableRow>
           <CTableHeaderCell>会員ID</CTableHeaderCell>
+          <CTableHeaderCell>会員氏名</CTableHeaderCell>
           <CTableHeaderCell>役職種別</CTableHeaderCell>
           <CTableHeaderCell>登録日</CTableHeaderCell>
           <CTableHeaderCell>更新日</CTableHeaderCell>
@@ -20,7 +21,9 @@
             <CTableDataCell :rowspan="row._lineCount" class="align-middle text-center">
               {{ row.member_id }}
             </CTableDataCell>
-
+            <CTableDataCell :rowspan="row._lineCount" class="align-middle">
+              {{ row.member_name }}
+            </CTableDataCell>
             <CTableDataCell>
               {{ roleTypeLabel[row.first?.type] }}
             </CTableDataCell>
@@ -71,6 +74,10 @@
         <div class="mb-3">
           <label class="form-label">会員ID</label>
           <input class="form-control" type="text" v-model="edit.form.member_id" disabled>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">会員氏名</label>
+          <input class="form-control" type="text" :value="edit.form.member_name" disabled>
         </div>
         <div class="mb-3">
           <label class="form-label">役職種別</label>
@@ -124,12 +131,17 @@ async function fetchList () {
     if (!grouped.has(key)) {
       grouped.set(key, {
         member_id: key,
+        member_name: r.member ? `${r.member.username_sei} ${r.member.username_mei}` : '（不明）',
         lines: [], // {coach_id, type}
         reg_min: r.registration_date ?? null,
         upd_max: r.update_date ?? null,
       })
     }
     const g = grouped.get(key)
+    // 念のため、最初の非nullを優先
+    if (!g.member_name && r.member) {
+     g.member_name = `${r.member.username_sei} ${r.member.username_mei}`
+    }
     g.lines.push({ coach_id: r.coach_id, type: r.role_type })
 
     // 登録日=最古、更新日=最新
@@ -146,6 +158,7 @@ async function fetchList () {
     const sorted = g.lines.sort((a, b) => a.type - b.type)
     return {
       member_id: g.member_id,
+      member_name: g.member_name,
       reg_min: g.reg_min,
       upd_max: g.upd_max,
       first: sorted[0] ?? null,
@@ -169,6 +182,7 @@ const edit = ref({
     role_kindsname: '',
     remarks: '',
     referee_id: null,
+    member_name: '',
   }
 })
 
@@ -182,6 +196,7 @@ function closeEdit () {
     role_kindsname: '',
     remarks: '',
     referee_id: null,
+    member_name: '',
   }
 }
 
@@ -190,6 +205,11 @@ async function openEdit (coachId) {
   // 単一取得で既存値をロード
   const res = await axios.get(`http://localhost:8000/api/coaches/${coachId}`, { withCredentials: true })
   const d = res.data
+  const nameFromApi =
+      d.member_name
+      ?? (d.member ? `${d.member.username_sei} ${d.member.username_mei}` : null)
+      ?? (rows.value.find(r => r.member_id === d.member_id)?.member_name || '')
+
   edit.value.form = {
     coach_id: d.coach_id,
     member_id: d.member_id,
@@ -198,6 +218,7 @@ async function openEdit (coachId) {
     role_kindsname: d.role_kindsname,
     remarks: d.remarks ?? '',
     referee_id: d.referee_id ?? null,
+    member_name: nameFromApi,
   }
   edit.value.visible = true
 }
